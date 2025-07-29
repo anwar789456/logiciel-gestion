@@ -6,13 +6,24 @@ import { useWebSocket } from '../../context/WebSocketContext';
 const NewMessageNotification = () => {
   const { t } = useTranslation();
   const { newMessageNotification, clearNotification } = useWebSocket();
+  const audioRef = React.useRef(null);
+  // Play sound when notification appears
+  React.useEffect(() => {
+    if (newMessageNotification && audioRef.current) {
+      audioRef.current.play().catch(error => {
+        console.error('Failed to play notification sound:', error);
+      });
+    }
+  }, [newMessageNotification]);
 
   if (!newMessageNotification) return null;
 
   const { count, latestMessage } = newMessageNotification;
 
   return (
-    <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right-full duration-300">
+    <div className="fixed top-4 right-4 z-50 animate-slide-in transition-all duration-300">
+      {/* Audio element for notification sound */}
+      <audio ref={audioRef} src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto" />
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 min-w-80 max-w-md">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
@@ -39,21 +50,18 @@ const NewMessageNotification = () => {
           </button>
         </div>
         
-        {latestMessage && (
+        {/* {latestMessage && (
           <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
             <div className="text-sm">
               <p className="font-medium text-gray-900 dark:text-gray-100">
                 {latestMessage.author}
-              </p>
-              <p className="text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
-                {latestMessage.content}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                 {new Date(latestMessage.timestamp).toLocaleTimeString()}
               </p>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

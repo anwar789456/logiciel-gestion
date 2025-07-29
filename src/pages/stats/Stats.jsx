@@ -6,7 +6,7 @@ function Stats() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">
+      <h1 className="text-center text-2xl font-semibold text-gray-800 dark:text-white mb-6">
         {t('stats')}
       </h1>
     </div>

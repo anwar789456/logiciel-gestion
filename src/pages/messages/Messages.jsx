@@ -10,7 +10,7 @@ function Messages() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-const { chatItems, isConnected, updateChatItems } = useWebSocket();
+  const { chatItems, isConnected, updateChatItems } = useWebSocket();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,7 +29,7 @@ const { chatItems, isConnected, updateChatItems } = useWebSocket();
   }, [t, updateChatItems]);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-none border border-gray-200 dark:border-gray-700 min-h-[300px]">
+    <div className="bg-none rounded-none min-h-[300px]">
       {/* Connection Status Indicator */}
       <div className="px-4 py-2 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
         <div className="flex items-center gap-2">

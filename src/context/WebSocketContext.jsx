@@ -63,24 +63,32 @@ export const WebSocketProvider = ({ children }) => {
     newSocket.on('chatlogs-updated', (updatedChatItems) => {
       console.log('Received chat update:', updatedChatItems);
       
-      // Store previous count to detect new messages
-      const previousCount = chatItems.length;
+      // Always show notification for any update
+      const latestMessage = getLatestMessage(updatedChatItems);
+      
+      // Update chat items first
       setChatItems(updatedChatItems);
       
-      // If we have more items than before, show notification
-      if (updatedChatItems.length > previousCount && previousCount > 0) {
-        const newMessagesCount = updatedChatItems.length - previousCount;
+      // Always show notification for any update
+      console.log('Always showing notification for any update');
+      
+      // Use setTimeout to ensure this runs after state updates
+      setTimeout(() => {
         setNewMessageNotification({
-          count: newMessagesCount,
+          count: 1,
           timestamp: new Date(),
-          latestMessage: getLatestMessage(updatedChatItems)
+          latestMessage: latestMessage || {
+            content: 'New message received',
+            author: 'System',
+            timestamp: new Date().toISOString()
+          }
         });
         
         // Auto-clear notification after 5 seconds
         setTimeout(() => {
           setNewMessageNotification(null);
         }, 5000);
-      }
+      }, 100);
     });
 
     setSocket(newSocket);
