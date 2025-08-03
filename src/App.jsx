@@ -1,5 +1,4 @@
 // src/App.jsx
-import { useState } from 'react'
 import './App.css'
 import { AppProvider } from './context/AppContext';
 import { WebSocketProvider } from './context/WebSocketContext';
@@ -15,7 +14,7 @@ import NewMessageNotification from './components/common/NewMessageNotification';
 import CommandesEnCours from './pages/commandes/Encours/EnCours';
 import HistoriqueCommande from './pages/commandes/Historique/Historique';
 import Stock from './pages/stock/Stock';
-
+import AssistantIA from './pages/assistant/AssistantIA'
 
 function App() {
   return (
@@ -32,6 +31,7 @@ function App() {
               <Route path="messages" element={<Messages />} />
               <Route path="stock" element={<Stock />} />
               <Route path="devis" element={<Devis />} />
+              <Route path="assistant-ia" element={<AssistantIA />} />
               <Route path="settings" element={<Settings />} />
             </Route>
           </Routes>

@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import DevisList from '../../components/DevisList';
-import DevisForm from '../../components/DevisForm';
-import DevisViewer from '../../components/DevisViewer';
+import DevisFormEntreprise from '../../components/DevisFormEntreprise';
+import DevisViewerEntreprise from '../../components/DevisViewerEntreprise';
 
-function Devis() {
-  const { t } = useTranslation();
+function DevisEntreprise() {
   const [currentView, setCurrentView] = useState('list'); // 'list', 'create', 'edit', 'view'
   const [selectedDevis, setSelectedDevis] = useState(null);
 
@@ -46,19 +44,18 @@ function Devis() {
           onCreateNew={handleCreateNew}
           onEdit={handleEdit}
           onView={handleView}
+          typeClient="entreprise"
         />
       )}
-      
       {(currentView === 'create' || currentView === 'edit') && (
-        <DevisForm
+        <DevisFormEntreprise
           existingDevis={currentView === 'edit' ? selectedDevis : null}
           onSuccess={handleSuccess}
           onCancel={handleCancel}
         />
       )}
-      
       {currentView === 'view' && selectedDevis && (
-        <DevisViewer
+        <DevisViewerEntreprise
           devis={selectedDevis}
           onEdit={handleEdit}
           onBack={handleBack}
@@ -68,4 +65,4 @@ function Devis() {
   );
 }
 
-export default Devis;
+export default DevisEntreprise; 

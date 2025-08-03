@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { Home, Receipt, ChartNoAxesCombined, MessageCircleMore, Boxes, ScrollText, ChevronDown, Clipboard, BellDot, FileText, ChevronsRight, ChevronsLeft, TrendingUp } from 'lucide-react';
+import { Home, Receipt, ChartNoAxesCombined, MessageCircleMore, Boxes, ScrollText, ChevronDown, Clipboard, BellDot, FileText, ChevronsRight, ChevronsLeft, TrendingUp, Brain } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 function Sidebar() {
@@ -20,20 +20,22 @@ function Sidebar() {
 
   return (
     <aside
-      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-[width] duration-300 ${isSidebarOpen ? 'w-60' : 'w-20'}`}
+      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-[width] duration-300 ${isSidebarOpen ? 'w-60' : 'w-20'} flex flex-col`}
     >
       <button 
         className='absolute transition-colors duration-300 ease-in-out top-2 -right-3.5 w-7 h-7 flex items-center cursor-pointer
         justify-center
         border rounded-full border-gray-200 dark:border-gray-200
         bg-white hover:bg-gray-100 dark:hover:bg-gray-300
-        text-gray-900'
+        text-gray-900 z-10'
 
         onClick={toggleSidebar}
       >
         {isSidebarOpen ? (<ChevronsLeft size={20} />) : (<ChevronsRight size={20} />) }
       </button>
-      <div className="p-2">
+      
+      {/* Scrollable content area */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
         <nav className="space-y-5">
           {/* Home */}
           <NavLink
@@ -273,6 +275,21 @@ function Sidebar() {
             </div>
             <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
               Stock
+            </span>
+          </NavLink>
+
+          <NavLink
+            to="/assistant-ia"
+            className={({ isActive }) =>
+              `flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
+            }
+            title={!isSidebarOpen ? 'stock' : undefined}
+          >
+            <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
+              <Brain size={24} />
+            </div>
+            <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
+              Assistant IA
             </span>
           </NavLink>
 

@@ -12,7 +12,7 @@ function Layout() {
       <Navbar />
       <Sidebar />
       <main
-        className={`h-screen pt-16 transition-all duration-300 ${isSidebarOpen ? 'pl-60' : 'pl-20'}`}
+        className={`pt-16 transition-all duration-300 ${isSidebarOpen ? 'pl-60' : 'pl-20'}`}
       >
         <Outlet />
       </main>
