@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { Home, Receipt, ChartNoAxesCombined, MessageCircleMore, Boxes, ScrollText, ChevronDown, Clipboard, BellDot, FileText, ChevronsRight, ChevronsLeft, TrendingUp, Brain } from 'lucide-react';
+import { Home, Receipt, ChartColumnBig, MessageCircleMore, GalleryHorizontal, TicketCheck, Boxes, ScrollText, ChevronDown, Clipboard, BellDot, FileText, ChevronsRight, ChevronsLeft, TrendingUp, Brain, Truck, Users, TrendingDown, UserCheck, Calendar, Wallet, Globe, Tag, Package } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 function Sidebar() {
@@ -9,6 +9,9 @@ function Sidebar() {
   const { isSidebarOpen, toggleSidebar } = useApp();
   const [isCommandesOpen, setIsCommandesOpen] = useState(false);
   const [isVentesOpen, setIsVentesOpen] = useState(false);
+  const [isAchatsOpen, setIsAchatsOpen] = useState(false);
+  const [isEmployeeOpen, setIsEmployeeOpen] = useState(false);
+  const [isWebsiteOpen, setIsWebsiteOpen] = useState(false);
 
   const toggleCommandes = () => {
     setIsCommandesOpen(!isCommandesOpen);
@@ -16,6 +19,18 @@ function Sidebar() {
 
   const toggleVentes = () => {
     setIsVentesOpen(!isVentesOpen);
+  };
+
+  const toggleAchats = () => {
+    setIsAchatsOpen(!isAchatsOpen);
+  };
+
+  const toggleEmployee = () => {
+    setIsEmployeeOpen(!isEmployeeOpen);
+  };
+
+  const toggleWebsite = () => {
+    setIsWebsiteOpen(!isWebsiteOpen);
   };
 
   return (
@@ -36,7 +51,7 @@ function Sidebar() {
       
       {/* Scrollable content area */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
-        <nav className="space-y-5">
+        <nav className="space-y-0.5">
           {/* Home */}
           <NavLink
             to="/"
@@ -62,7 +77,7 @@ function Sidebar() {
             title={!isSidebarOpen ? t('stats') : undefined}
           >
             <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
-              <ChartNoAxesCombined size={24} />
+              <ChartColumnBig size={24} />
             </div>
             <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
               {t('stats')}
@@ -79,7 +94,7 @@ function Sidebar() {
           <div>
             <button
               onClick={toggleVentes}
-              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/devis') || location.pathname.startsWith('/factures')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
+              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/devis') || location.pathname.startsWith('/factures') || location.pathname.startsWith('/bon-livraison')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
               title={!isSidebarOpen ? t('ventes') : undefined}
             >
               <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
@@ -99,7 +114,7 @@ function Sidebar() {
             <div 
               className={`ml-4 overflow-hidden transition-all duration-300 ease-in-out ${
                 isVentesOpen && isSidebarOpen 
-                  ? 'max-h-32 opacity-100 mt-1' 
+                  ? 'max-h-44 opacity-100 mt-1' 
                   : 'max-h-0 opacity-0 mt-0'
               }`}
             >
@@ -128,30 +143,6 @@ function Sidebar() {
                   </NavLink>
                 </div>
 
-                {/* Commandes en cours */}
-                <div
-                  className={`transform transition-all duration-300 ease-in-out ${
-                    isVentesOpen && isSidebarOpen
-                      ? 'translate-y-0 opacity-100'
-                      : '-translate-y-2 opacity-0'
-                  }`}
-                  style={{
-                    transitionDelay: isVentesOpen ? '50ms' : '0ms'
-                  }}
-                >
-                  <NavLink
-                    to="/commandes/en-cours"
-                    className={({ isActive }) =>
-                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
-                    }
-                  >
-                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
-                      <BellDot size={20} />
-                    </div>
-                    {t('commandes_en_cours')}
-                  </NavLink>
-                </div>
-
                 {/* Factures */}
                 <div
                   className={`transform transition-all duration-300 ease-in-out ${
@@ -173,6 +164,110 @@ function Sidebar() {
                       <Receipt size={20} />
                     </div>
                     {t('factures')}
+                  </NavLink>
+                </div>
+
+                {/* Bon Livraison */}
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isVentesOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isVentesOpen ? '100ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/bon-livraison"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <Truck size={20} />
+                    </div>
+                    {t('bon_livraison')}
+                  </NavLink>
+                </div>
+
+                {/* Reçu de paiement sur commande */}
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isVentesOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isVentesOpen ? '150ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/recue-de-paiement-sur-commande"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <TicketCheck size={20} />
+                    </div>
+                    {t('recu_de_paiement_sur_commande')}
+                  </NavLink>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Achats Dropdown */}
+          <div>
+            <button
+              onClick={toggleAchats}
+              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname.startsWith('/fournisseur') ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
+              title={!isSidebarOpen ? t('achats') : undefined}
+            >
+              <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
+                <TrendingDown size={24} />
+              </div>
+              <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
+                {t('achats')}
+              </span>
+              <div className={`ml-auto transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
+                <div className={`transform transition-transform duration-300 ease-in-out ${isAchatsOpen ? 'rotate-180' : 'rotate-0'}`}>
+                  <ChevronDown size={16} />
+                </div>
+              </div>
+            </button>
+            
+            {/* Dropdown Items with smooth animation */}
+            <div 
+              className={`ml-4 overflow-hidden transition-all duration-300 ease-in-out ${
+                isAchatsOpen && isSidebarOpen 
+                  ? 'max-h-20 opacity-100 mt-1' 
+                  : 'max-h-0 opacity-0 mt-0'
+              }`}
+            >
+              <div className="space-y-1 transform transition-transform duration-300 ease-in-out">
+                {/* Fournisseur */}
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isAchatsOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isAchatsOpen ? '0ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/fournisseur"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-300 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <Users size={20} />
+                    </div>
+                    {t('fournisseur')}
                   </NavLink>
                 </div>
               </div>
@@ -241,6 +336,124 @@ function Sidebar() {
             </div>
           </div>
 
+          {/* Clients */}
+          <NavLink
+            to="/clients"
+            className={({ isActive }) =>
+              `flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
+            }
+            title={!isSidebarOpen ? t('clients') : undefined}
+          >
+            <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
+              <Users size={24} />
+            </div>
+            <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
+              {t('clients')}
+            </span>
+          </NavLink>
+
+          {/* Employée Dropdown */}
+          <div>
+            <button
+              onClick={toggleEmployee}
+              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/employee') || location.pathname.startsWith('/demande-conge')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
+              title={!isSidebarOpen ? t('employee') : undefined}
+            >
+              <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
+                <UserCheck size={24} />
+              </div>
+              <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
+                {t('employee')}
+              </span>
+              <div className={`ml-auto transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
+                <div className={`transform transition-transform duration-300 ease-in-out ${isEmployeeOpen ? 'rotate-180' : 'rotate-0'}`}>
+                  <ChevronDown size={16} />
+                </div>
+              </div>
+            </button>
+            
+            {/* Dropdown Items with smooth animation */}
+            <div 
+              className={`ml-4 overflow-hidden transition-all duration-300 ease-in-out ${
+                isEmployeeOpen && isSidebarOpen 
+                  ? 'max-h-32 opacity-100 mt-1' 
+                  : 'max-h-0 opacity-0 mt-0'
+              }`}
+            >
+              <div className="space-y-1 transform transition-transform duration-300 ease-in-out">
+                {/* Employée List */}
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isEmployeeOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isEmployeeOpen ? '0ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/employee/list"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-300 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <Users size={20} />
+                    </div>
+                    {t('employee_list')}
+                  </NavLink>
+                </div>
+
+                {/* Demande de Congé */}
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isEmployeeOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isEmployeeOpen ? '50ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/employee/demande-conge"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <Calendar size={20} />
+                    </div>
+                    {t('demande_de_conge')}
+                  </NavLink>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={`pt-2 pb-2 transition-normal duration-300 ${isSidebarOpen ? 'pl-2 text-sm' : 'pl-0 text-[11px]' }`}>
+            <p className='font-semibold uppercase whitespace-nowrap transition-all duration-300 ease-in-out text-gray-400 dark:text-gray-500'>
+              {t('en_cours')}
+            </p>
+          </div>
+
+          {/* Commandes en cours */}      
+          <NavLink
+            to="/commandes/en-cours"
+            className={({ isActive }) =>
+              `flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
+            }
+            title={!isSidebarOpen ? t('commandes_en_cours') : undefined}
+          >
+            <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
+              <BellDot size={24} />
+            </div>
+            <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
+              {t('commandes_en_cours')}
+            </span>
+          </NavLink>
+
           {/* Messages */}
           <NavLink
             to="/messages"
@@ -259,31 +472,161 @@ function Sidebar() {
 
           <div className={`pt-2 pb-2 transition-normal duration-300 ${isSidebarOpen ? 'pl-2 text-sm' : 'pl-0 text-[11px]' }`}>
             <p className='font-semibold uppercase whitespace-nowrap transition-all duration-300 ease-in-out text-gray-400 dark:text-gray-500'>
-              stock
+              Website
             </p>
           </div>
 
+          {/* Website Dropdown */}
+          <div>
+            <button
+              onClick={toggleWebsite}
+              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/stock') || location.pathname.startsWith('/categories') || location.pathname.startsWith('/products')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
+              title={!isSidebarOpen ? 'Website' : undefined}
+            >
+              <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
+                <Globe size={24} />
+              </div>
+              <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
+                Website
+              </span>
+              <div className={`ml-auto transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
+                <div className={`transform transition-transform duration-300 ease-in-out ${isWebsiteOpen ? 'rotate-180' : 'rotate-0'}`}>
+                  <ChevronDown size={16} />
+                </div>
+              </div>
+            </button>
+            
+            {/* Dropdown Items with smooth animation */}
+            <div 
+              className={`ml-4 overflow-hidden transition-all duration-300 ease-in-out ${
+                isWebsiteOpen && isSidebarOpen 
+                  ? 'max-h-44 opacity-100 mt-1' 
+                  : 'max-h-0 opacity-0 mt-0'
+              }`}
+            >
+              <div className="space-y-1 transform transition-transform duration-300 ease-in-out">
+                {/* Stock */}
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isWebsiteOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isWebsiteOpen ? '0ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/stock"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-300 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <Boxes size={20} />
+                    </div>
+                    Stock
+                  </NavLink>
+                </div>
+
+                {/* Categories */}
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isWebsiteOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isWebsiteOpen ? '50ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/categories"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <Tag size={20} />
+                    </div>
+                    Categories
+                  </NavLink>
+                </div>
+
+                {/* Products */}
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isWebsiteOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isWebsiteOpen ? '100ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/products"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <Package size={20} />
+                    </div>
+                    Products
+                  </NavLink>
+                </div>
+                
+                {/* HomePage Carousel */}
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isWebsiteOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isWebsiteOpen ? '100ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/carousel"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <GalleryHorizontal size={20} />
+                    </div>
+                    Carousel
+                  </NavLink>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Caisse */}
           <NavLink
-            to="/stock"
+            to="/caisse"
             className={({ isActive }) =>
               `flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
             }
-            title={!isSidebarOpen ? 'stock' : undefined}
+            title={!isSidebarOpen ? t('caisse') : undefined}
           >
             <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
-              <Boxes size={24} />
+              <Wallet size={24} />
             </div>
             <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
-              Stock
+              {t('caisse')}
             </span>
           </NavLink>
 
+          {/* Assistant IA */}
           <NavLink
             to="/assistant-ia"
             className={({ isActive }) =>
               `flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
             }
-            title={!isSidebarOpen ? 'stock' : undefined}
+            title={!isSidebarOpen ? 'Assistant IA' : undefined}
           >
             <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
               <Brain size={24} />

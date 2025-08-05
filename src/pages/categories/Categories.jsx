@@ -1,12 +1,9 @@
 import React from 'react'
 
-function Stock() {
+export default function Categories() {
   return (
     <div className='pt-4 px-8'>
-      <h1>Stock</h1>
-      
+        <h1>Categories</h1>
     </div>
   )
 }
-
-export default Stock

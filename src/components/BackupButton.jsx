@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Download, Database, AlertCircle, CheckCircle, FileText, FileSpreadsheet, FileImage, Settings } from 'lucide-react';
 import { getBackupInfo, exportCollections } from '../api/backup';
+import { useTranslation } from 'react-i18next';
 
 const BackupButton = () => {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [backupInfo, setBackupInfo] = useState(null);
   const [error, setError] = useState(null);
@@ -111,12 +113,12 @@ const BackupButton = () => {
         <div className="flex items-center">
           <Database className="h-6 w-6 text-blue-600 dark:text-blue-400 mr-3" />
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-            Sauvegarde de la Base de Données
+            {t('Sauvegarde_de_la_Base_de_Donnees')}
           </h3>
         </div>
         <button
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="flex items-center px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg transition-colors"
+          className="flex items-center cursor-pointer text-gray-800 dark:text-gray-300 px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg transition-colors"
         >
           <Settings className="h-4 w-4 mr-1" />
           {showAdvanced ? 'Simple' : 'Avancé'}
@@ -251,7 +253,7 @@ const BackupButton = () => {
         <button
           onClick={handleExport}
           disabled={isLoading || selectedCollections.length === 0}
-          className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors duration-200 font-medium"
+          className="flex items-center cursor-pointer px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors duration-200 font-medium"
         >
           <Download className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
           {isLoading ? 'Export en cours...' : `Exporter (${selectedCollections.length})`}
@@ -260,7 +262,7 @@ const BackupButton = () => {
         <button
           onClick={loadBackupInfo}
           disabled={isLoading}
-          className="flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white rounded-lg transition-colors duration-200"
+          className="flex items-center cursor-pointer px-4 py-2 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white rounded-lg transition-colors duration-200"
         >
           <Database className="h-4 w-4 mr-2" />
           Actualiser

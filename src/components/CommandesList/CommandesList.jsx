@@ -1,17 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  Calendar, 
-  User, 
-  Phone, 
-  Mail, 
-  MapPin, 
-  MessageCircle, 
-  Package, 
-  Eye,
-  Search,
-  ChevronDown
-} from 'lucide-react';
+import { Calendar, User, Phone, Mail, MapPin, MessageCircle, Package, Eye, Search, Users, Contact, DollarSign, Settings } from 'lucide-react';
 import { FetchAllCommandeItems } from '../../api/commandes/commande.js';
 import { FetchAllProductItems } from '../../api/product.js';
 
@@ -147,7 +136,7 @@ function CommandesList() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -160,109 +149,132 @@ function CommandesList() {
         />
       </div>
 
-      {/* Commands Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {filteredCommandes.map((commande) => (
-          <div
-            key={commande._id}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-700 overflow-hidden group"
-          >
-            {/* Header */}
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                    <User className="text-blue-600 dark:text-blue-300" size={20} />
+      {/* Table */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+              <tr>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
+                  <div className="flex items-center space-x-2">
+                    <Users size={16} />
+                    <span>Client</span>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
-                      {commande.nomPrenom || 'Nom non spécifié'}
-                    </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      ID: {commande._id?.slice(-8) || 'N/A'}
-                    </p>
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
+                  <div className="flex items-center space-x-2">
+                    <Contact size={16} />
+                    <span>Contact</span>
                   </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="flex items-center text-gray-600 dark:text-gray-300">
-                  <Calendar size={16} className="mr-2" />
-                  {commande.createdAt ? new Date(commande.createdAt).toLocaleDateString('fr-FR') : 'Date inconnue'}
-                </div>
-                <div className="flex items-center text-gray-600 dark:text-gray-300">
-                  <Package size={16} className="mr-2" />
-                  {getTotalQuantity(commande.cartItems)} article{getTotalQuantity(commande.cartItems) > 1 ? 's' : ''}
-                </div>
-              </div>
-            </div>
-
-            {/* Content */}
-            <div className="p-6">
-              <div className="space-y-3 mb-4">
-                <div className="flex items-center text-gray-600 dark:text-gray-300">
-                  <MapPin size={16} className="mr-2 text-gray-400" />
-                  <span className="text-sm">
-                    {commande.gouvernorat || 'Non spécifié'}, {commande.pays || 'Tunisie'}
-                  </span>
-                </div>
-                {commande.telephone && (
-                  <div className="flex items-center text-gray-600 dark:text-gray-300">
-                    <Phone size={16} className="mr-2 text-gray-400" />
-                    <span className="text-sm">{commande.telephone}</span>
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
+                  <div className="flex items-center space-x-2">
+                    <MapPin size={16} />
+                    <span>Localisation</span>
                   </div>
-                )}
-                {commande.email && (
-                  <div className="flex items-center text-gray-600 dark:text-gray-300">
-                    <Mail size={16} className="mr-2 text-gray-400" />
-                    <span className="text-sm truncate">{commande.email}</span>
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
+                  <div className="flex items-center space-x-2">
+                    <Calendar size={16} />
+                    <span>Date</span>
                   </div>
-                )}
-                {commande.comments && (
-                  <div className="flex items-start text-gray-600 dark:text-gray-300">
-                    <MessageCircle size={16} className="mr-2 mt-0.5 text-gray-400" />
-                    <span className="text-sm">{commande.comments}</span>
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
+                  <div className="flex items-center space-x-2">
+                    <Package size={16} />
+                    <span>Articles</span>
                   </div>
-                )}
-              </div>
-
-              {/* Total Price */}
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
-                <div className="text-center">
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Total de la commande</p>
-                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {getTotalPrice(commande.cartItems).toFixed(2)} TND
-                  </p>
-                </div>
-              </div>
-
-              {/* Action Button */}
-              <button
-                onClick={() => openModal(commande)}
-                className="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center group-hover:bg-blue-700"
-              >
-                <Eye size={16} className="mr-2" />
-                Voir les détails
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {filteredCommandes.length === 0 && !loading && (
-        <div className="text-center py-12">
-          <Package size={64} className="mx-auto text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-            Aucune commande trouvée
-          </h3>
-          <p className="text-gray-500 dark:text-gray-400">
-            {searchTerm 
-              ? 'Essayez de modifier vos critères de recherche.'
-              : 'Il n\'y a pas de commandes pour le moment.'
-            }
-          </p>
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
+                  <div className="flex items-center space-x-2">
+                    <Settings size={16} />
+                    <span>Actions</span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
+              {filteredCommandes.map((commande) => (
+                <tr key={commande._id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                        <User className="mr-2 text-gray-400" size={16} />
+                        <span className="truncate max-w-[200px]">{commande.nomPrenom}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="space-y-1">
+                      {commande.email && (
+                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                          <Mail size={14} className="mr-2 text-gray-400" />
+                          <span className="truncate max-w-[200px]">{commande.email}</span>
+                        </div>
+                      )}
+                      {commande.telephone && (
+                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                          <Phone size={14} className="mr-2 text-gray-400" />
+                          <span>{commande.telephone}</span>
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                      <MapPin size={14} className="mr-2 text-gray-400" />
+                      <span>{commande.gouvernorat || 'Non spécifié'}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                      <Calendar size={14} className="mr-2 text-gray-400" />
+                      <span>
+                        {commande.createdAt ? new Date(commande.createdAt).toLocaleDateString('fr-FR') : 'Date inconnue'}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                      <Package size={14} className="mr-2 text-gray-400" />
+                      <span>{getTotalQuantity(commande.cartItems)} article{getTotalQuantity(commande.cartItems) > 1 ? 's' : ''}</span>
+                    </div>
+                    {commande.comments && (
+                      <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        <MessageCircle size={12} className="mr-1" />
+                        <span className="truncate max-w-[150px]">{commande.comments}</span>
+                      </div>
+                    )}
+                  </td>
+                  
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => openModal(commande)}
+                      className="inline-flex items-center px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
+                    >
+                      <Eye size={14} className="mr-1" />
+                      Détails
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      )}
+
+        {filteredCommandes.length === 0 && (
+          <div className="text-center py-12">
+            <Package size={64} className="mx-auto text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+              Aucune commande trouvée
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400">
+              {searchTerm 
+                ? 'Essayez de modifier vos critères de recherche.'
+                : 'Il n\'y a pas de commandes pour le moment.'
+              }
+            </p>
+          </div>
+        )}
+      </div>
 
       {/* Modal for command details with animations */}
       {(selectedCommande || isModalOpen) && (

@@ -13,6 +13,39 @@ export const getAllDevis = async () => {
   }
 };
 
+export const getDevisCompteur = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/admin/api/logiciel/devis-compteur/get-devis-counter`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching devis:', error);
+    throw error;
+  }
+}
+
+export const incrementDevisCounter = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/admin/api/logiciel/devis-compteur/increment`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching devis:', error);
+    throw error;
+  }
+}
+
+
+export const updateDevisCompteur = async (value) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/admin/api/logiciel/devis-compteur/update`, {
+      value: value
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating devis counter:', error);
+    throw error;
+  }
+}
+
 // Get devis by ID
 export const getDevisById = async (id) => {
   try {

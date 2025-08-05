@@ -66,9 +66,15 @@ const DevisList = ({ onCreateNew, onEdit, onView }) => {
 
   const filteredAndSortedDevis = devisList
     .filter(devis => {
-      const matchesSearch = devis.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           devis.devisNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           devis.clientPhone?.includes(searchTerm);
+      // Safe string operations with null checks
+      const clientName = devis.clientName || '';
+      const devisNumber = devis.devisNumber || '';
+      const clientPhone = devis.clientPhone || '';
+      
+      const searchLower = searchTerm.toLowerCase();
+      const matchesSearch = clientName.toLowerCase().includes(searchLower) ||
+                           devisNumber.toLowerCase().includes(searchLower) ||
+                           clientPhone.includes(searchTerm);
       const matchesStatus = statusFilter === 'all' || devis.status === statusFilter;
       return matchesSearch && matchesStatus;
     })
@@ -80,8 +86,8 @@ const DevisList = ({ onCreateNew, onEdit, onView }) => {
           bValue = new Date(b.createdAt);
           break;
         case 'client':
-          aValue = a.clientName.toLowerCase();
-          bValue = b.clientName.toLowerCase();
+          aValue = (a.clientName || '').toLowerCase();
+          bValue = (b.clientName || '').toLowerCase();
           break;
         case 'amount':
           aValue = a.totalAmount || 0;
@@ -244,15 +250,15 @@ const DevisList = ({ onCreateNew, onEdit, onView }) => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900 dark:text-white">
-                        {devis.clientName}
+                        {devis.clientName || 'N/A'}
                       </div>
                       <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {devis.clientPhone}
+                        {devis.clientPhone || 'N/A'}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900 dark:text-white">
-                        {new Date(devis.createdAt).toLocaleDateString('fr-FR')}
+                        {devis.createdAt ? new Date(devis.createdAt).toLocaleDateString('fr-FR') : 'N/A'}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
