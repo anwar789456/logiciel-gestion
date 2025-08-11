@@ -283,6 +283,7 @@ function ChatLog({ chatItems }) {
                 placeholder={t('Search messages...')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                autoComplete="off"
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 outline-none"
               />
             </div>
@@ -297,6 +298,7 @@ function ChatLog({ chatItems }) {
                   value={authorSearchTerm}
                   onChange={(e) => setAuthorSearchTerm(e.target.value)}
                   onFocus={() => setShowAuthorDropdown(true)}
+                  autoComplete="off"
                   className="w-64 pl-3 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 outline-none"
                 />
                 

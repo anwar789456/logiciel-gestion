@@ -108,6 +108,7 @@ const AIAssistantChat = () => {
           placeholder="Posez une question à l'IA..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          autoComplete="off"
           disabled={loading}
         />
         <button
@@ -122,4 +123,4 @@ const AIAssistantChat = () => {
   );
 };
 
-export default AIAssistantChat; 
+export default AIAssistantChat;

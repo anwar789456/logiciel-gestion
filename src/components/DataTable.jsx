@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ChevronLeft, ChevronRight, Eye, Filter, Download } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const DataTable = ({ 
   title, 
@@ -9,6 +10,7 @@ const DataTable = ({
   onRowClick = null,
   exportData = null 
 }) => {
+  const { t } = useTranslation();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,7 +30,7 @@ const DataTable = ({
       setCurrentPage(response.pagination.current);
       setError(null);
     } catch (err) {
-      setError('Erreur lors du chargement des données');
+      setError(t('error_loading_data'));
       console.error('Error loading data:', err);
     } finally {
       setLoading(false);
@@ -59,10 +61,7 @@ const DataTable = ({
     if (value === null || value === undefined) return '-';
     
     switch (type) {
-      case 'date':
-        return new Date(value).toLocaleDateString('fr-FR');
-      case 'datetime':
-        return new Date(value).toLocaleString('fr-FR');
+      // date and datetime cases removed as requested
       case 'price':
         return `${value} DT`;
       case 'email':
@@ -79,15 +78,21 @@ const DataTable = ({
         );
       case 'status':
         const statusColors = {
+          'En stock': 'bg-green-100 text-green-800',
+          'Hors stock': 'bg-red-100 text-red-800',
+          'En arrivage': 'bg-blue-100 text-blue-800',
+          'Sur commande': 'bg-amber-100 text-amber-800',
           'disponible': 'bg-green-100 text-green-800',
           'indisponible': 'bg-red-100 text-red-800',
           'pending': 'bg-yellow-100 text-yellow-800',
           'completed': 'bg-green-100 text-green-800',
           'cancelled': 'bg-red-100 text-red-800'
         };
+        // Try to translate the status value, fallback to original value if no translation exists
+        const translatedValue = t(value.toLowerCase(), { defaultValue: value });
         return (
           <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[value] || 'bg-gray-100 text-gray-800'}`}>
-            {value}
+            {translatedValue}
           </span>
         );
       default:
@@ -122,7 +127,7 @@ const DataTable = ({
               onClick={() => loadData(currentPage, searchTerm)}
               className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
-              Réessayer
+              {t('retry')}
             </button>
           </div>
         </div>
@@ -138,7 +143,7 @@ const DataTable = ({
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {totalItems} élément{totalItems > 1 ? 's' : ''} au total
+              {t('showing')} {(currentPage - 1) * itemsPerPage + 1} {t('to')} {Math.min(currentPage * itemsPerPage, totalItems)} {t('of')} {totalItems} {t('elements')}
             </p>
           </div>
           
@@ -151,6 +156,7 @@ const DataTable = ({
                 placeholder={searchPlaceholder}
                 value={searchTerm}
                 onChange={handleSearch}
+                autoComplete="off"
                 className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
               />
             </div>
@@ -162,7 +168,7 @@ const DataTable = ({
                 className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
                 <Download className="h-4 w-4" />
-                Exporter
+                {t('export')}
               </button>
             )}
           </div>
@@ -186,7 +192,7 @@ const DataTable = ({
                 ))}
                 {onRowClick && (
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Actions
+                    {t('actions')}
                   </th>
                 )}
               </tr>
@@ -233,7 +239,7 @@ const DataTable = ({
         <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              Page {currentPage} sur {totalPages}
+              {t('page_of', { current: currentPage, total: totalPages })}
             </div>
             
             <div className="flex items-center gap-2">
@@ -279,7 +285,7 @@ const DataTable = ({
       
       {loading && (
         <div className="absolute inset-0 bg-white dark:bg-gray-800 bg-opacity-75 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" aria-label={t('loading')}></div>
         </div>
       )}
     </div>

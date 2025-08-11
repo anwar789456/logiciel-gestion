@@ -192,8 +192,10 @@ const AdvancedFilters = ({ onFiltersChange, availableClients = [], loading = fal
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
             >
               <option value="">Tous les statuts</option>
-              <option value="disponible">Disponible</option>
-              <option value="indisponible">Indisponible</option>
+              <option value="En stock">En stock</option>
+              <option value="Hors stock">Hors stock</option>
+              <option value="En arrivage">En arrivage</option>
+              <option value="Sur commande">Sur commande</option>
               <option value="pending">En attente</option>
               <option value="completed">Terminé</option>
               <option value="cancelled">Annulé</option>
@@ -210,6 +212,7 @@ const AdvancedFilters = ({ onFiltersChange, availableClients = [], loading = fal
               placeholder="Filtrer par catégorie..."
               value={filters.category}
               onChange={(e) => handleFilterChange('category', e.target.value)}
+              autoComplete="off"
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
             />
           </div>

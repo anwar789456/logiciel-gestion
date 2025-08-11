@@ -178,15 +178,15 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nom de la société *</label>
-                <input type="text" name="societe" value={formData.societe} onChange={handleInputChange} required={formData.typeClient === 'entreprise'} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
+                <input type="text" name="societe" value={formData.societe} onChange={handleInputChange} required={formData.typeClient === 'entreprise'} autoComplete="off" className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">RC *</label>
-                <input type="text" name="rc" value={formData.rc} onChange={handleInputChange} required={formData.typeClient === 'entreprise'} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
+                <input type="text" name="rc" value={formData.rc} onChange={handleInputChange} required={formData.typeClient === 'entreprise'} autoComplete="off" className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">TVA *</label>
-                <input type="text" name="tva" value={formData.tva} onChange={handleInputChange} required={formData.typeClient === 'entreprise'} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
+                <input type="text" name="tva" value={formData.tva} onChange={handleInputChange} required={formData.typeClient === 'entreprise'} autoComplete="off" className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
               </div>
             </div>
           </div>
@@ -206,6 +206,7 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
                 name="clientName"
                 value={formData.clientName}
                 onChange={handleInputChange}
+                autoComplete="off"
                 required
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
               />
@@ -232,6 +233,7 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
                 name="clientAddress"
                 value={formData.clientAddress}
                 onChange={handleInputChange}
+                autoComplete="off"
                 required
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
               />
@@ -316,6 +318,7 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
                           type="text"
                           value={item.description}
                           onChange={(e) => handleItemChange(index, 'description', e.target.value)}
+                          autoComplete="off"
                           className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-gray-800 dark:text-white"
                           placeholder="Description de l'article"
                         />
@@ -325,6 +328,7 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
                           type="text"
                           value={item.reference}
                           onChange={(e) => handleItemChange(index, 'reference', e.target.value)}
+                          autoComplete="off"
                           className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-gray-800 dark:text-white"
                           placeholder="Référence"
                         />
@@ -334,6 +338,7 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
                           type="text"
                           value={item.color}
                           onChange={(e) => handleItemChange(index, 'color', e.target.value)}
+                          autoComplete="off"
                           className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-gray-800 dark:text-white"
                           placeholder="Couleur"
                         />
@@ -412,6 +417,7 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
                 name="deliveryDelay"
                 value={formData.deliveryDelay}
                 onChange={handleInputChange}
+                autoComplete="off"
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
               />
             </div>

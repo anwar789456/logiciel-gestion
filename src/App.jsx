@@ -25,7 +25,7 @@ import Caisse from './pages/caisse/Caisse';
 import Products from './pages/products/Products';
 import Categories from './pages/categories/Categories';
 import Carousel from './pages/carousel/Carousel';
-
+import QrCode from './pages/qrCode/QrCode';
 
 
 function App() {
@@ -52,7 +52,8 @@ function App() {
               <Route path="assistant-ia" element={<AssistantIA />} />
               <Route path="caisse" element={<Caisse />} />
               <Route path="products" element={<Products />} />
-              <Route path="categories" element={<Categories />} />
+              <Route path="categories" element={<Categories />} /> 
+              <Route path="qr-code" element={<QrCode />} />
               <Route path="carousel" element={<Carousel />} />
               <Route path="settings" element={<Settings />} />
             </Route>
