@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CopyPlus, GripVertical, Trash2, Edit, AlertCircle, ChevronDown, ChevronRight } from 'lucide-react'
+import { CopyPlus, GripVertical, Trash2, Edit, AlertCircle, ChevronDown, ChevronRight, X } from 'lucide-react'
 import { 
   FetchAllCategoryItems, 
   AddCategoryItem, 
@@ -162,21 +162,17 @@ const SortableCategory = ({ category, onEdit, onDelete, t }) => {
       {/* Subcategories dropdown with drag-and-drop */}
       {expanded && category.subLinks && category.subLinks.length > 0 && (
         <div className="mt-2 space-y-2">
-          <SortableContext 
-            items={category.subLinks.map(sl => `${category._id}-${sl.title}`)} 
-            strategy={verticalListSortingStrategy}
-          >
-            {category.subLinks.map((subLink, index) => (
-              <SortableSubcategory 
-                key={`${category._id}-${subLink.title}`}
-                subLink={subLink}
-                categoryId={category._id}
-                onEdit={() => onEdit(category, subLink)}
-                onDelete={(subLinkTitle) => onDelete(category._id, subLinkTitle)}
-                t={t}
-              />
-            ))}
-          </SortableContext>
+          {/* Remove nested SortableContext - items are already in parent context */}
+          {category.subLinks.map((subLink) => (
+            <SortableSubcategory 
+              key={`${category._id}-${subLink.title}`}
+              subLink={subLink}
+              categoryId={category._id}
+              onEdit={() => onEdit(category, subLink)}
+              onDelete={(subLinkTitle) => onDelete(category._id, subLinkTitle)}
+              t={t}
+            />
+          ))}
         </div>
       )}
     </div>
@@ -223,26 +219,33 @@ const AddCategoryForm = ({ onClose, onSave, t }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 p-4">
+    <div 
+      className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-white/20 dark:border-gray-700/50">
+        <div className="flex justify-between items-center border-b border-gray-200/50 dark:border-gray-700/50 p-6">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('add_category')}</h2>
           <button 
             onClick={onClose}
-            className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="p-2 rounded-full hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-all duration-200 hover:scale-105"
           >
-            <Trash2 size={20} className="text-gray-500 dark:text-gray-400" />
+            <X size={20} className="text-gray-500 dark:text-gray-400" />
           </button>
         </div>
 
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 p-3 m-4 rounded-lg flex items-start">
-            <AlertCircle size={18} className="mr-2 flex-shrink-0 mt-0.5" />
+          <div className="bg-red-50/80 dark:bg-red-900/30 text-red-800 dark:text-red-200 p-4 m-6 rounded-xl flex items-start backdrop-blur-sm border border-red-200/50 dark:border-red-800/50">
+            <AlertCircle size={18} className="mr-3 flex-shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {t('category_name')} *
@@ -253,7 +256,7 @@ const AddCategoryForm = ({ onClose, onSave, t }) => {
               value={formData.title}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              className="w-full px-4 py-3 border border-gray-300/50 dark:border-gray-600/50 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 dark:bg-gray-700/50 dark:text-white bg-white/50 backdrop-blur-sm transition-all duration-200"
             />
           </div>
 
@@ -274,7 +277,7 @@ const AddCategoryForm = ({ onClose, onSave, t }) => {
                   }
                 })}
                 placeholder={formData.title ? formData.title.toLowerCase().replace(/\s+/g, '-') : ''}
-                className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                className="flex-1 px-4 py-3 border border-gray-300/50 dark:border-gray-600/50 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 dark:bg-gray-700/50 dark:text-white bg-white/50 backdrop-blur-sm transition-all duration-200"
               />
             </div>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -282,18 +285,18 @@ const AddCategoryForm = ({ onClose, onSave, t }) => {
             </p>
           </div>
 
-          <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex justify-end pt-6 border-t border-gray-200/50 dark:border-gray-700/50">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg mr-2 transition-colors"
+              className="px-6 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-gray-700/50 rounded-xl mr-3 transition-all duration-200 hover:scale-105 backdrop-blur-sm"
             >
               {t('cancel')}
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
+              className="px-6 py-3 bg-blue-600/90 text-white rounded-xl hover:bg-blue-700/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center hover:scale-105 backdrop-blur-sm shadow-lg"
             >
               {loading ? (
                 <>
@@ -379,9 +382,16 @@ const EditCategoryForm = ({ category, onClose, onSave, t }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 p-4">
+    <div 
+      className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-white/20 dark:border-gray-700/50">
+        <div className="flex justify-between items-center border-b border-gray-200/50 dark:border-gray-700/50 p-6">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
             {editMode === 'sublink' 
               ? (isEditingSubLink ? t('edit_subcategory') : t('add_subcategory')) 
@@ -389,42 +399,42 @@ const EditCategoryForm = ({ category, onClose, onSave, t }) => {
           </h2>
           <button 
             onClick={onClose}
-            className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="p-2 rounded-full hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-all duration-200 hover:scale-105"
           >
-            <Trash2 size={20} className="text-gray-500 dark:text-gray-400" />
+            <X size={20} className="text-gray-500 dark:text-gray-400" />
           </button>
         </div>
 
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 p-3 m-4 rounded-lg flex items-start">
-            <AlertCircle size={18} className="mr-2 flex-shrink-0 mt-0.5" />
+          <div className="bg-red-50/80 dark:bg-red-900/30 text-red-800 dark:text-red-200 p-4 m-6 rounded-xl flex items-start backdrop-blur-sm border border-red-200/50 dark:border-red-800/50">
+            <AlertCircle size={18} className="mr-3 flex-shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
         )}
 
         {/* Mode selector tabs */}
-        <div className="flex border-b border-gray-200 dark:border-gray-700">
+        <div className="flex border-b border-gray-200/50 dark:border-gray-700/50 mx-6">
           <button
             type="button"
             onClick={() => setEditMode('category')}
-            className={`flex-1 py-3 px-4 text-center ${editMode === 'category' 
-              ? 'text-blue-600 border-b-2 border-blue-600 font-medium' 
-              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'}`}
+            className={`flex-1 py-4 px-6 text-sm font-medium transition-all duration-200 rounded-t-xl ${editMode === 'category' 
+              ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-blue-50/50 dark:bg-blue-900/30 backdrop-blur-sm' 
+              : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50/50 dark:hover:bg-gray-700/30'}`}
           >
             {t('category')}
           </button>
           <button
             type="button"
             onClick={() => setEditMode('sublink')}
-            className={`flex-1 py-3 px-4 text-center ${editMode === 'sublink' 
-              ? 'text-blue-600 border-b-2 border-blue-600 font-medium' 
-              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'}`}
+            className={`flex-1 py-4 px-6 text-sm font-medium transition-all duration-200 rounded-t-xl ${editMode === 'sublink' 
+              ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-blue-50/50 dark:bg-blue-900/30 backdrop-blur-sm' 
+              : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50/50 dark:hover:bg-gray-700/30'}`}
           >
             {isEditingSubLink ? t('edit_subcategory') : t('add_subcategory')}
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {editMode === 'category' ? (
             /* Category edit form */
             <>
@@ -438,7 +448,7 @@ const EditCategoryForm = ({ category, onClose, onSave, t }) => {
                   value={formData.title}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  className="w-full px-4 py-3 border border-gray-300/50 dark:border-gray-600/50 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 dark:bg-gray-700/50 dark:text-white bg-white/50 backdrop-blur-sm transition-all duration-200"
                 />
               </div>
 
@@ -458,7 +468,7 @@ const EditCategoryForm = ({ category, onClose, onSave, t }) => {
                         value: `/Shop/${e.target.value}`
                       }
                     })}
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    className="flex-1 px-4 py-3 border border-gray-300/50 dark:border-gray-600/50 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 dark:bg-gray-700/50 dark:text-white bg-white/50 backdrop-blur-sm transition-all duration-200"
                   />
                 </div>
               </div>
@@ -476,7 +486,7 @@ const EditCategoryForm = ({ category, onClose, onSave, t }) => {
                   value={subLinkData.title}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  className="w-full px-4 py-3 border border-gray-300/50 dark:border-gray-600/50 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 dark:bg-gray-700/50 dark:text-white bg-white/50 backdrop-blur-sm transition-all duration-200"
                 />
               </div>
 
@@ -485,7 +495,6 @@ const EditCategoryForm = ({ category, onClose, onSave, t }) => {
                   {t('subcategory_href')} *
                 </label>
                 <div className="flex items-center">
-                  <span className="text-gray-500 dark:text-gray-400 mr-1">{formData.href}/</span>
                   <input
                     type="text"
                     name="href"
@@ -497,25 +506,25 @@ const EditCategoryForm = ({ category, onClose, onSave, t }) => {
                       }
                     })}
                     required
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    className="flex-1 px-4 py-3 border border-gray-300/50 dark:border-gray-600/50 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 dark:bg-gray-700/50 dark:text-white bg-white/50 backdrop-blur-sm transition-all duration-200"
                   />
                 </div>
               </div>
             </>
           )}
 
-          <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex justify-end pt-6 border-t border-gray-200/50 dark:border-gray-700/50">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg mr-2 transition-colors"
+              className="px-6 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-gray-700/50 rounded-xl mr-3 transition-all duration-200 hover:scale-105 backdrop-blur-sm"
             >
               {t('cancel')}
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
+              className="px-6 py-3 bg-blue-600/90 text-white rounded-xl hover:bg-blue-700/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center hover:scale-105 backdrop-blur-sm shadow-lg"
             >
               {loading ? (
                 <>
@@ -542,8 +551,7 @@ export default function Categories() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [showEditForm, setShowEditForm] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState(null)
-  const [deleteConfirmation, setDeleteConfirmation] = useState({ show: false, categoryId: null, subLinkTitle: null })
-  const [activeCategory, setActiveCategory] = useState(null) // Track which category has active subcategory drag
+  const [deleteConfirmation, setDeleteConfirmation] = useState({ show: false, categoryId: null, subLinkTitle: null });
 
   // Setup sensors for drag and drop
   const sensors = useSensors(
@@ -718,52 +726,61 @@ export default function Categories() {
     latestDragEventRef.current = event;
     
     // Check if this is a subcategory drag (IDs will be in format "categoryId-subLinkTitle")
-    if (typeof active.id === 'string' && active.id.includes('-')) {
+    const isActiveSubcategory = typeof active.id === 'string' && active.id.includes('-');
+    const isOverSubcategory = typeof over.id === 'string' && over.id.includes('-');
+    
+    if (isActiveSubcategory) {
       // This is a subcategory drag
       const activeCategoryId = active.id.split('-')[0];
-      const overCategoryId = over.id.split('-')[0];
       
-      // Only allow reordering within the same category
-      if (activeCategoryId === overCategoryId) {
-        const activeSubLinkTitle = active.id.split('-')[1];
-        const overSubLinkTitle = over.id.split('-')[1];
+      // Check if dropping on another subcategory or main category
+      if (isOverSubcategory) {
+        const overCategoryId = over.id.split('-')[0];
         
-        // Update local state first for immediate UI feedback
-        setCategories(prev => {
-          const categoryIndex = prev.findIndex(cat => cat._id === activeCategoryId);
-          if (categoryIndex === -1) return prev;
+        // Only allow reordering within the same category
+        if (activeCategoryId === overCategoryId) {
+          const activeSubLinkTitle = active.id.split('-').slice(1).join('-'); // Handle titles with dashes
+          const overSubLinkTitle = over.id.split('-').slice(1).join('-'); // Handle titles with dashes
           
-          const category = prev[categoryIndex];
-          const subLinks = [...category.subLinks];
-          
-          const oldIndex = subLinks.findIndex(sl => sl.title === activeSubLinkTitle);
-          const newIndex = subLinks.findIndex(sl => sl.title === overSubLinkTitle);
-          
-          if (oldIndex === -1 || newIndex === -1) return prev;
-          
-          const reorderedSubLinks = arrayMove(subLinks, oldIndex, newIndex);
-          
-          // Create a new category object with reordered subLinks
-          const updatedCategory = {
-            ...category,
-            subLinks: reorderedSubLinks
-          };
-          
-          // Create a new categories array with the updated category
-          const updatedCategories = [...prev];
-          updatedCategories[categoryIndex] = updatedCategory;
-          
-          // Save to local storage immediately for fallback
-          saveCategoriesLocally(updatedCategories);
-          
-          // Debounce the API call to update the server
-          debouncedSubcategoryUpdate(activeCategoryId, updatedCategory);
-          
-          return updatedCategories;
-        });
+          // Update local state first for immediate UI feedback
+          setCategories(prev => {
+            const categoryIndex = prev.findIndex(cat => cat._id === activeCategoryId);
+            if (categoryIndex === -1) return prev;
+            
+            const category = prev[categoryIndex];
+            const subLinks = [...category.subLinks];
+            
+            const oldIndex = subLinks.findIndex(sl => sl.title === activeSubLinkTitle);
+            const newIndex = subLinks.findIndex(sl => sl.title === overSubLinkTitle);
+            
+            if (oldIndex === -1 || newIndex === -1) return prev;
+            
+            const reorderedSubLinks = arrayMove(subLinks, oldIndex, newIndex);
+            
+            // Create a new category object with reordered subLinks
+            const updatedCategory = {
+              ...category,
+              subLinks: reorderedSubLinks
+            };
+            
+            // Create a new categories array with the updated category
+            const updatedCategories = [...prev];
+            updatedCategories[categoryIndex] = updatedCategory;
+            
+            // Save to local storage immediately for fallback
+            saveCategoriesLocally(updatedCategories);
+            
+            // Debounce the API call to update the server
+            debouncedSubcategoryUpdate(activeCategoryId, updatedCategory);
+            
+            return updatedCategories;
+          });
+        }
       }
-    } else {
-      // This is a main category drag
+      // If dropping subcategory on main category, do nothing (not allowed)
+      return;
+    } else if (!isOverSubcategory) {
+      // This is a main category drag to another main category
       // Update local state first for immediate UI feedback
       setCategories((prev) => {
         const oldIndex = prev.findIndex(cat => cat._id === active.id);
@@ -783,6 +800,7 @@ export default function Categories() {
         return reorderedCategories;
       });
     }
+    // If dropping main category on subcategory, do nothing (not allowed)
   }
 
   const handleAddCategory = async (categoryData) => {
@@ -879,7 +897,7 @@ export default function Categories() {
   return (
     <div className="pt-4 px-8">
       {/* Loading overlay */}
-      {loading && (
+      {/* {loading && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 flex items-center space-x-3">
             <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -889,7 +907,7 @@ export default function Categories() {
             <span className="text-gray-800 dark:text-white font-medium">{t('updating_categories')}</span>
           </div>
         </div>
-      )}
+      )} */}
       
       {/* Header */}
       <div className="pb-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-700 mb-6">
@@ -931,8 +949,14 @@ export default function Categories() {
             collisionDetection={closestCorners}
             onDragEnd={handleDragEnd}
           >
+            {/* Single SortableContext for all draggable items */}
             <SortableContext 
-              items={categories.map(cat => cat._id)} 
+              items={[
+                ...categories.map(cat => cat._id),
+                ...categories.flatMap(cat => 
+                  cat.subLinks ? cat.subLinks.map(sl => `${cat._id}-${sl.title}`) : []
+                )
+              ]} 
               strategy={verticalListSortingStrategy}
             >
               <div className="space-y-3">

@@ -145,18 +145,14 @@ export const ReorderCategories = async (categoryIds, retryCount = 0, maxRetries 
       
       console.log('Sending to server:', { orderedCategories });
       
-      // Based on the error message, the server is expecting a specific payload structure
-      // Let's try a format that directly uses the array of category IDs
-      // This is a common pattern for reordering endpoints
-      const payload = categoryIds.map((id, index) => ({
-        id: id,
-        order: index + 1
-      }));
+      // Try different payload formats based on common API patterns
+      // Format 1: Simple array of IDs (most common)
+      let payload = categoryIds;
       
       // Use axios with timeout and retry logic
       // Add more detailed error handling to capture the exact server error
       try {
-        console.log('Final payload being sent:', JSON.stringify(payload, null, 2));
+        console.log('Trying simple array format:', JSON.stringify(payload, null, 2));
         
         const response = await axios.put(endpoint, payload, {
           timeout: 10000, // 10 second timeout
@@ -176,6 +172,64 @@ export const ReorderCategories = async (categoryIds, retryCount = 0, maxRetries 
         console.error('Detailed server error:', axiosError.response?.data);
         console.error('Error status:', axiosError.response?.status);
         console.error('Error headers:', axiosError.response?.headers);
+        
+        // If simple array format fails, try alternative formats
+        if (axiosError.response?.status === 500 && 
+            axiosError.response?.data?.error?.includes("Cannot read properties of undefined (reading 'map')")) {
+          
+          console.log('Simple array format failed, trying object format...');
+          
+          // Format 2: Object with categoryIds array
+          const altPayload1 = { categoryIds: categoryIds };
+          
+          try {
+            console.log('Trying object format:', JSON.stringify(altPayload1, null, 2));
+            const response = await axios.put(endpoint, altPayload1, {
+              timeout: 10000,
+              headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
+              }
+            });
+            
+            if (!response.data) {
+              throw new Error('Server returned empty response');
+            }
+            
+            console.log('Server response (object format):', response.data);
+            return response.data;
+          } catch (altError1) {
+            console.log('Object format also failed, trying ordered array format...');
+            
+            // Format 3: Array of objects with id and order
+            const altPayload2 = categoryIds.map((id, index) => ({
+              _id: id,
+              order: index + 1
+            }));
+            
+            try {
+              console.log('Trying ordered array format:', JSON.stringify(altPayload2, null, 2));
+              const response = await axios.put(endpoint, altPayload2, {
+                timeout: 10000,
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Cache-Control': 'no-cache'
+                }
+              });
+              
+              if (!response.data) {
+                throw new Error('Server returned empty response');
+              }
+              
+              console.log('Server response (ordered array format):', response.data);
+              return response.data;
+            } catch (altError2) {
+              console.log('All payload formats failed, throwing original error');
+              throw axiosError;
+            }
+          }
+        }
+        
         throw axiosError;
       }
     } catch (error) {
