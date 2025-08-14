@@ -6,7 +6,7 @@ function CommandesEnCours() {
   const { t } = useTranslation();
 
   return (
-    <div className="p-6 mx-auto">
+    <div className="pt-4 px-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
           {t('commandes_en_cours')}

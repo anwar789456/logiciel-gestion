@@ -606,77 +606,9 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
     }));
   };
 
-  const handleSizeChange = (index, field, value) => {
-    const updatedSizes = [...formData.sizes];
-    updatedSizes[index][field] = value;
-    setFormData(prev => ({
-      ...prev,
-      sizes: updatedSizes
-    }));
-  };
-
-  const removeSize = (index) => {
-    const updatedSizes = [...formData.sizes];
-    updatedSizes.splice(index, 1);
-    setFormData(prev => ({
-      ...prev,
-      sizes: updatedSizes
-    }));
-  };
-
-  const addMousse = () => {
-    setFormData(prev => ({
-      ...prev,
-      mousse: [...prev.mousse, { mousse_name: '', mousse_prix: '' }]
-    }));
-  };
-
-  const handleMousseChange = (index, field, value) => {
-    const updatedMousse = [...formData.mousse];
-    updatedMousse[index][field] = value;
-    setFormData(prev => ({
-      ...prev,
-      mousse: updatedMousse
-    }));
-  };
-
-  const removeMousse = (index) => {
-    const updatedMousse = [...formData.mousse];
-    updatedMousse.splice(index, 1);
-    setFormData(prev => ({
-      ...prev,
-      mousse: updatedMousse
-    }));
-  };
-
-  const addDimension = () => {
-    setFormData(prev => ({
-      ...prev,
-      dimensions: [...prev.dimensions, {
-        display: 'oui',
-        thedimensiontype: '',
-        longueur: '',
-        largeur: '',
-        hauteur: '',
-        long: '',
-        larg: '',
-        image_url: ''
-      }]
-    }));
-  };
-
   const handleDimensionChange = (index, field, value) => {
     const updatedDimensions = [...formData.dimensions];
     updatedDimensions[index][field] = value;
-    setFormData(prev => ({
-      ...prev,
-      dimensions: updatedDimensions
-    }));
-  };
-
-  const removeDimension = (index) => {
-    const updatedDimensions = [...formData.dimensions];
-    updatedDimensions.splice(index, 1);
     setFormData(prev => ({
       ...prev,
       dimensions: updatedDimensions
@@ -740,15 +672,8 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
       cleanedData.categorie = cleanedData.subcategorie; // Set product.categorie to the subcategory title
       cleanedData.subcategorie = tempCategory; // Set product.subcategorie to the main category title
       
-      // Log the swapped values
-      console.log('After swapping for database schema:', {
-        'product.categorie (subcategory)': cleanedData.categorie,
-        'product.subcategorie (main category)': cleanedData.subcategorie
-      });
-      
       // Remove the category_changed flag as it's only used for UI logic
       delete cleanedData.categorie_changed;
-
 
       await UpdateProductById(product._id, cleanedData);
 
@@ -899,12 +824,12 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
               })}
             </select>
             {/* Debug info */}
-            <div className="text-xs text-gray-500 mt-1">
+            {/* <div className="text-xs text-gray-500 mt-1">
               {`Selected main category: ${formData.categorie || 'None'}`}
               <div className="text-amber-600 font-semibold">
                 (Matches product.subcategorie in database)
               </div>
-            </div>
+            </div> */}
           </div>
           
           <div>
@@ -935,14 +860,14 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
               )}
             </select>
             {/* Debug info */}
-            <div className="text-xs text-gray-500 mt-1">
+            {/* <div className="text-xs text-gray-500 mt-1">
               {`Selected subcategory: ${formData.subcategorie || 'None'}`}
               <div className="text-amber-600 font-semibold">
                 (Matches product.categorie in database)
               </div>
               <br />
               {`Available subcategories: ${subCategories.length}`}
-            </div>
+            </div> */}
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1132,7 +1057,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
           </select>
         </div>
         
-        {formData.options.length === 0 ? (
+        {/* {formData.options.length === 0 ? (
           <div className="text-center py-6 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
             <p className="text-gray-500 dark:text-gray-400">{t('no_options_added')}</p>
             <p className="text-sm text-gray-500 dark:text-gray-400">{t('select_from_dropdown')}</p>
@@ -1141,7 +1066,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
           <div className="py-3 px-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
             <p className="text-sm text-gray-700 dark:text-gray-300">{t('options_selected')}: <span className="font-medium">{formData.options.length}</span></p>
           </div>
-        )}
+        )} */}
       </div>
       
       {/* Sizes */}
@@ -1169,7 +1094,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
           </select>
         </div>
         
-        {formData.sizes.length === 0 ? (
+        {/* {formData.sizes.length === 0 ? (
           <div className="text-center py-6 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
             <p className="text-gray-500 dark:text-gray-400">{t('no_sizes_added')}</p>
             <p className="text-sm text-gray-500 dark:text-gray-400">{t('select_from_dropdown')}</p>
@@ -1178,7 +1103,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
           <div className="py-3 px-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
             <p className="text-sm text-gray-700 dark:text-gray-300">{t('sizes_selected')}: <span className="font-medium">{formData.sizes.length}</span></p>
           </div>
-        )}
+        )} */}
       </div>
       
       {/* Mousse */}
@@ -1206,7 +1131,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
           </select>
         </div>
         
-        {formData.mousse.length === 0 ? (
+        {/* {formData.mousse.length === 0 ? (
           <div className="text-center py-6 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
             <p className="text-gray-500 dark:text-gray-400">{t('no_mousse_added')}</p>
             <p className="text-sm text-gray-500 dark:text-gray-400">{t('select_from_dropdown')}</p>
@@ -1215,7 +1140,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
           <div className="py-3 px-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
             <p className="text-sm text-gray-700 dark:text-gray-300">{t('foam_selected')}: <span className="font-medium">{formData.mousse.length}</span></p>
           </div>
-        )}
+        )} */}
       </div>
       
       {/* Additional Dimensions */}

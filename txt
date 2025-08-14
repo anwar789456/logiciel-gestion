@@ -1,0 +1,23 @@
+nom et prenom
+date_naiss
+date_recrutement
+nom_post
+descriptif_post
+type_contrat
+lien_cv
+image_profil
+remuneration -> salaire
+
+
+
+
+
+
+Agenda:
+jours férier
+
+
+page caisse:
+credit - green
+debit - red
+libelle

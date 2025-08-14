@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { Home, Receipt, ChartColumnBig, MessageCircleMore, QrCode, GalleryHorizontal, TicketCheck, Boxes, ScrollText, ChevronDown, Clipboard, BellDot, FileText, ChevronsRight, ChevronsLeft, TrendingUp, Brain, Truck, Users, TrendingDown, UserCheck, Calendar, Wallet, Globe, Tag, Package } from 'lucide-react';
+import { Receipt, LayoutDashboard, MessageCircleMore, QrCode, GalleryHorizontal, TicketCheck, ScrollText, ChevronDown, Clipboard, BellDot, FileText, ChevronsRight, ChevronsLeft, TrendingUp, Brain, Truck, Users, TrendingDown, UserCheck, Calendar, Wallet, Globe, Tag, Package } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../hooks/useAuth';
 
 function Sidebar() {
   const { t } = useTranslation();
   const { isSidebarOpen, toggleSidebar } = useApp();
+  const { canAccess } = useAuth();
   const [isCommandesOpen, setIsCommandesOpen] = useState(false);
   const [isVentesOpen, setIsVentesOpen] = useState(false);
   const [isAchatsOpen, setIsAchatsOpen] = useState(false);
@@ -53,7 +55,7 @@ function Sidebar() {
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
         <nav className="space-y-0.5">
           {/* Home */}
-          <NavLink
+          {/* <NavLink
             to="/"
             className={({ isActive }) =>
               `flex items-center p-3 rounded-s-xs transition-colors duration-300 ease-in-out rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
@@ -66,21 +68,22 @@ function Sidebar() {
             <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
               {t('home')}
             </span>
-          </NavLink>
+          </NavLink> */}
 
           {/* Stats */}
           <NavLink
-            to="/stats"
+            to="/dashboard"
+            end
             className={({ isActive }) =>
               `flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
             }
-            title={!isSidebarOpen ? t('stats') : undefined}
+            title={!isSidebarOpen ? t('dashboard') : undefined}
           >
             <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
-              <ChartColumnBig size={24} />
+              <LayoutDashboard size={24} />
             </div>
             <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
-              {t('stats')}
+              {t('home')}
             </span>
           </NavLink>
 
@@ -94,7 +97,7 @@ function Sidebar() {
           <div>
             <button
               onClick={toggleVentes}
-              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/devis') || location.pathname.startsWith('/factures') || location.pathname.startsWith('/bon-livraison')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
+              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/dashboard/devis') || location.pathname.startsWith('/dashboard/factures') || location.pathname.startsWith('/dashboard/bon-livraison')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
               title={!isSidebarOpen ? t('ventes') : undefined}
             >
               <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
@@ -131,7 +134,7 @@ function Sidebar() {
                   }}
                 >
                   <NavLink
-                    to="/devis"
+                    to="/dashboard/devis"
                     className={({ isActive }) =>
                       `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-300 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                     }
@@ -155,7 +158,7 @@ function Sidebar() {
                   }}
                 >
                   <NavLink
-                    to="/factures"
+                    to="/dashboard/factures"
                     className={({ isActive }) =>
                       `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                     }
@@ -179,7 +182,7 @@ function Sidebar() {
                   }}
                 >
                   <NavLink
-                    to="/bon-livraison"
+                    to="/dashboard/bon-livraison"
                     className={({ isActive }) =>
                       `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                     }
@@ -203,7 +206,7 @@ function Sidebar() {
                   }}
                 >
                   <NavLink
-                    to="/recue-de-paiement-sur-commande"
+                    to="/dashboard/recue-de-paiement-sur-commande"
                     className={({ isActive }) =>
                       `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                     }
@@ -222,7 +225,7 @@ function Sidebar() {
           <div>
             <button
               onClick={toggleAchats}
-              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname.startsWith('/fournisseur') ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
+              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname.startsWith('/dashboard/fournisseur') ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
               title={!isSidebarOpen ? t('achats') : undefined}
             >
               <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
@@ -259,7 +262,7 @@ function Sidebar() {
                   }}
                 >
                   <NavLink
-                    to="/fournisseur"
+                    to="/dashboard/fournisseur"
                     className={({ isActive }) =>
                       `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-300 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                     }
@@ -284,7 +287,7 @@ function Sidebar() {
           <div>
             <button
               onClick={toggleCommandes}
-              className={`w-full cursor-pointer flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname.startsWith('/commandes') ? 'pl-2   text-blue-600 dark:text-blue-50' : ''}`}
+              className={`w-full cursor-pointer flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname.startsWith('/dashboard/commandes') ? 'pl-2   text-blue-600 dark:text-blue-50' : ''}`}
               title={!isSidebarOpen ? t('commandes') : undefined}
             >
               <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
@@ -321,7 +324,7 @@ function Sidebar() {
                   }}
                 >
                   <NavLink
-                    to="/commandes/fiche"
+                    to="/dashboard/commandes/fiche"
                     className={({ isActive }) =>
                       `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                     }
@@ -338,7 +341,7 @@ function Sidebar() {
 
           {/* Clients */}
           <NavLink
-            to="/clients"
+            to="/dashboard/clients"
             className={({ isActive }) =>
               `flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
             }
@@ -356,7 +359,7 @@ function Sidebar() {
           <div>
             <button
               onClick={toggleEmployee}
-              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/employee') || location.pathname.startsWith('/demande-conge')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
+              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/dashboard/employee') || location.pathname.startsWith('/dashboard/demande-conge')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
               title={!isSidebarOpen ? t('employee') : undefined}
             >
               <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
@@ -381,29 +384,31 @@ function Sidebar() {
               }`}
             >
               <div className="space-y-1 transform transition-transform duration-300 ease-in-out">
-                {/* Employée List */}
-                <div
-                  className={`transform transition-all duration-300 ease-in-out ${
-                    isEmployeeOpen && isSidebarOpen
-                      ? 'translate-y-0 opacity-100'
-                      : '-translate-y-2 opacity-0'
-                  }`}
-                  style={{
-                    transitionDelay: isEmployeeOpen ? '0ms' : '0ms'
-                  }}
-                >
-                  <NavLink
-                    to="/employee/list"
+                {/* Employée List - Admin Only */}
+                {canAccess('employee/list') && (
+                  <div
+                    className={`transform transition-all duration-300 ease-in-out ${
+                      isEmployeeOpen && isSidebarOpen
+                        ? 'translate-y-0 opacity-100'
+                        : '-translate-y-2 opacity-0'
+                    }`}
+                    style={{
+                      transitionDelay: isEmployeeOpen ? '0ms' : '0ms'
+                    }}
+                  >
+                    <NavLink
+                    to="/dashboard/employee/list"
                     className={({ isActive }) =>
                       `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-300 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                     }
                   >
-                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
-                      <Users size={20} />
-                    </div>
-                    {t('employee_list')}
-                  </NavLink>
-                </div>
+                      <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                        <Users size={20} />
+                      </div>
+                      {t('employee_list')}
+                    </NavLink>
+                  </div>
+                )}
 
                 {/* Demande de Congé */}
                 <div
@@ -417,7 +422,7 @@ function Sidebar() {
                   }}
                 >
                   <NavLink
-                    to="/employee/demande-conge"
+                    to="/dashboard/employee/demande-conge"
                     className={({ isActive }) =>
                       `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                     }
@@ -440,7 +445,7 @@ function Sidebar() {
 
           {/* Commandes en cours */}      
           <NavLink
-            to="/commandes/en-cours"
+            to="/dashboard/commandes/en-cours"
             className={({ isActive }) =>
               `flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
             }
@@ -456,7 +461,7 @@ function Sidebar() {
 
           {/* Messages */}
           <NavLink
-            to="/messages"
+            to="/dashboard/messages"
             className={({ isActive }) =>
               `flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
             }
@@ -480,7 +485,7 @@ function Sidebar() {
           <div>
             <button
               onClick={toggleWebsite}
-              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/stock') || location.pathname.startsWith('/categories') || location.pathname.startsWith('/products')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
+              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/dashboard/stock') || location.pathname.startsWith('/dashboard/categories') || location.pathname.startsWith('/dashboard/products')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
               title={!isSidebarOpen ? 'Website' : undefined}
             >
               <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
@@ -506,7 +511,7 @@ function Sidebar() {
             >
               <div className="space-y-1 transform transition-transform duration-300 ease-in-out">
                 {/* Stock */}
-                <div
+                {/* <div
                   className={`transform transition-all duration-300 ease-in-out ${
                     isWebsiteOpen && isSidebarOpen
                       ? 'translate-y-0 opacity-100'
@@ -517,7 +522,7 @@ function Sidebar() {
                   }}
                 >
                   <NavLink
-                    to="/stock"
+                    to="/dashboard/stock"
                     className={({ isActive }) =>
                       `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-300 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                     }
@@ -527,7 +532,7 @@ function Sidebar() {
                     </div>
                     Stock
                   </NavLink>
-                </div>
+                </div> */}
 
                 {/* Categories */}
                 <div
@@ -541,7 +546,7 @@ function Sidebar() {
                   }}
                 >
                   <NavLink
-                    to="/categories"
+                    to="/dashboard/categories"
                     className={({ isActive }) =>
                       `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                     }
@@ -565,7 +570,7 @@ function Sidebar() {
                   }}
                 >
                   <NavLink
-                    to="/products"
+                    to="/dashboard/products"
                     className={({ isActive }) =>
                       `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                     }
@@ -590,7 +595,7 @@ function Sidebar() {
                   }}
                 >
                   <NavLink
-                    to="/carousel"
+                    to="/dashboard/carousel"
                     className={({ isActive }) =>
                       `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                     }
@@ -614,7 +619,7 @@ function Sidebar() {
                   }}
                 >
                   <NavLink
-                    to="/qr-code"
+                    to="/dashboard/qr-code"
                     className={({ isActive }) =>
                       `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                     }
@@ -629,37 +634,41 @@ function Sidebar() {
             </div>
           </div>
 
-          {/* Caisse */}
-          <NavLink
-            to="/caisse"
-            className={({ isActive }) =>
-              `flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
-            }
-            title={!isSidebarOpen ? t('caisse') : undefined}
-          >
-            <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
-              <Wallet size={24} />
-            </div>
-            <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
-              {t('caisse')}
-            </span>
-          </NavLink>
+          {/* Caisse - Admin Only */}
+          {canAccess('caisse') && (
+            <NavLink
+              to="/dashboard/caisse"
+              className={({ isActive }) =>
+                `flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
+              }
+              title={!isSidebarOpen ? t('caisse') : undefined}
+            >
+              <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
+                <Wallet size={24} />
+              </div>
+              <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
+                {t('caisse')}
+              </span>
+            </NavLink>
+          )}
 
-          {/* Assistant IA */}
-          <NavLink
-            to="/assistant-ia"
-            className={({ isActive }) =>
-              `flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
-            }
-            title={!isSidebarOpen ? 'Assistant IA' : undefined}
-          >
-            <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
-              <Brain size={24} />
-            </div>
-            <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
-              Assistant IA
-            </span>
-          </NavLink>
+          {/* Assistant IA - Admin Only */}
+          {canAccess('assistant-ia') && (
+            <NavLink
+              to="/dashboard/assistant-ia"
+              className={({ isActive }) =>
+                `flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
+              }
+              title={!isSidebarOpen ? t('assistant_ia') : undefined}
+            >
+              <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
+                <Brain size={24} />
+              </div>
+              <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
+                Assistant IA
+              </span>
+            </NavLink>
+          )}
 
         </nav>
       </div>

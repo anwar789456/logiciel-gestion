@@ -139,9 +139,9 @@ const AdvancedProductFilters = ({ filters, setFilters, onFiltersChange, onApplyF
   }, []);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-4">
+    <div className="bg-white dark:bg-gray-800 rounded-none ">
       {/* Filter Toggle Button */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+      <div className="p-2 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-sm hover:shadow-md"

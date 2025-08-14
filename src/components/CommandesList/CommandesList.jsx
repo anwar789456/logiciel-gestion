@@ -136,7 +136,7 @@ function CommandesList() {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-3">
       {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />

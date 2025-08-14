@@ -292,7 +292,7 @@ export default function Products() {
       
       {/* Advanced Filters */}
       <Collapse in={showAdvancedFilters}>
-        <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+        <div className="px-0 py-0 border-b border-gray-200 dark:border-gray-700">
           <AdvancedProductFilters 
             filters={advancedFilters} 
             categories={categories}
@@ -319,7 +319,7 @@ export default function Products() {
       </Collapse>
       
       {/* Product Table */}
-      <div className="p-4">
+      <div className="p-2">
         <TableDisplayProduct
           ref={tableRef}
           title={t('product_list')}

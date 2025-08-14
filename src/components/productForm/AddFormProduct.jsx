@@ -610,12 +610,12 @@ const AddFormProduct = ({ onClose, onSuccess }) => {
               ))}
             </select>
             {/* Debug info */}
-            <div className="text-xs text-gray-500 mt-1">
+            {/* <div className="text-xs text-gray-500 mt-1">
               {`Selected main category: ${formData.categorie || 'None'}`}
               <div className="text-amber-600 font-semibold">
                 (Matches product.subcategorie in database)
               </div>
-            </div>
+            </div> */}
           </div>
           
           <div>
@@ -636,7 +636,7 @@ const AddFormProduct = ({ onClose, onSuccess }) => {
                 })}
             </select>
             {/* Debug info */}
-            <div className="text-xs text-gray-500 mt-1">
+            {/* <div className="text-xs text-gray-500 mt-1">
               {`Selected subcategory: ${formData.subcategorie || 'None'}`}
               <div className="text-amber-600 font-semibold">
                 (Matches product.categorie in database)
@@ -644,7 +644,7 @@ const AddFormProduct = ({ onClose, onSuccess }) => {
               <div className="text-blue-600 font-semibold">
                 {`Available subcategories: ${subCategories.length}`}
               </div>
-            </div>
+            </div> */}
           </div>
           
           <div>
@@ -676,7 +676,7 @@ const AddFormProduct = ({ onClose, onSuccess }) => {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('direction')}</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('direction')} (Canapé d'angle)</label>
             <select
               name="direction"
               value={formData.direction}

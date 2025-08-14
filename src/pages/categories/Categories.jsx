@@ -25,7 +25,7 @@ import {
 } from '@dnd-kit/sortable'
 
 // SortableSubcategory Component for drag-and-drop functionality of subcategories
-const SortableSubcategory = ({ subLink, categoryId, onEdit, onDelete, t }) => {
+const SortableSubcategory = ({ subLink, categoryId, onEdit, onDelete, t, onToggleDisplay }) => {
   const {
     attributes,
     listeners,
@@ -44,6 +44,11 @@ const SortableSubcategory = ({ subLink, categoryId, onEdit, onDelete, t }) => {
     touchAction: 'none', // Prevents touch scrolling while dragging on mobile
   }
   
+  const handleToggleDisplay = (e) => {
+    e.stopPropagation()
+    onToggleDisplay(categoryId, subLink.title)
+  }
+  
   return (
     <div 
       ref={setNodeRef} 
@@ -59,14 +64,38 @@ const SortableSubcategory = ({ subLink, categoryId, onEdit, onDelete, t }) => {
         >
           <GripVertical size={16} />
         </div>
-        <div>
-          <h4 className="font-medium text-gray-800 dark:text-gray-200">{subLink.title}</h4>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            {subLink.href}
-          </p>
+        <div className="flex items-center">
+          {subLink.src && (
+            <img 
+              src={subLink.src} 
+              alt={subLink.title} 
+              className="h-8 w-8 object-cover rounded-md mr-3" 
+              onError={(e) => e.target.src = 'https://via.placeholder.com/32?text=Error'}
+            />
+          )}
+          <div>
+            <div className="flex items-center">
+              <h4 className="font-medium text-gray-800 dark:text-gray-200">{subLink.title}</h4>
+              <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${subLink.display === 'oui' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                {subLink.display === 'oui' ? t('visible') : t('hidden')}
+              </span>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {subLink.href}
+            </p>
+          </div>
         </div>
       </div>
       <div className="flex items-center gap-2">
+        <button
+          onClick={handleToggleDisplay}
+          className="flex items-center justify-center p-1.5 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-110"
+          title={subLink.display === 'oui' ? t('hide') : t('show')}
+        >
+          <div className={`relative w-8 h-4 rounded-full transition-colors duration-300 ${subLink.display === 'oui' ? 'bg-green-500' : 'bg-gray-300'}`}>
+            <div className={`absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full shadow transform transition-transform duration-300 ${subLink.display === 'oui' ? 'translate-x-4' : ''}`}></div>
+          </div>
+        </button>
         <button
           onClick={() => onEdit(subLink)}
           className="p-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 hover:text-blue-900 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-110"
@@ -87,7 +116,7 @@ const SortableSubcategory = ({ subLink, categoryId, onEdit, onDelete, t }) => {
 }
 
 // SortableCategory Component for drag-and-drop functionality
-const SortableCategory = ({ category, onEdit, onDelete, t }) => {
+const SortableCategory = ({ category, onEdit, onDelete, t, onToggleDisplay }) => {
   const [expanded, setExpanded] = useState(false)
   const {
     attributes,
@@ -112,6 +141,11 @@ const SortableCategory = ({ category, onEdit, onDelete, t }) => {
     setExpanded(!expanded)
   }
   
+  const handleToggleDisplay = (e) => {
+    e.stopPropagation()
+    onToggleDisplay(category._id)
+  }
+  
   return (
     <div className="mb-3">
       <div 
@@ -134,14 +168,38 @@ const SortableCategory = ({ category, onEdit, onDelete, t }) => {
           >
             {expanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
           </button>
-          <div>
-            <h3 className="font-medium text-gray-900 dark:text-white">{category.title}</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {category.subLinks?.length || 0} {t('subcategories')}
-            </p>
+          <div className="flex items-center">
+            {category.src && (
+              <img 
+                src={category.src} 
+                alt={category.title} 
+                className="h-10 w-10 object-cover rounded-md mr-3" 
+                onError={(e) => e.target.src = 'https://via.placeholder.com/40?text=Error'}
+              />
+            )}
+            <div>
+              <div className="flex items-center">
+                <h3 className="font-medium text-gray-900 dark:text-white">{category.title}</h3>
+                <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${category.display === 'oui' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                  {category.display === 'oui' ? t('visible') : t('hidden')}
+                </span>
+              </div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {category.subLinks?.length || 0} {t('subcategories')}
+              </p>
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={handleToggleDisplay}
+            className="flex items-center justify-center p-2 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-110"
+            title={category.display === 'oui' ? t('hide') : t('show')}
+          >
+            <div className={`relative w-10 h-5 rounded-full transition-colors duration-300 ${category.display === 'oui' ? 'bg-green-500' : 'bg-gray-300'}`}>
+              <div className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transform transition-transform duration-300 ${category.display === 'oui' ? 'translate-x-5' : ''}`}></div>
+            </div>
+          </button>
           <button
             onClick={() => onEdit(category)}
             className="p-2 bg-blue-100 hover:bg-blue-200 text-blue-700 hover:text-blue-900 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-110"
@@ -170,6 +228,7 @@ const SortableCategory = ({ category, onEdit, onDelete, t }) => {
               categoryId={category._id}
               onEdit={() => onEdit(category, subLink)}
               onDelete={(subLinkTitle) => onDelete(category._id, subLinkTitle)}
+              onToggleDisplay={onToggleDisplay}
               t={t}
             />
           ))}
@@ -184,6 +243,8 @@ const AddCategoryForm = ({ onClose, onSave, t }) => {
   const [formData, setFormData] = useState({
     title: '',
     href: '',
+    src: '',
+    display: 'oui',
     subLinks: []
   })
   const [loading, setLoading] = useState(false)
@@ -285,6 +346,60 @@ const AddCategoryForm = ({ onClose, onSave, t }) => {
             </p>
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('image_url')}
+            </label>
+            <input
+              type="url"
+              name="src"
+              value={formData.src}
+              onChange={handleChange}
+              placeholder="https://example.com/image.jpg"
+              className="w-full px-4 py-3 border border-gray-300/50 dark:border-gray-600/50 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 dark:bg-gray-700/50 dark:text-white bg-white/50 backdrop-blur-sm transition-all duration-200"
+            />
+            {formData.src && (
+              <div className="mt-2 p-2 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <img 
+                  src={formData.src} 
+                  alt={formData.title} 
+                  className="h-24 object-contain mx-auto rounded" 
+                  onError={(e) => e.target.src = 'https://via.placeholder.com/150?text=Image+Error'}
+                />
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('display')}
+            </label>
+            <div className="flex items-center space-x-4">
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="display"
+                  value="oui"
+                  checked={formData.display === 'oui'}
+                  onChange={handleChange}
+                  className="form-radio h-5 w-5 text-blue-600 transition duration-150 ease-in-out"
+                />
+                <span className="ml-2 text-gray-700 dark:text-gray-300">Oui</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="display"
+                  value="non"
+                  checked={formData.display === 'non'}
+                  onChange={handleChange}
+                  className="form-radio h-5 w-5 text-blue-600 transition duration-150 ease-in-out"
+                />
+                <span className="ml-2 text-gray-700 dark:text-gray-300">Non</span>
+              </label>
+            </div>
+          </div>
+
           <div className="flex justify-end pt-6 border-t border-gray-200/50 dark:border-gray-700/50">
             <button
               type="button"
@@ -321,11 +436,15 @@ const EditCategoryForm = ({ category, onClose, onSave, t }) => {
   const [formData, setFormData] = useState({
     title: category.title || '',
     href: category.href || '',
+    src: category.src || '',
+    display: category.display || 'oui',
     subLinks: category.subLinks || []
   })
   const [subLinkData, setSubLinkData] = useState({
     title: isEditingSubLink ? category.selectedSubLink.title : '',
-    href: isEditingSubLink ? category.selectedSubLink.href : ''
+    href: isEditingSubLink ? category.selectedSubLink.href : '',
+    src: isEditingSubLink ? category.selectedSubLink.src : '',
+    display: isEditingSubLink ? category.selectedSubLink.display : 'oui'
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -472,6 +591,60 @@ const EditCategoryForm = ({ category, onClose, onSave, t }) => {
                   />
                 </div>
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {t('image_url')}
+                </label>
+                <input
+                  type="url"
+                  name="src"
+                  value={formData.src}
+                  onChange={handleChange}
+                  placeholder="https://example.com/image.jpg"
+                  className="w-full px-4 py-3 border border-gray-300/50 dark:border-gray-600/50 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 dark:bg-gray-700/50 dark:text-white bg-white/50 backdrop-blur-sm transition-all duration-200"
+                />
+                {formData.src && (
+                  <div className="mt-2 p-2 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <img 
+                      src={formData.src} 
+                      alt={formData.title} 
+                      className="h-24 object-contain mx-auto rounded" 
+                      onError={(e) => e.target.src = 'https://via.placeholder.com/150?text=Image+Error'}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {t('display')}
+                </label>
+                <div className="flex items-center space-x-4">
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="display"
+                      value="oui"
+                      checked={formData.display === 'oui'}
+                      onChange={handleChange}
+                      className="form-radio h-5 w-5 text-blue-600 transition duration-150 ease-in-out"
+                    />
+                    <span className="ml-2 text-gray-700 dark:text-gray-300">Oui</span>
+                  </label>
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="display"
+                      value="non"
+                      checked={formData.display === 'non'}
+                      onChange={handleChange}
+                      className="form-radio h-5 w-5 text-blue-600 transition duration-150 ease-in-out"
+                    />
+                    <span className="ml-2 text-gray-700 dark:text-gray-300">Non</span>
+                  </label>
+                </div>
+              </div>
             </>
           ) : (
             /* Subcategory edit form */
@@ -508,6 +681,60 @@ const EditCategoryForm = ({ category, onClose, onSave, t }) => {
                     required
                     className="flex-1 px-4 py-3 border border-gray-300/50 dark:border-gray-600/50 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 dark:bg-gray-700/50 dark:text-white bg-white/50 backdrop-blur-sm transition-all duration-200"
                   />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {t('image_url')}
+                </label>
+                <input
+                  type="url"
+                  name="src"
+                  value={subLinkData.src}
+                  onChange={handleChange}
+                  placeholder="https://example.com/image.jpg"
+                  className="w-full px-4 py-3 border border-gray-300/50 dark:border-gray-600/50 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 dark:bg-gray-700/50 dark:text-white bg-white/50 backdrop-blur-sm transition-all duration-200"
+                />
+                {subLinkData.src && (
+                  <div className="mt-2 p-2 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <img 
+                      src={subLinkData.src} 
+                      alt={subLinkData.title} 
+                      className="h-24 object-contain mx-auto rounded" 
+                      onError={(e) => e.target.src = 'https://via.placeholder.com/150?text=Image+Error'}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {t('display')}
+                </label>
+                <div className="flex items-center space-x-4">
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="display"
+                      value="oui"
+                      checked={subLinkData.display === 'oui'}
+                      onChange={handleChange}
+                      className="form-radio h-5 w-5 text-blue-600 transition duration-150 ease-in-out"
+                    />
+                    <span className="ml-2 text-gray-700 dark:text-gray-300">Oui</span>
+                  </label>
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="display"
+                      value="non"
+                      checked={subLinkData.display === 'non'}
+                      onChange={handleChange}
+                      className="form-radio h-5 w-5 text-blue-600 transition duration-150 ease-in-out"
+                    />
+                    <span className="ml-2 text-gray-700 dark:text-gray-300">Non</span>
+                  </label>
                 </div>
               </div>
             </>
@@ -578,7 +805,6 @@ export default function Categories() {
   const saveCategoriesLocally = useCallback((categories) => {
     try {
       localStorage.setItem('samet_categories_backup', JSON.stringify(categories));
-      console.log('Categories saved to local storage as fallback');
     } catch (err) {
       console.error('Error saving categories to local storage:', err);
     }
@@ -852,6 +1078,88 @@ export default function Categories() {
     })
     setShowEditForm(true)
   }
+  
+  // Handle toggle display for category or subcategory
+  const handleToggleDisplay = async (categoryId, subLinkTitle = null) => {
+    setLoading(true)
+    try {
+      // Find the category
+      const categoryIndex = categories.findIndex(cat => cat._id === categoryId)
+      if (categoryIndex === -1) {
+        console.error('Category not found:', categoryId)
+        return
+      }
+      
+      const category = {...categories[categoryIndex]}
+      
+      if (subLinkTitle) {
+        // Toggle subcategory display
+        const subLinkIndex = category.subLinks.findIndex(sl => sl.title === subLinkTitle)
+        if (subLinkIndex === -1) {
+          console.error('Sublink not found:', subLinkTitle)
+          return
+        }
+        
+        // Create a new subLinks array with the updated sublink
+        const updatedSubLinks = [...category.subLinks]
+        updatedSubLinks[subLinkIndex] = {
+          ...updatedSubLinks[subLinkIndex],
+          display: updatedSubLinks[subLinkIndex].display === 'oui' ? 'non' : 'oui'
+        }
+        
+        // Create updated category with new subLinks
+        const updatedCategory = {
+          ...category,
+          subLinks: updatedSubLinks
+        }
+        
+        // Update local state first for immediate UI feedback
+        setCategories(prev => {
+          const newCategories = [...prev]
+          newCategories[categoryIndex] = updatedCategory
+          return newCategories
+        })
+        
+        // Save to local storage for fallback
+        saveCategoriesLocally([...categories])
+        
+        // Update on server
+        await UpdateCategoryItem(categoryId, updatedCategory)
+      } else {
+        // Toggle category display
+        const updatedCategory = {
+          ...category,
+          display: category.display === 'oui' ? 'non' : 'oui'
+        }
+        
+        // Update local state first for immediate UI feedback
+        setCategories(prev => {
+          const newCategories = [...prev]
+          newCategories[categoryIndex] = updatedCategory
+          return newCategories
+        })
+        
+        // Save to local storage for fallback
+        saveCategoriesLocally([...categories])
+        
+        // Update on server
+        await UpdateCategoryItem(categoryId, updatedCategory)
+      }
+    } catch (err) {
+      console.error('Error toggling display:', err)
+      setError(t('error_updating_category'))
+      
+      // Clear error after 5 seconds
+      setTimeout(() => {
+        setError(null)
+      }, 5000)
+      
+      // Refresh categories to revert UI changes
+      fetchCategories()
+    } finally {
+      setLoading(false)
+    }
+  }
 
   if (loading && categories.length === 0) {
     return (
@@ -895,10 +1203,10 @@ export default function Categories() {
   }
 
   return (
-    <div className="pt-4 px-8">
+    <div className="pt-4">
       {/* Loading overlay */}
-      {/* {loading && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+      {loading && (
+        <div className="fixed inset-0 bg-transparent bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 flex items-center space-x-3">
             <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -907,10 +1215,10 @@ export default function Categories() {
             <span className="text-gray-800 dark:text-white font-medium">{t('updating_categories')}</span>
           </div>
         </div>
-      )} */}
-      
+      )}
+
       {/* Header */}
-      <div className="pb-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-700 mb-6">
+      <div className="pb-4 px-8 flex justify-between items-center border-b border-gray-200 dark:border-gray-700 mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
             {t('categories')}
@@ -932,7 +1240,7 @@ export default function Categories() {
       </div>
 
       {/* Categories List with Drag and Drop */}
-      <div className="space-y-2">
+      <div className="space-y-2 max-w-4xl mx-auto h-[calc(100vh-180px)] overflow-y-auto pr-4">
         {categories.length === 0 ? (
           <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
             <p className="text-gray-500 dark:text-gray-400">{t('no_categories')}</p>
@@ -970,6 +1278,7 @@ export default function Categories() {
                       categoryId: id, 
                       subLinkTitle: subLinkTitle 
                     })}
+                    onToggleDisplay={handleToggleDisplay}
                     t={t}
                   />
                 ))}

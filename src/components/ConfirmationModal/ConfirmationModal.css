@@ -1,0 +1,38 @@
+.confirmation-modal .modal-content {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.confirmation-modal .modal-header {
+  border-bottom: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+}
+
+.confirmation-modal .modal-body {
+  padding: 1.5rem;
+}
+
+.confirmation-modal .modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+}
+
+.confirmation-modal .btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.confirmation-modal .btn-danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+
+.confirmation-modal .btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.confirmation-modal .btn-secondary:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}

@@ -243,7 +243,7 @@ const TableDisplayProduct = React.forwardRef(({
 
   return (
     <div 
-      className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden relative"
+      className="bg-white dark:bg-gray-800 rounded-md shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden relative"
       style={{
         '--header-height': headerHeight,
         '--pagination-height': paginationHeight
