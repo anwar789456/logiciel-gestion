@@ -17,11 +17,22 @@ const EditTransactionForm = ({ transaction, onClose, onSuccess }) => {
 
   useEffect(() => {
     if (transaction) {
+      // Format the date without timezone conversion
+      let dateStr = transaction.datetransaction || new Date().toISOString();
+      
+      // If the date contains a space (like "2023-01-01 11:00:00"), replace it with 'T'
+      if (dateStr.includes(' ')) {
+        dateStr = dateStr.replace(' ', 'T');
+      }
+      
+      // Slice to get only the date and time parts (YYYY-MM-DDTHH:MM)
+      dateStr = dateStr.slice(0, 16);
+      
       setFormData({
         name: transaction.name || '',
         montant: transaction.montant || '',
         note: transaction.note || '',
-        datetransaction: transaction.datetransaction ? transaction.datetransaction.replace(' ', 'T').slice(0, 16) : new Date().toISOString().slice(0, 16),
+        datetransaction: dateStr,
         transactiontype: transaction.transactiontype || 'Entrée'
       });
     }
@@ -41,7 +52,14 @@ const EditTransactionForm = ({ transaction, onClose, onSuccess }) => {
     setLoading(true);
 
     try {
-      await updateCaisseTransaction(transaction._id, formData);
+      // Create a copy of the form data to avoid timezone conversion issues
+      const transactionData = {
+        ...formData,
+        // Ensure the date is sent without timezone conversion
+        datetransaction: formData.datetransaction
+      };
+      
+      await updateCaisseTransaction(transaction._id, transactionData);
       onSuccess();
     } catch (error) {
       console.error('Error updating transaction:', error);
@@ -61,7 +79,7 @@ const EditTransactionForm = ({ transaction, onClose, onSuccess }) => {
       
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('person_name')}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Libele</label>
           <input
             type="text"
             name="name"
@@ -69,8 +87,8 @@ const EditTransactionForm = ({ transaction, onClose, onSuccess }) => {
             onChange={handleChange}
             required
             autoComplete="off"
-            placeholder={t('enter_person_name')}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 px-3 py-2"
+            placeholder="Libele"
+            className="mt-1 block w-full rounded-md border-gray-300 text-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 px-3 py-2"
           />
         </div>
         
@@ -83,7 +101,7 @@ const EditTransactionForm = ({ transaction, onClose, onSuccess }) => {
             onChange={handleChange}
             required
             autoComplete="off"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 px-3 py-2"
+            className="mt-1 block w-full rounded-md border-gray-300 text-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 px-3 py-2"
           />
         </div>
         
@@ -95,7 +113,7 @@ const EditTransactionForm = ({ transaction, onClose, onSuccess }) => {
             value={formData.datetransaction}
             onChange={handleChange}
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 px-3 py-2"
+            className="mt-1 block w-full rounded-md border-gray-300 text-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 px-3 py-2"
           />
         </div>
         
@@ -108,12 +126,12 @@ const EditTransactionForm = ({ transaction, onClose, onSuccess }) => {
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 px-3 py-2"
           >
-            <option value="Entrée">{t('income')}</option>
-            <option value="Sortie">{t('expense')}</option>
+            <option value="Entrée">Credit</option>
+            <option value="Sortie">Debit</option>
           </select>
         </div>
         
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('note')}</label>
           <textarea
             name="note"
@@ -122,7 +140,7 @@ const EditTransactionForm = ({ transaction, onClose, onSuccess }) => {
             rows="3"
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 px-3 py-2"
           ></textarea>
-        </div>
+        </div> */}
       </div>
       
       <div className="flex justify-end space-x-3">

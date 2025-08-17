@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../../../hooks/useAuth';
-import { getAllUsers, deleteUserById, updateUserById, createUser } from '../../../api/user';
-import { User, Trash2, Edit, Search, UserPlus, AlertCircle, X, Check, Lock } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
+import { getAllUsers, deleteUserById, updateUserById, createUser } from '../../api/user';
+import { User, Trash2, Edit, Search, UserPlus, AlertCircle, X, Check, Lock, IdCard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const EmployeeList = () => {
+const UserList = () => {
   const { t } = useTranslation();
   const { isAdmin } = useAuth();
   const navigate = useNavigate();
@@ -26,6 +26,7 @@ const EmployeeList = () => {
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newEmployee, setNewEmployee] = useState({
+    userID: '',
     username: '',
     password: '',
     confirmPassword: '',
@@ -187,6 +188,7 @@ const EmployeeList = () => {
     try {
       // Create new user
       const createdEmployee = await createUser({
+        userID: newEmployee.userID,
         username: newEmployee.username,
         password: newEmployee.password,
         role: newEmployee.role,
@@ -250,8 +252,9 @@ const EmployeeList = () => {
               <Search className="h-5 w-5 text-gray-400" />
             </div>
             <input
+              autoComplete='off'
               type="text"
-              className="pl-10 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="p-3 pl-10 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
               placeholder={t('search_employees')}
               value={searchTerm}
               onChange={handleSearch}
@@ -389,6 +392,28 @@ const EmployeeList = () => {
               
               <form onSubmit={handleAddEmployee} className="space-y-4">
                 <div>
+                  <label htmlFor="userID" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    User ID
+                  </label>
+                  <div className="mt-1 relative rounded-md shadow-sm">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <IdCard className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                    </div>
+                    <input
+                      autoComplete='off'
+                      type="text"
+                      name="userID"
+                      id="userID"
+                      className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 py-2 px-3 sm:text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white rounded-md"
+                      placeholder="User ID"
+                      value={newEmployee.userID}
+                      onChange={handleAddModalChange}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
                   <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {t('username')}
                   </label>
@@ -397,6 +422,7 @@ const EmployeeList = () => {
                       <User className="h-5 w-5 text-gray-400" aria-hidden="true" />
                     </div>
                     <input
+                      autoComplete='off'
                       type="text"
                       name="username"
                       id="username"
@@ -420,6 +446,7 @@ const EmployeeList = () => {
                       <Lock className="h-5 w-5 text-gray-400" aria-hidden="true" />
                     </div>
                     <input
+                      autoComplete='off'
                       type="password"
                       name="password"
                       id="password"
@@ -441,6 +468,7 @@ const EmployeeList = () => {
                       <Lock className="h-5 w-5 text-gray-400" aria-hidden="true" />
                     </div>
                     <input
+                      autoComplete='off'
                       type="password"
                       name="confirmPassword"
                       id="confirmPassword"
@@ -478,6 +506,7 @@ const EmployeeList = () => {
                       <User className="h-5 w-5 text-gray-400" aria-hidden="true" />
                     </div>
                     <input
+                      autoComplete='off'
                       type="text"
                       name="img_url"
                       id="img_url"
@@ -550,6 +579,7 @@ const EmployeeList = () => {
                       <User className="h-5 w-5 text-gray-400" aria-hidden="true" />
                     </div>
                     <input
+                      autoComplete='off'
                       type="text"
                       name="username"
                       id="edit-username"
@@ -587,6 +617,7 @@ const EmployeeList = () => {
                       <User className="h-5 w-5 text-gray-400" aria-hidden="true" />
                     </div>
                     <input
+                      autoComplete='off'
                       type="text"
                       name="img_url"
                       id="edit-img_url"
@@ -616,4 +647,4 @@ const EmployeeList = () => {
   );
 };
 
-export default EmployeeList;
+export default UserList;

@@ -108,7 +108,7 @@ export const AuthProvider = ({ children }) => {
     if (isAdmin()) return true;
     
     // Pages that employees cannot access
-    const restrictedPages = ['caisse', 'employee/list', 'register', 'assistant-ia'];
+    const restrictedPages = ['caisse', 'users/list', 'register', 'assistant-ia'];
     
     // Check if the current page is restricted
     return !restrictedPages.some(restrictedPage => page.includes(restrictedPage));

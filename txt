@@ -1,4 +1,4 @@
-nom et prenom
+/*nom et prenom
 date_naiss
 date_recrutement
 nom_post
@@ -21,3 +21,50 @@ page caisse:
 credit - green
 debit - red
 libelle
+*/
+
+
+
+
+/* ------------------------------------------------------------------- */
+/*
+we just changed the userModel schema from this :
+const userSchema = new mongoose.Schema({
+    userID: String,
+    username: String,
+    password: String,
+    role: String,
+    img_url: String,
+}, { timestamps: true });
+
+to this :
+const userSchema = new mongoose.Schema({
+    userID: String,
+    username: String,
+    password: String,
+    role: String,
+    img_url: String,
+    access_routes: [String]
+}, { timestamps: true });
+now please in the UserList just add in the "edit form" and "add form" an access routes select dropdown which will have these options:
+<option value="">Accueil</option>
+<option value="">Agenda</option>
+<option value="">Ventes - Devis</option>
+<option value="">Ventes - Factures</option>
+<option value="">Ventes - Bon Livraison</option>
+<option value="">Ventes - Reçu sur paiement</option>
+<option value="">Achat - Fournisseur</option>
+<option value="">Commandes - Liste Commandes</option>
+<option value="">Clients</option>
+<option value="">Employe - Liste utilisateurs</option>
+<option value="">Employe - Liste employé</option>
+<option value="">Employe - Demande de congé</option>
+<option value="">Commande Client</option>
+<option value="">Messagerie</option>
+<option value="">Website - Categories</option>
+<option value="">Website - Produits</option>
+<option value="">Website - Carousel</option>
+<option value="">Website - QrCode</option>
+<option value="">Caisse</option>
+<option value="">Assistant AI</option>
+*/

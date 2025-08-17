@@ -15,12 +15,11 @@ import NewMessageNotification from './components/common/NewMessageNotification';
 import CommandesEnCours from './pages/commandes/Encours/EnCours';
 import HistoriqueCommande from './pages/commandes/Historique/Historique';
 import Commandes from './pages/commandes/Commandes';
-import Stock from './pages/stock/Stock';
 import AssistantIA from './pages/assistant/AssistantIA'
 import RecuDePaiement from './pages/recuPaiement/RecuDePaiement';
 import BonLivraison from './pages/bonLivraison/BonLivraison';
 import Clients from './pages/clients/Clients';
-import EmployeeList from './pages/employe/list/EmployeeList';
+import UserList from './pages/users/UserList';
 import DemandeConge from './pages/employe/demandeConge/DemandeConge';
 import Fournisseur from './pages/fournisseur/Fournisseur';
 import Caisse from './pages/caisse/Caisse';
@@ -30,7 +29,8 @@ import Carousel from './pages/carousel/Carousel';
 import QrCode from './pages/qrCode/QrCode';
 import Login from './pages/auth/Login';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-
+import ListeEmploye from './pages/employe/ListeEmploye/ListeEmploye';
+import Agenda from './pages/agenda/Agenda';
 
 function App() {
   return (
@@ -50,11 +50,14 @@ function App() {
                 </ProtectedRoute>
               }>
                 <Route index element={<Stats />} />
+                <Route path="agenda" element={<Agenda />} />
                 <Route path="factures" element={<Factures />} />
                 <Route path="commandes" element={<Commandes />} />
                 <Route path="commandes/en-cours" element={<CommandesEnCours />} />
                 <Route path="commandes/fiche" element={<HistoriqueCommande />} />
-                <Route path="employee/list" element={<EmployeeList />} />
+                <Route path="users/list" element={<UserList />} />
+                {/* Redirecting old employee/list route to users/list */}
+                <Route path="employee/list" element={<ListeEmploye />} />
                 <Route path="employee/demande-conge" element={<DemandeConge />} />
                 <Route path="clients" element={<Clients />} />
                 <Route path="recue-de-paiement-sur-commande" element={<RecuDePaiement />} />

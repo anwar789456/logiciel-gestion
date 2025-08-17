@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CopyPlus, LayoutTemplate, Tags, X, AlertCircle } from 'lucide-react';
+import { CopyPlus, Plus, LayoutTemplate, Tags, X, AlertCircle, Settings } from 'lucide-react';
 import { FetchAllProductItems, DeleteProductById, FetchAllProductTypeItems } from '../../api/product';
 import TableDisplayProduct from '../../components/product/TableDisplayProduct';
 import AddFormProduct from '../../components/productForm/AddFormProduct';
 import EditFormProduct from '../../components/productForm/EditFormProduct';
 import ProductTypesModal from '../../components/productTypes/ProductTypesModal';
 import AdvancedProductFilters from '../../components/product/AdvancedProductFilters';
+import Options from '../../components/optionsProduct/OptionsProduct';
 import { Collapse } from 'react-bootstrap';
 
 
@@ -17,6 +18,8 @@ export default function Products() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [showProductTypesModal, setShowProductTypesModal] = useState(false);
+  const [showOptionsModal, setShowOptionsModal] = useState(false);
+  const [showOptionsForm, setShowOptionsForm] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState({ show: false, productId: null });
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false); // Advanced filters closed by default
@@ -263,6 +266,20 @@ export default function Products() {
             {t('product_types')}
           </button>
           <button
+            onClick={() => setShowOptionsModal(true)}
+            className='flex items-center bg-transparent border border-blue-600
+              hover:bg-blue-600 text-blue-600 font-bold 
+              hover:text-white
+              py-2 px-4 rounded-xl cursor-pointer
+              mr-2
+              shadow-lg hover:shadow-lg active:shadow-inner
+              active:scale-85
+              transition-all duration-400 ease-in-out'
+          >
+            <Settings className='mr-2 mt-0.5' size={20} />
+            {t('options')}
+          </button>
+          <button
             className='flex items-center bg-transparent border border-blue-600
               hover:bg-blue-600 text-blue-600 font-bold 
               hover:text-white
@@ -461,6 +478,49 @@ export default function Products() {
         isOpen={showProductTypesModal} 
         onClose={() => setShowProductTypesModal(false)} 
       />
+      
+      {/* Options Modal */}
+      {showOptionsModal && (
+        <div 
+          className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+          onClick={(e) => {
+            // Close modal when clicking outside
+            if (e.target === e.currentTarget) {
+              setShowOptionsModal(false);
+            }
+          }}
+        >
+          <div className="bg-white dark:bg-gray-800 rounded-lg w-[80%] max-h-[90vh] overflow-hidden shadow-xl flex flex-col">
+            {/* Modal Header */}
+            <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Options</h2>
+              <div className="flex items-center space-x-2">
+                <button 
+                  onClick={() => {
+                    // Afficher directement le formulaire via la prop
+                    setShowOptionsForm(true);
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1.5 px-3 rounded-lg transition-colors duration-300 flex items-center"
+                >
+                  <Plus size={16} className="mr-1" />
+                  Ajouter
+                </button>
+                <button 
+                  onClick={() => setShowOptionsModal(false)}
+                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+            
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <Options initialShowForm={showOptionsForm} onFormClose={() => setShowOptionsForm(false)} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

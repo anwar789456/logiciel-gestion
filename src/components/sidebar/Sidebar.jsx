@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { Receipt, LayoutDashboard, MessageCircleMore, QrCode, GalleryHorizontal, TicketCheck, ScrollText, ChevronDown, Clipboard, BellDot, FileText, ChevronsRight, ChevronsLeft, TrendingUp, Brain, Truck, Users, TrendingDown, UserCheck, Calendar, Wallet, Globe, Tag, Package } from 'lucide-react';
+import { Receipt, LayoutGrid, MessageCircleMore, CalendarDays, QrCode, GalleryHorizontal, TicketCheck, ScrollText, ChevronDown, Clipboard, BellDot, FileText, ChevronsRight, ChevronsLeft, TrendingUp, Brain, Truck, Users, TrendingDown, UserCheck, Calendar, Wallet, Globe, Tag, Package } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -80,10 +80,27 @@ function Sidebar() {
             title={!isSidebarOpen ? t('dashboard') : undefined}
           >
             <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
-              <LayoutDashboard size={24} />
+              <LayoutGrid size={24} />
             </div>
             <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
               {t('home')}
+            </span>
+          </NavLink>
+
+          {/* Agenda */}
+          <NavLink
+            to="/dashboard/agenda"
+            end
+            className={({ isActive }) =>
+              `flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
+            }
+            title={!isSidebarOpen ? t('dashboard') : undefined}
+          >
+            <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
+              <CalendarDays size={24} />
+            </div>
+            <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
+              {t('agenda')}
             </span>
           </NavLink>
 
@@ -384,7 +401,34 @@ function Sidebar() {
               }`}
             >
               <div className="space-y-1 transform transition-transform duration-300 ease-in-out">
-                {/* Employée List - Admin Only */}
+                {/* User List - Admin Only */}
+                {canAccess('users/list') && (
+                  <div
+                    className={`transform transition-all duration-300 ease-in-out ${
+                      isEmployeeOpen && isSidebarOpen
+                        ? 'translate-y-0 opacity-100'
+                        : '-translate-y-2 opacity-0'
+                    }`}
+                    style={{
+                      transitionDelay: isEmployeeOpen ? '0ms' : '0ms'
+                    }}
+                  >
+                    <NavLink
+                    to="/dashboard/users/list"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-300 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                      <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                        <Users size={20} />
+                      </div>
+                      {t('users_list')}
+                      {/* {t('employee_list')} */}
+                    </NavLink>
+                  </div>
+                )}
+
+                {/* Employee List */}
                 {canAccess('employee/list') && (
                   <div
                     className={`transform transition-all duration-300 ease-in-out ${
@@ -409,7 +453,6 @@ function Sidebar() {
                     </NavLink>
                   </div>
                 )}
-
                 {/* Demande de Congé */}
                 <div
                   className={`transform transition-all duration-300 ease-in-out ${
@@ -477,7 +520,7 @@ function Sidebar() {
 
           <div className={`pt-2 pb-2 transition-normal duration-300 ${isSidebarOpen ? 'pl-2 text-sm' : 'pl-0 text-[11px]' }`}>
             <p className='font-semibold uppercase whitespace-nowrap transition-all duration-300 ease-in-out text-gray-400 dark:text-gray-500'>
-              Website
+              {t('website')}
             </p>
           </div>
 
@@ -492,7 +535,7 @@ function Sidebar() {
                 <Globe size={24} />
               </div>
               <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
-                Website
+                {t('website')}
               </span>
               <div className={`ml-auto transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
                 <div className={`transform transition-transform duration-300 ease-in-out ${isWebsiteOpen ? 'rotate-180' : 'rotate-0'}`}>

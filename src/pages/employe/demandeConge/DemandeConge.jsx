@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next';
 import html2pdf from 'html2pdf.js';
 import CongeDocument from '../../../components/employe/CongeDocument';
+import { TriangleAlert } from 'lucide-react';
 
 export default function DemandeConge() {
   const { t } = useTranslation();
@@ -117,6 +118,10 @@ export default function DemandeConge() {
                 />
               </div>
             )}
+          </div>
+          <div className='flex'>
+            <TriangleAlert className="mt-1 w-4 h-4 mr-2 text-yellow-500" />
+            <p className='text-gray-500'>Les demandes de congés doivent être soumises au minimum deux jours avant leur date effective sauf pour les congés maladies.</p>
           </div>
 
           {/* Sollicite un congé (date range) */}

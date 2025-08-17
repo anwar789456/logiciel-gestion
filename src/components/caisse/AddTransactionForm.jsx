@@ -9,6 +9,7 @@ const AddTransactionForm = ({ onClose, onSuccess }) => {
     name: '',
     montant: '',
     note: '',
+    // Initialize with current date-time, but ensure we're not applying timezone conversion
     datetransaction: new Date().toISOString().slice(0, 16),
     transactiontype: 'Entrée'
   });
@@ -29,7 +30,14 @@ const AddTransactionForm = ({ onClose, onSuccess }) => {
     setLoading(true);
 
     try {
-      await addCaisseTransaction(formData);
+      // Create a copy of the form data to avoid timezone conversion issues
+      const transactionData = {
+        ...formData,
+        // Ensure the date is sent without timezone conversion
+        datetransaction: formData.datetransaction
+      };
+      
+      await addCaisseTransaction(transactionData);
       onSuccess();
     } catch (error) {
       console.error('Error adding transaction:', error);
@@ -49,7 +57,7 @@ const AddTransactionForm = ({ onClose, onSuccess }) => {
       
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('person_name')}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Libele</label>
           <input
             type="text"
             name="name"
@@ -57,8 +65,8 @@ const AddTransactionForm = ({ onClose, onSuccess }) => {
             onChange={handleChange}
             required
             autoComplete="off"
-            placeholder={t('enter_person_name')}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 px-3 py-2"
+            placeholder="Libele"
+            className="mt-1 block w-full rounded-md text-gray-700 dark:text-gray-300 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 px-3 py-2"
           />
         </div>
         
@@ -71,7 +79,7 @@ const AddTransactionForm = ({ onClose, onSuccess }) => {
             onChange={handleChange}
             required
             autoComplete="off"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 px-3 py-2"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 px-3 py-2"
           />
         </div>
         
@@ -83,7 +91,7 @@ const AddTransactionForm = ({ onClose, onSuccess }) => {
             value={formData.datetransaction}
             onChange={handleChange}
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 px-3 py-2"
+            className="mt-1 block w-full rounded-md text-gray-700 dark:text-gray-300 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 px-3 py-2"
           />
         </div>
         
@@ -96,12 +104,12 @@ const AddTransactionForm = ({ onClose, onSuccess }) => {
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 px-3 py-2"
           >
-            <option value="Entrée">{t('income')}</option>
-            <option value="Sortie">{t('expense')}</option>
+            <option value="Entrée">Credit</option>
+            <option value="Sortie">Debit</option>
           </select>
         </div>
         
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('note')}</label>
           <textarea
             name="note"
@@ -110,7 +118,7 @@ const AddTransactionForm = ({ onClose, onSuccess }) => {
             rows="3"
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 px-3 py-2"
           ></textarea>
-        </div>
+        </div> */}
       </div>
       
       <div className="flex justify-end space-x-3">

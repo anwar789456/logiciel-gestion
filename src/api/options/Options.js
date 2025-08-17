@@ -1,8 +1,4 @@
 import axios from 'axios';
-// const API_BASE_URL_GET = 'http://localhost:3001/admin/api/get-options';
-// const API_BASE_URL_DEL = 'http://localhost:3001/admin/api/delete-option/';
-// const API_BASE_URL_UPDATE = 'http://localhost:3001/admin/api/update-option/';
-// const API_BASE_URL_ADD = 'http://localhost:3001/admin/api/add-option';
 
 const API_BASE_URL_GET = 'https://www.samethome.com/admin/api/get-options';
 const API_BASE_URL_DEL = 'https://www.samethome.com/admin/api/delete-option/';

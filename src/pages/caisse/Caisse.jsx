@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CopyPlus, X, Edit, Trash2, Plus, Filter, RefreshCw, ChevronDown, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
-import { fetchAllCaisseTransactions, deleteCaisseTransaction } from '../../api/caisse';
+import { CopyPlus, X, Edit, Trash2, Plus, Filter, RefreshCw, ChevronDown, ChevronLeft, ChevronRight, AlertCircle, DollarSign } from 'lucide-react';
+import { fetchAllCaisseTransactions, deleteCaisseTransaction, findInitialBalanceDocument } from '../../api/caisse';
 import AddTransactionForm from '../../components/caisse/AddTransactionForm';
 import EditTransactionForm from '../../components/caisse/EditTransactionForm';
+import SoldePartForm from '../../components/caisse/SoldePartForm';
 import ConfirmationModal from '../../components/ConfirmationModal/ConfirmationModal';
 
 export default function Caisse() {
@@ -13,16 +14,15 @@ export default function Caisse() {
   const [error, setError] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
+  const [showSoldePartForm, setShowSoldePartForm] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [showItemsPerPageDropdown, setShowItemsPerPageDropdown] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const itemsPerPageDropdownRef = React.useRef(null);
   const [summary, setSummary] = useState({
     totalIncome: 0,
     totalExpenses: 0,
-    balance: 0
+    balance: 0,
+    soldeDepart: 0,
+    soldeDate: new Date().toISOString().split('T')[0]
   });
   const [filters, setFilters] = useState({
     transactionType: '',
@@ -31,25 +31,48 @@ export default function Caisse() {
   });
   const [deleteConfirmation, setDeleteConfirmation] = useState({ show: false, transactionId: null });
   
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (itemsPerPageDropdownRef.current && !itemsPerPageDropdownRef.current.contains(event.target)) {
-        setShowItemsPerPageDropdown(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  // No pagination dropdown to close
   
   const fetchTransactions = async () => {
     setLoading(true);
     setError('');
     try {
+      // Find the dedicated initial balance document first
+      const initialBalanceDoc = await findInitialBalanceDocument();
+      
+      // Get solde_depart and date from the initial balance document or default to 0 and today
+      const soldeDepart = initialBalanceDoc && initialBalanceDoc.solde_depart ? 
+        parseFloat(initialBalanceDoc.solde_depart) : 0;
+      
+      // Get the date from the initial balance document or default to today
+      let soldeDate = new Date().toISOString().split('T')[0];
+      try {
+        if (initialBalanceDoc && initialBalanceDoc.datetransaction) {
+          // Handle both string and Date object formats
+          if (typeof initialBalanceDoc.datetransaction === 'string') {
+            soldeDate = initialBalanceDoc.datetransaction.includes('T') ? 
+              initialBalanceDoc.datetransaction.split('T')[0] : initialBalanceDoc.datetransaction;
+          } else {
+            soldeDate = new Date(initialBalanceDoc.datetransaction).toISOString().split('T')[0];
+          }
+        }
+      } catch (dateError) {
+        console.error('Error parsing date:', dateError);
+        // Keep default date if there's an error
+      }
+      
+      // Fetch all transactions
       const transactionsData = await fetchAllCaisseTransactions();
-      setTransactions(transactionsData);
+      
+      // Filter out the initial balance document from the transactions list
+      const filteredTransactionsData = transactionsData.filter(transaction => {
+        // Skip the transaction if it's the initial balance document
+        return !(transaction.solde_depart && 
+                (transaction.libele === 'Initial Balance' || transaction.name === 'Initial Balance') &&
+                (transaction.montant === '0' || transaction.montant === 0 || !transaction.montant));
+      });
+      
+      setTransactions(filteredTransactionsData);
       
       // Calculate summary directly from transactions
       const totalIncome = transactionsData
@@ -60,12 +83,14 @@ export default function Caisse() {
         .filter(t => t.transactiontype === 'Sortie')
         .reduce((sum, t) => sum + parseFloat(t.montant || 0), 0);
       
-      const balance = totalIncome - totalExpenses;
+      const balance = soldeDepart + totalIncome - totalExpenses;
       
       setSummary({
         totalIncome: totalIncome.toString(),
         totalExpenses: totalExpenses.toString(),
-        balance: balance.toString()
+        balance: balance.toString(),
+        soldeDepart: soldeDepart.toString(),
+        soldeDate: soldeDate
       });
     } catch (error) {
       console.error('Error fetching transactions:', error);
@@ -103,15 +128,7 @@ export default function Caisse() {
     setShowEditForm(true);
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  const handleItemsPerPageChange = (value) => {
-    setItemsPerPage(value);
-    setCurrentPage(1);
-    setShowItemsPerPageDropdown(false);
-  };
+  // Removed pagination handlers
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -119,8 +136,6 @@ export default function Caisse() {
       ...prev,
       [name]: value
     }));
-    // Reset to first page when filters change to prevent empty table issue
-    setCurrentPage(1);
   };
 
   const applyFilters = (data) => {
@@ -155,14 +170,11 @@ export default function Caisse() {
     });
   };
 
-  // Apply filters and pagination
-  const filteredTransactions = applyFilters(transactions);
-  const totalItems = filteredTransactions.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedTransactions = filteredTransactions.slice(startIndex, startIndex + itemsPerPage);
+  // Apply filters and sort by date (oldest to newest)
+  const filteredTransactions = applyFilters(transactions)
+    .sort((a, b) => new Date(a.datetransaction) - new Date(b.datetransaction));
 
-  // Use summary data from API
+  // Use summary data from API including solde_depart
 
   return (
     <div className='pt-4'>
@@ -174,6 +186,20 @@ export default function Caisse() {
           </h1>
         </div>
         <div className='flex pr-2'>
+          <button
+            onClick={() => setShowSoldePartForm(true)}
+            className='flex items-center bg-transparent border border-green-600
+              hover:bg-green-600 text-green-600 font-bold 
+              hover:text-white
+              py-2 px-4 rounded-xl cursor-pointer
+              mr-2
+              shadow-lg hover:shadow-lg active:shadow-inner
+              active:scale-85
+              transition-all duration-400 ease-in-out'
+          >
+            <DollarSign className='mr-2 mt-0.5' size={20} />
+            {t('starting_balance')}
+          </button>
           <button
             onClick={() => setShowFilters(!showFilters)}
             className='flex items-center bg-transparent border border-blue-600
@@ -291,24 +317,21 @@ export default function Caisse() {
           </div>
         ) : (
           <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
-            <div className="overflow-x-auto" style={{ height: '400px', overflowY: 'auto' }}>
+            <div className="overflow-x-auto" style={{ maxHeight: '64vh', overflowY: 'auto' }}>
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-10">
                   <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      {t('row_number')}
-                    </th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       {t('transaction_date')}
                     </th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      {t('libele')}
+                      Libele
                     </th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      {t('debit')}
+                      Debit
                     </th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      {t('credit')}
+                      Credit
                     </th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       {t('balance')}
@@ -319,22 +342,47 @@ export default function Caisse() {
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {paginatedTransactions.map((transaction, index) => {
-                    // Calculate running balance for each transaction
-                    const previousTransactions = filteredTransactions.slice(0, startIndex + index);
+                  {/* Solde Depart Row */}
+                  <tr className="bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-800/30 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                      {/* Display the date from the initial balance document */}
+                      {new Date(summary.soldeDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
+                      {t('starting_balance')}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                      {/* Empty debit cell */}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                      {/* Empty credit cell */}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                      {parseFloat(summary.soldeDepart || 0).toFixed(3)} DT
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button
+                        onClick={() => setShowSoldePartForm(true)}
+                        className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-3"
+                      >
+                        <Edit size={18} />
+                      </button>
+                    </td>
+                  </tr>
+                  
+                  {filteredTransactions.map((transaction, index) => {
+                    // Calculate running balance for each transaction including the current transaction
+                    const previousTransactions = filteredTransactions.slice(0, index + 1);
                     const runningBalance = previousTransactions.reduce((acc, curr) => {
                       if (curr.transactiontype === 'Entrée') {
                         return acc + parseFloat(curr.montant);
                       } else {
                         return acc - parseFloat(curr.montant);
                       }
-                    }, 0);
+                    }, parseFloat(summary.soldeDepart || 0));
                     
                     return (
                       <tr key={transaction._id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                          {startIndex + index + 1}
-                        </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                           {new Date(transaction.datetransaction).toLocaleString()}
                         </td>
@@ -369,7 +417,7 @@ export default function Caisse() {
                   })}
                   {/* Total row */}
                   <tr className="bg-gray-50 dark:bg-gray-700 font-bold">
-                    <td colSpan="3" className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right">
+                    <td colSpan="2" className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right">
                       {t('total')}:
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">
@@ -393,146 +441,49 @@ export default function Caisse() {
               </table>
             </div>
             
-            {/* Pagination */}
-            <div className="px-4 py-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 sm:px-6 flex items-center justify-between">
-              <div className="flex-1 flex justify-between sm:hidden">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {t('previous')}
-                </button>
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {t('next')}
-                </button>
-              </div>
-              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    {t('showing')} <span className="font-medium">{startIndex + 1}</span> {t('to')} <span className="font-medium">{Math.min(startIndex + itemsPerPage, totalItems)}</span> {t('of')} <span className="font-medium">{totalItems}</span> {t('results')}
-                  </p>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div className="relative" ref={itemsPerPageDropdownRef}>
-                    <button 
-                      onClick={() => setShowItemsPerPageDropdown(!showItemsPerPageDropdown)}
-                      className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
-                    >
-                      <span>{t('show_items_per_page')}: {itemsPerPage}</span>
-                      <ChevronDown className="h-4 w-4" />
-                    </button>
-                    
-                    {showItemsPerPageDropdown && (
-                      <div className="absolute right-0 bottom-full mb-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
-                        <ul className="py-1">
-                          {[10, 20, 50].map((value) => (
-                            <li key={value}>
-                              <button
-                                onClick={() => handleItemsPerPageChange(value)}
-                                className={`w-full text-left px-4 py-2 text-sm ${itemsPerPage === value ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
-                              >
-                                {value} {t('items_per_page')}
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                      className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 shadow-sm hover:shadow-md"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </button>
-                    
-                    {/* Page Numbers */}
-                    {(() => {
-                      let pages = [];
-                      const maxVisiblePages = 5;
-                      
-                      if (totalPages <= maxVisiblePages) {
-                        // If we have 5 or fewer pages, show all of them
-                        for (let i = 1; i <= totalPages; i++) {
-                          pages.push(i);
-                        }
-                      } else {
-                        // Always include first page
-                        pages.push(1);
-                        
-                        // Calculate middle pages
-                        let startPage = Math.max(2, currentPage - 1);
-                        let endPage = Math.min(totalPages - 1, currentPage + 1);
-                        
-                        // Adjust if we're at the start or end
-                        if (currentPage <= 2) {
-                          endPage = 4;
-                        } else if (currentPage >= totalPages - 1) {
-                          startPage = totalPages - 3;
-                        }
-                        
-                        // Add ellipsis after first page if needed
-                        if (startPage > 2) {
-                          pages.push('...');
-                        }
-                        
-                        // Add middle pages
-                        for (let i = startPage; i <= endPage; i++) {
-                          pages.push(i);
-                        }
-                        
-                        // Add ellipsis before last page if needed
-                        if (endPage < totalPages - 1) {
-                          pages.push('...');
-                        }
-                        
-                        // Always include last page
-                        pages.push(totalPages);
-                      }
-                      
-                      return pages.map((page, index) => {
-                        if (page === '...') {
-                          return (
-                            <span key={`ellipsis-${index}`} className="w-8 h-8 flex items-center justify-center text-gray-500 dark:text-gray-400">
-                              ...
-                            </span>
-                          );
-                        }
-                        
-                        return (
-                          <button
-                            key={`page-${page}`}
-                            onClick={() => handlePageChange(page)}
-                            className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium ${currentPage === page ? 'bg-blue-600 text-white' : 'text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'} transition-all duration-200 shadow-sm hover:shadow-md`}
-                          >
-                            {page}
-                          </button>
-                        );
-                      });
-                    })()}
-                    
-                    <button
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                      className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 shadow-sm hover:shadow-md"
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Pagination removed - now using endless scrolling */}
           </div>
         )}
       </div>
+      
+      {/* Solde Part Form Modal */}
+      {showSoldePartForm && (
+        <div 
+          className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={(e) => {
+            // Close modal when clicking outside
+            if (e.target === e.currentTarget) {
+              setShowSoldePartForm(false);
+            }
+          }}
+        >
+          <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-lg w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-xl flex flex-col">
+            {/* Modal Header */}
+            <div className="flex-shrink-0 bg-white/95 dark:bg-gray-800/95 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('starting_balance')}</h2>
+              <button 
+                onClick={() => setShowSoldePartForm(false)}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <SoldePartForm 
+                onClose={() => setShowSoldePartForm(false)} 
+                onSuccess={() => {
+                  setShowSoldePartForm(false);
+                  fetchTransactions();
+                }}
+                currentSoldeDepart={summary.soldeDepart}
+                currentDate={summary.soldeDate}
+              />
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Add Transaction Modal */}
       {showAddForm && (
