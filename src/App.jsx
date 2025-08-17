@@ -31,6 +31,8 @@ import Login from './pages/auth/Login';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import ListeEmploye from './pages/employe/ListeEmploye/ListeEmploye';
 import Agenda from './pages/agenda/Agenda';
+import ListeConge from './pages/employe/ListeConge/ListeConge';
+
 
 function App() {
   return (
@@ -59,6 +61,7 @@ function App() {
                 {/* Redirecting old employee/list route to users/list */}
                 <Route path="employee/list" element={<ListeEmploye />} />
                 <Route path="employee/demande-conge" element={<DemandeConge />} />
+                <Route path="employee/liste-conge" element={<ListeConge />} />
                 <Route path="clients" element={<Clients />} />
                 <Route path="recue-de-paiement-sur-commande" element={<RecuDePaiement />} />
                 <Route path="bon-livraison" element={<BonLivraison />} />

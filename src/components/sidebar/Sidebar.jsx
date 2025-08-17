@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { Receipt, LayoutGrid, MessageCircleMore, CalendarDays, QrCode, GalleryHorizontal, TicketCheck, ScrollText, ChevronDown, Clipboard, BellDot, FileText, ChevronsRight, ChevronsLeft, TrendingUp, Brain, Truck, Users, TrendingDown, UserCheck, Calendar, Wallet, Globe, Tag, Package } from 'lucide-react';
+import { Receipt, LayoutGrid, MessageCircleMore, List, CalendarDays, QrCode, GalleryHorizontal, TicketCheck, ScrollText, ChevronDown, Clipboard, BellDot, FileText, ChevronsRight, ChevronsLeft, TrendingUp, Brain, Truck, Users, TrendingDown, UserCheck, Calendar, Wallet, Globe, Tag, Package } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -396,7 +396,7 @@ function Sidebar() {
             <div 
               className={`ml-4 overflow-hidden transition-all duration-300 ease-in-out ${
                 isEmployeeOpen && isSidebarOpen 
-                  ? 'max-h-32 opacity-100 mt-1' 
+                  ? 'max-h-48 opacity-100 mt-1' 
                   : 'max-h-0 opacity-0 mt-0'
               }`}
             >
@@ -474,6 +474,30 @@ function Sidebar() {
                       <Calendar size={20} />
                     </div>
                     {t('demande_de_conge')}
+                  </NavLink>
+                </div>
+
+                {/* Liste de Demande de Congé */}
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isEmployeeOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isEmployeeOpen ? '50ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/dashboard/employee/liste-conge"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <List size={20} />
+                    </div>
+                    {t('liste_demande_de_conge')}
                   </NavLink>
                 </div>
               </div>

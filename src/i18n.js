@@ -552,10 +552,12 @@ i18n
           'employee_details': 'Employee Details',
           'select_or_type_contract_type': 'Select or Type Contract Type',
           'website': 'Website',
+          'liste_demande_de_conge': 'Leave Request List',
         }
       },
       fr: {
         translation: {
+          'liste_demande_de_conge': 'Liste des demandes',
           'website': 'Site web',
           // Profile page translations
           'select_or_type_contract_type': 'Sélectionnez ou tapez le type de contrat',

@@ -1,29 +1,76 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next';
-import html2pdf from 'html2pdf.js';
-import CongeDocument from '../../../components/employe/CongeDocument';
 import { TriangleAlert } from 'lucide-react';
+import { createDemandeConge } from '../../../api/Employe/demandeConge';
+import { getAllEmployes } from '../../../api/Employe/Employe';
+import { useAuth } from '../../../hooks/useAuth';
 
 export default function DemandeConge() {
   const { t } = useTranslation();
+  const { currentUser } = useAuth();
+  
   const [formData, setFormData] = useState({
     motif: '',
     autreMotif: '',
-    dateDebut: '',
-    dateFin: '',
-    dateEffectuerConge: '',
+    dateRange: {
+      startDate: '',
+      endDate: ''
+    },
     decisionResponsable: ''
   });
   
-  const [showDocument, setShowDocument] = useState(false);
-  const documentRef = useRef(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [employeeData, setEmployeeData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [employeeInfo, setEmployeeInfo] = useState({
+    name: '',
+    department: '',
+    userID: ''
+  });
   
-  // Mock employee info - in a real app, this would come from your auth system or API
-  const employeeInfo = {
-    name: 'Souleima GHANNEY',
-    department: 'Architecture d\'intérieur',
-    manager: 'Faiez Samet'
-  };
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  
+  // Fetch employee data when component mounts
+  useEffect(() => {
+    const fetchEmployeeData = async () => {
+      if (currentUser?.userID) {
+        try {
+          // Get all employees and filter locally
+          const allEmployees = await getAllEmployes();
+          
+          // Find the employee with matching userID
+          const employee = allEmployees.find(emp => emp.userID === currentUser.userID);
+          
+          if (employee) {
+            setEmployeeData(employee);
+          } else {
+            console.warn(`No employee found with userID: ${currentUser.userID} after fetching all employees and filtering locally.`);
+          }
+        } catch (error) {
+          console.error('Error fetching employee data:', error);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        console.warn('No userID found in currentUser:', currentUser);
+        setLoading(false);
+      }
+    };
+    
+    fetchEmployeeData();
+  }, [currentUser]);
+  
+  // Set employee info from employee data when it's loaded
+  useEffect(() => {
+    if (employeeData) {
+      setEmployeeInfo({
+        name: employeeData?.nom_prenom || '',
+        department: employeeData?.nom_post || '',
+        userID: currentUser?.userID || ''
+      });
+    }
+  }, [employeeData, currentUser]);
 
   const motifOptions = [
     'Maladie',
@@ -37,53 +84,150 @@ export default function DemandeConge() {
     'autre'
   ];
 
-  const decisionOptions = [
-    'Accord total',
-    'Accord partiel',
-    'Refus'
-  ];
+  // Decision options removed from form but kept for reference
+  // const decisionOptions = [
+  //   'Accord total',
+  //   'Accord partiel',
+  //   'Refus'
+  // ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // Handle nested dateRange object
+    if (name === 'dateDebut' || name === 'dateFin') {
+      const dateField = name === 'dateDebut' ? 'startDate' : 'endDate';
+      setFormData(prev => ({
+        ...prev,
+        dateRange: {
+          ...prev.dateRange,
+          [dateField]: value
+        }
+      }));
+    } else if (name === 'name' || name === 'department') {
+      // Handle employee info fields
+      setEmployeeInfo(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Show the document preview
-    setShowDocument(true);
-    // Here you would typically send the data to your backend
+    setSubmitting(true);
+    setSubmitError(null);
+    
+    try {
+      // Prepare data according to the backend schema
+      // Note: userID is stored locally but not sent to backend as it's not in the model
+      const demandeData = {
+        username: employeeInfo.name || currentUser?.username || '',
+        job: employeeInfo.department || currentUser?.job || '',
+        motif: formData.motif === 'autre' ? formData.autreMotif : formData.motif,
+        dateRange: {
+          startDate: formData.dateRange.startDate,
+          endDate: formData.dateRange.endDate
+        },
+        decisionResponsable: '' // Leave it empty as requested
+      };
+      
+      // Send data to backend
+      await createDemandeConge(demandeData);
+      
+      // Show success message
+      setSubmitSuccess(true);
+      // Reset form
+      setFormData({
+        motif: '',
+        autreMotif: '',
+        dateRange: {
+          startDate: '',
+          endDate: ''
+        },
+        decisionResponsable: ''
+      });
+    } catch (error) {
+      console.error('Error submitting demande de congé:', error);
+      setSubmitError(t('failed_to_submit_request'));
+    } finally {
+      setSubmitting(false);
+    }
   };
   
-  const handleDownloadPDF = () => {
-    const element = documentRef.current;
-    
-    const options = {
-      margin: 10,
-      filename: `demande_conge_${new Date().toISOString().split('T')[0]}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-    
-    html2pdf().set(options).from(element).save();
-  };
-  
-  const handleBack = () => {
-    setShowDocument(false);
+  const handleNewRequest = () => {
+    setSubmitSuccess(false);
   };
 
   return (
     <div className='mt-4 px-8'>
       <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Demande de Congé</h1>
       
-      {!showDocument ? (
+      {loading ? (
+        <div className="flex justify-center items-center py-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+      ) : submitSuccess ? (
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 max-w-4xl mx-auto">
+          <div className="text-center py-8">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 dark:bg-green-900">
+              <svg className="h-6 w-6 text-green-600 dark:text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="mt-3 text-lg font-medium text-gray-900 dark:text-white">Demande soumise avec succès!</h3>
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              Votre demande de congé a été soumise et est en attente d'approbation.
+            </p>
+            <div className="mt-6">
+              <button
+                onClick={handleNewRequest}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-300"
+              >
+                Nouvelle demande
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 max-w-4xl mx-auto">
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Employee Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Nom et prénom
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={employeeInfo.name}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="department" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Département
+                </label>
+                <input
+                  type="text"
+                  id="department"
+                  name="department"
+                  value={employeeInfo.department}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+            </div>
+            
           {/* Motif */}
           <div className="space-y-4">
             <div>
@@ -132,7 +276,7 @@ export default function DemandeConge() {
                 type="date"
                 id="dateDebut"
                 name="dateDebut"
-                value={formData.dateDebut}
+                value={formData.dateRange.startDate}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                 required
@@ -144,7 +288,7 @@ export default function DemandeConge() {
                 type="date"
                 id="dateFin"
                 name="dateFin"
-                value={formData.dateFin}
+                value={formData.dateRange.endDate}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                 required
@@ -152,68 +296,28 @@ export default function DemandeConge() {
             </div>
           </div>
 
-          {/* Date effectuer conge */}
-          <div>
-            <label htmlFor="dateEffectuerConge" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date effectuer congé</label>
-            <input
-              type="date"
-              id="dateEffectuerConge"
-              name="dateEffectuerConge"
-              value={formData.dateEffectuerConge}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-            />
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Date confirmée par l'administrateur</p>
-          </div>
+          {/* Removed date effectuer conge field as it's not in the new schema */}
 
-          {/* Decision du responsable du service */}
-          <div>
-            <label htmlFor="decisionResponsable" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Décision du responsable du service</label>
-            <select
-              id="decisionResponsable"
-              name="decisionResponsable"
-              value={formData.decisionResponsable}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-            >
-              <option value="" disabled>Sélectionnez une décision</option>
-              {decisionOptions.map((option, index) => (
-                <option key={index} value={option}>{option}</option>
-              ))}
-            </select>
-          </div>
+          {/* Decision du responsable du service field removed as requested */}
 
+          {/* Error message */}
+          {submitError && (
+            <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+              {submitError}
+            </div>
+          )}
+          
           {/* Submit button */}
           <div className="flex justify-end">
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-300"
+              disabled={submitting}
+              className={`px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-300 ${submitting ? 'opacity-70' : ''}`}
             >
-              Soumettre la demande
+              {submitting ? t('submitting') : t('submit_request')}
             </button>
           </div>
           </form>
-        </div>
-      ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 max-w-4xl mx-auto">
-          <div className="mb-6 flex justify-between items-center">
-            <button
-              onClick={handleBack}
-              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-colors duration-300"
-            >
-              Retour au formulaire
-            </button>
-            <button
-              onClick={handleDownloadPDF}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-300"
-            >
-              Télécharger PDF
-            </button>
-          </div>
-          
-          <div className="border border-gray-300 rounded-lg overflow-hidden">
-            <CongeDocument ref={documentRef} formData={formData} employeeInfo={employeeInfo} />
-          </div>
         </div>
       )}
     </div>

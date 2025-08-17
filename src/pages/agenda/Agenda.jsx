@@ -114,54 +114,43 @@ export default function Agenda() {
   }
 
   const handleDeleteEvent = async (eventId) => {
-    if (window.confirm(t('confirm_delete_event'))) {
-      try {
-        console.log('Deleting event with ID:', eventId)
-        await deleteAgendaEvent(eventId)
-        setShowEditModal(false)
-        setSelectedEvent(null)
-        fetchEvents()
-      } catch (err) {
-        console.error('Failed to delete event:', err)
-        setError(t('failed_to_delete_event'))
-      }
+    try {
+      await deleteAgendaEvent(eventId)
+      setShowEditModal(false)
+      setSelectedEvent(null)
+      fetchEvents()
+    } catch (err) {
+      console.error('Failed to delete event:', err)
+      setError(t('failed_to_delete_event'))
     }
   }
 
   const getDaysInMonth = (year, month) => {
-    // Get days in month without timezone conversion
     return new Date(year, month + 1, 0).getDate()
   }
 
   const getFirstDayOfMonth = (year, month) => {
-    // Get first day of month without timezone conversion
     return new Date(year, month, 1).getDay()
   }
 
   const handlePrevMonth = () => {
-    // Create a date in Ariana timezone for the previous month
     let newMonth = selectedMonth - 1
     let newYear = selectedYear
-    
     if (newMonth < 0) {
-      newMonth = 11
-      newYear = newYear - 1
-    }
-    
+      newMonth = 11;
+      newYear = newYear - 1;
+    }    
     setSelectedMonth(newMonth)
     setSelectedYear(newYear)
   }
 
   const handleNextMonth = () => {
-    // Create a date in Ariana timezone for the next month
     let newMonth = selectedMonth + 1
     let newYear = selectedYear
-    
     if (newMonth > 11) {
       newMonth = 0
       newYear = newYear + 1
     }
-    
     setSelectedMonth(newMonth)
     setSelectedYear(newYear)
   }
@@ -181,7 +170,7 @@ export default function Agenda() {
 
     // Add empty cells for days before the first day of the month
     for (let i = 0; i < firstDayOfMonth; i++) {
-      days.push(<div key={`empty-${i}`} className="h-24 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"></div>)
+      days.push(<div key={`empty-${i}`} className="h-24 border text-gray-700 dark:text-white border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"></div>)
     }
 
     // Add cells for each day of the month
@@ -199,8 +188,8 @@ export default function Agenda() {
 
       days.push(
         <div key={day} className="h-24 border border-gray-200 dark:border-gray-700 p-1 overflow-hidden">
-          <div className="flex justify-between items-center mb-1">
-            <span className={`text-sm font-medium ${todayString === dateString ? 'bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center' : ''}`}>
+          <div className="flex justify-between text-gray-700 dark:text-white items-center mb-1">
+            <span className={`text-sm font-medium ${todayString === dateString ? 'bg-blue-600 text-white rounded-full w-9 h-9 flex items-center justify-center' : ''}`}>
               {day}
             </span>
           </div>
@@ -208,7 +197,7 @@ export default function Agenda() {
             {dayEvents.map((event, index) => (
               <div 
                 key={index} 
-                className="text-xs p-1 mb-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 cursor-pointer truncate"
+                className="text-xs p-1 mb-1 rounded bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-white cursor-pointer truncate"
                 onClick={() => {
                   setSelectedEvent(event)
                   setShowEditModal(true)
@@ -250,7 +239,7 @@ export default function Agenda() {
           <button
             key={index}
             onClick={() => selectMonth(index)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${selectedMonth === index ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${selectedMonth === index ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600'}`}
           >
             {month}
           </button>
@@ -262,16 +251,16 @@ export default function Agenda() {
         <div className="flex items-center gap-2">
           <button 
             onClick={handlePrevMonth}
-            className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+            className="p-1 rounded-full text-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
           >
             <ChevronLeft size={20} />
           </button>
-          <h2 className="text-xl font-semibold">
+          <h2 className="text-xl font-semibold text-gray-700 dark:text-white">
             {months[selectedMonth]} {selectedYear}
           </h2>
           <button 
             onClick={handleNextMonth}
-            className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+            className="p-1 rounded-full text-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
           >
             <ChevronRight size={20} />
           </button>
@@ -284,7 +273,7 @@ export default function Agenda() {
               setSelectedMonth(today.getMonth())
               setSelectedYear(today.getFullYear())
             }}
-            className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
+            className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
           >
             {t('Today')}
           </button>
@@ -296,7 +285,7 @@ export default function Agenda() {
         {/* Days of week */}
         <div className="grid grid-cols-7 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
           {[t('sunday'), t('monday'), t('tuesday'), t('wednesday'), t('thursday'), t('friday'), t('saturday')].map((day, index) => (
-            <div key={index} className="py-2 text-center text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div key={index} className="py-2 text-center text-sm font-medium text-gray-700 dark:text-white">
               {day}
             </div>
           ))}
@@ -305,7 +294,7 @@ export default function Agenda() {
         {/* Calendar days */}
         <div className="grid grid-cols-7">
           {loading ? (
-            <div className="col-span-7 p-4 text-center text-gray-500 dark:text-gray-400">
+            <div className="col-span-7 p-4 text-center text-gray-500 dark:text-gray-200">
               {t('loading_calendar')}
             </div>
           ) : (
@@ -333,7 +322,7 @@ export default function Agenda() {
                   e.stopPropagation()
                   setShowAddModal(false)
                 }}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-200 dark:hover:text-white"
               >
                 <X size={20} />
               </button>
@@ -341,7 +330,7 @@ export default function Agenda() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
                   {t('event_title')}
                 </label>
                 <input
@@ -354,7 +343,7 @@ export default function Agenda() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
                   {t('start_date')}
                 </label>
                 <input
@@ -366,7 +355,7 @@ export default function Agenda() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
                   {t('end_date')}
                 </label>
                 <input
@@ -383,7 +372,7 @@ export default function Agenda() {
                     e.stopPropagation()
                     setShowAddModal(false)
                   }}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                   {t('cancel')}
                 </button>
@@ -406,7 +395,7 @@ export default function Agenda() {
       {/* Edit Event Modal */}
       {showEditModal && selectedEvent && (
         <div 
-          className="fixed inset-0 backdrop-blur-sm bg-black bg-opacity-30 flex items-center justify-center z-50"
+          className="fixed inset-0 backdrop-blur-sm bg-transparent backdrop:blur-2xl bg-opacity-30 flex items-center justify-center z-50"
           onClick={(e) => {
             e.preventDefault()
             setShowEditModal(false)
@@ -430,7 +419,7 @@ export default function Agenda() {
                   setShowEditModal(false)
                   setSelectedEvent(null)
                 }}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-200 dark:hover:text-white"
               >
                 <X size={20} />
               </button>
@@ -438,7 +427,7 @@ export default function Agenda() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
                   {t('event_title')}
                 </label>
                 <input
@@ -451,7 +440,7 @@ export default function Agenda() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
                   {t('start_date')}
                 </label>
                 <input
@@ -463,7 +452,7 @@ export default function Agenda() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
                   {t('end_date')}
                 </label>
                 <input
@@ -499,7 +488,7 @@ export default function Agenda() {
                       setShowEditModal(false)
                       setSelectedEvent(null)
                     }}
-                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     {t('cancel')}
                   </button>

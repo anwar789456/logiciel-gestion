@@ -1,102 +1,136 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const CongeDocument = React.forwardRef(({ formData, employeeInfo }, ref) => {
   const { t } = useTranslation();
   
-  // Format date to DD/MM/YYYY
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
-  };
+  // Helper function to generate checkbox styles
+  const getCheckboxStyle = (isChecked) => ({
+    width: '1.25rem', 
+    height: '1.25rem', 
+    border: '1px solid #9ca3af', 
+    marginRight: '0.5rem', 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    backgroundColor: isChecked ? '#1f2937' : 'white',
+    color: isChecked ? 'white' : 'inherit'
+  });
+  
+  // Format date to DD/MM/YYYY - memoized to prevent recalculations
+  const formatDate = useMemo(() => {
+    return (dateString) => {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+    };
+  }, []);
 
-  // Calculate number of days between two dates
-  const calculateDays = (startDate, endDate) => {
-    if (!startDate || !endDate) return '';
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const diffTime = Math.abs(end - start);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end days
-    return diffDays === 1 ? '(1 jour)' : `(${diffDays} jours)`;
-  };
+  // Calculate number of days between two dates - memoized to prevent recalculations
+  const calculateDays = useMemo(() => {
+    return (startDate, endDate) => {
+      if (!startDate || !endDate) return '';
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const diffTime = Math.abs(end - start);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end days
+      return diffDays === 1 ? '(1 jour)' : `(${diffDays} jours)`;
+    };
+  }, []);
 
+  // Memoize the current date to avoid recalculations on each render
+  const currentDate = useMemo(() => {
+    return formatDate(new Date().toISOString().split('T')[0]);
+  }, [formatDate]);
+  
+  // PDF document styles
+  const documentStyles = useMemo(() => ({
+    minHeight: '29.7cm',
+    width: '100%',
+    maxWidth: '100%',
+    padding: '100px',
+    margin: '0 auto',
+    backgroundColor: 'white',
+    boxSizing: 'border-box',
+    fontFamily: 'Arial, sans-serif'
+  }), []);
+  
   return (
-    <div ref={ref} className="bg-white p-8 max-w-[21cm] mx-auto" style={{ minHeight: '29.7cm' }}>
+    <div ref={ref} style={documentStyles}>
       {/* Header with logo and title */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold uppercase tracking-wider mb-2">SAMET HOME</h1>
-        <p className="text-sm text-gray-600">MEUBLES ET DÉCORATION</p>
+      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>SAMET HOME</h1>
+        <p style={{ fontSize: '0.875rem', color: '#718096' }}>MEUBLES ET DÉCORATION</p>
       </div>
 
-      <div className="text-center mb-10">
-        <h2 className="text-xl font-bold border-b-2 border-gray-300 pb-2 inline-block">Demande de congés</h2>
+      <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', borderBottom: '2px solid #d1d5db', paddingBottom: '0.5rem', display: 'inline-block' }}>Demande de congés</h2>
       </div>
 
       {/* Employee Information */}
-      <div className="mb-8">
-        <div className="mb-2">
-          <span className="font-semibold">Nom de l'employé: </span>
+      <div style={{ marginBottom: '2rem' }}>
+        <div style={{ marginBottom: '0.5rem' }}>
+          <span style={{ fontWeight: '600' }}>Nom de l'employé: </span>
           <span>{employeeInfo?.name || 'N/A'}</span>
         </div>
-        <div className="mb-2">
-          <span className="font-semibold">Service: </span>
+        <div style={{ marginBottom: '0.5rem' }}>
+          <span style={{ fontWeight: '600' }}>Service: </span>
           <span>{employeeInfo?.department || 'N/A'}</span>
         </div>
-        <div className="mb-2">
-          <span className="font-semibold">Responsable: </span>
+        <div style={{ marginBottom: '0.5rem' }}>
+          <span style={{ fontWeight: '600' }}>Responsable: </span>
           <span>{employeeInfo?.manager || 'N/A'}</span>
         </div>
       </div>
 
       {/* Motif Section */}
-      <div className="mb-8">
-        <h3 className="font-semibold mb-4">Motif:</h3>
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="flex items-center">
-            <div className={`w-5 h-5 border border-gray-400 mr-2 flex items-center justify-center ${formData.motif === 'Maladie' ? 'bg-gray-800 text-white' : 'bg-white'}`}>
+      <div style={{ marginBottom: '2rem' }}>
+        <h3 style={{ fontWeight: '600', marginBottom: '1rem' }}>Motif:</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={getCheckboxStyle(formData.motif === 'Maladie')}>
               {formData.motif === 'Maladie' && 'X'}
             </div>
             <span>Maladie</span>
           </div>
-          <div className="flex items-center">
-            <div className={`w-5 h-5 border border-gray-400 mr-2 flex items-center justify-center ${formData.motif === 'Congé' ? 'bg-gray-800 text-white' : 'bg-white'}`}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={getCheckboxStyle(formData.motif === 'Congé')}>
               {formData.motif === 'Congé' && 'X'}
             </div>
             <span>Congé</span>
           </div>
-          <div className="flex items-center">
-            <div className={`w-5 h-5 border border-gray-400 mr-2 flex items-center justify-center ${formData.motif === 'Décès' ? 'bg-gray-800 text-white' : 'bg-white'}`}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={getCheckboxStyle(formData.motif === 'Décès')}>
               {formData.motif === 'Décès' && 'X'}
             </div>
             <span>Décès</span>
           </div>
-          <div className="flex items-center">
-            <div className={`w-5 h-5 border border-gray-400 mr-2 flex items-center justify-center ${formData.motif === 'Congés sans solde' ? 'bg-gray-800 text-white' : 'bg-white'}`}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={getCheckboxStyle(formData.motif === 'Congés sans solde')}>
               {formData.motif === 'Congés sans solde' && 'X'}
             </div>
             <span>Congés sans solde</span>
           </div>
-          <div className="flex items-center">
-            <div className={`w-5 h-5 border border-gray-400 mr-2 flex items-center justify-center ${formData.motif === 'Congé maternité' ? 'bg-gray-800 text-white' : 'bg-white'}`}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={getCheckboxStyle(formData.motif === 'Congé maternité')}>
               {formData.motif === 'Congé maternité' && 'X'}
             </div>
             <span>Congé maternité</span>
           </div>
-          <div className="flex items-center">
-            <div className={`w-5 h-5 border border-gray-400 mr-2 flex items-center justify-center ${formData.motif === 'Congé parental' ? 'bg-gray-800 text-white' : 'bg-white'}`}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={getCheckboxStyle(formData.motif === 'Congé parental')}>
               {formData.motif === 'Congé parental' && 'X'}
             </div>
             <span>Congé parental</span>
           </div>
-          <div className="flex items-center">
-            <div className={`w-5 h-5 border border-gray-400 mr-2 flex items-center justify-center ${formData.motif === 'Mariage' ? 'bg-gray-800 text-white' : 'bg-white'}`}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={getCheckboxStyle(formData.motif === 'Mariage')}>
               {formData.motif === 'Mariage' && 'X'}
             </div>
             <span>Mariage</span>
           </div>
-          <div className="flex items-center">
-            <div className={`w-5 h-5 border border-gray-400 mr-2 flex items-center justify-center ${formData.motif === 'Pour évènements familiaux' ? 'bg-gray-800 text-white' : 'bg-white'}`}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={getCheckboxStyle(formData.motif === 'Pour évènements familiaux')}>
               {formData.motif === 'Pour évènements familiaux' && 'X'}
             </div>
             <span>Pour évènements familiaux</span>
@@ -104,15 +138,15 @@ const CongeDocument = React.forwardRef(({ formData, employeeInfo }, ref) => {
         </div>
         
         {/* Autre motif */}
-        <div className="mt-4">
-          <div className="flex items-center mb-2">
-            <div className={`w-5 h-5 border border-gray-400 mr-2 flex items-center justify-center ${formData.motif === 'autre' ? 'bg-gray-800 text-white' : 'bg-white'}`}>
+        <div style={{ marginTop: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+            <div style={getCheckboxStyle(formData.motif === 'autre')}>
               {formData.motif === 'autre' && 'X'}
             </div>
             <span>Autres: </span>
           </div>
           {formData.motif === 'autre' && formData.autreMotif && (
-            <div className="ml-7 border-b border-gray-400 pb-1">
+            <div style={{ marginLeft: '1.75rem', borderBottom: '1px solid #9ca3af', paddingBottom: '0.25rem' }}>
               {formData.autreMotif}
             </div>
           )}
@@ -120,40 +154,40 @@ const CongeDocument = React.forwardRef(({ formData, employeeInfo }, ref) => {
       </div>
 
       {/* Date Range Section */}
-      <div className="mb-8">
-        <p className="mb-4">
-          <span className="font-semibold">Sollicite un congé: </span>
-          du {formatDate(formData.dateDebut)} au {formatDate(formData.dateFin)} {calculateDays(formData.dateDebut, formData.dateFin)}
+      <div style={{ marginBottom: '2rem' }}>
+        <p style={{ marginBottom: '1rem' }}>
+          <span style={{ fontWeight: '600' }}>Sollicite un congé: </span>
+          du {formatDate(formData.dateRange?.startDate)} au {formatDate(formData.dateRange?.endDate)} {calculateDays(formData.dateRange?.startDate, formData.dateRange?.endDate)}
         </p>
         
-        <div className="mt-6 text-sm">
-          <p className="italic">Les demandes de congés doivent être soumises au minimum deux jours avant leur date effective sauf pour les congés maladies.</p>
+        <div style={{ marginTop: '1.5rem', fontSize: '0.875rem' }}>
+          <p style={{ fontStyle: 'italic' }}>Les demandes de congés doivent être soumises au minimum deux jours avant leur date effective sauf pour les congés maladies.</p>
         </div>
       </div>
 
       {/* Admin Section */}
-      <div className="mb-8">
-        <h3 className="font-semibold mb-4">Demande de congé effectuée le {formatDate(formData.dateEffectuerConge || new Date().toISOString().split('T')[0])}</h3>
+      <div style={{ marginBottom: '2rem' }}>
+        <h3 style={{ fontWeight: '600', marginBottom: '1rem' }}>Demande de congé effectuée le {currentDate}</h3>
       </div>
 
       {/* Decision Section */}
-      <div className="mb-8">
-        <h3 className="font-semibold mb-4">Décision du responsable du service</h3>
-        <div className="space-y-2">
-          <div className="flex items-center">
-            <div className={`w-5 h-5 border border-gray-400 mr-2 flex items-center justify-center ${formData.decisionResponsable === 'Accord total' ? 'bg-gray-800 text-white' : 'bg-white'}`}>
+      <div style={{ marginBottom: '2rem' }}>
+        <h3 style={{ fontWeight: '600', marginBottom: '1rem' }}>Décision du responsable du service</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={getCheckboxStyle(formData.decisionResponsable === 'Accord total')}>
               {formData.decisionResponsable === 'Accord total' && 'X'}
             </div>
             <span>Accord total</span>
           </div>
-          <div className="flex items-center">
-            <div className={`w-5 h-5 border border-gray-400 mr-2 flex items-center justify-center ${formData.decisionResponsable === 'Accord partiel' ? 'bg-gray-800 text-white' : 'bg-white'}`}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={getCheckboxStyle(formData.decisionResponsable === 'Accord partiel')}>
               {formData.decisionResponsable === 'Accord partiel' && 'X'}
             </div>
             <span>Accord partiel</span>
           </div>
-          <div className="flex items-center">
-            <div className={`w-5 h-5 border border-gray-400 mr-2 flex items-center justify-center ${formData.decisionResponsable === 'Refus' ? 'bg-gray-800 text-white' : 'bg-white'}`}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={getCheckboxStyle(formData.decisionResponsable === 'Refus')}>
               {formData.decisionResponsable === 'Refus' && 'X'}
             </div>
             <span>Refus</span>
@@ -161,15 +195,40 @@ const CongeDocument = React.forwardRef(({ formData, employeeInfo }, ref) => {
         </div>
       </div>
 
-      {/* Signature Section */}
-      <div className="flex justify-between mt-16">
-        <div className="text-center">
-          <p className="font-semibold mb-12">Signature du responsable du service</p>
-          <div className="border-t border-gray-400 w-40 mx-auto"></div>
+      {/* Administrative Decision Section */}
+      <div style={{ marginBottom: '2rem' }}>
+        <div style={{ fontWeight: '600', marginBottom: '0.5rem' }}>Décision administrative:</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={getCheckboxStyle(formData.status === 'Approuvé')}>
+              {formData.status === 'Approuvé' && 'X'}
+            </div>
+            <span>Approuvé</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={getCheckboxStyle(formData.status === 'Refusé')}>
+              {formData.status === 'Refusé' && 'X'}
+            </div>
+            <span>Refusé</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={getCheckboxStyle(formData.status === 'En attente')}>
+              {formData.status === 'En attente' && 'X'}
+            </div>
+            <span>En attente</span>
+          </div>
         </div>
-        <div className="text-center">
-          <p className="font-semibold mb-12">Fait à Ariana le {formatDate(new Date().toISOString().split('T')[0])}</p>
-          <div className="border-t border-gray-400 w-40 mx-auto"></div>
+      </div>
+
+      {/* Signature Section */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4rem' }}>
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontWeight: '600', marginBottom: '3rem' }}>Signature du responsable du service</p>
+          <div style={{ borderTop: '1px solid #9ca3af', width: '10rem', margin: '0 auto' }}></div>
+        </div>
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontWeight: '600', marginBottom: '3rem' }}>Fait à Ariana le {currentDate}</p>
+          <div style={{ borderTop: '1px solid #9ca3af', width: '10rem', margin: '0 auto' }}></div>
         </div>
       </div>
     </div>

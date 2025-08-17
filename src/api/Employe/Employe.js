@@ -6,6 +6,7 @@ const API_BASE_URL_UPDATE = 'https://www.samethome.com/admin/api/logiciel/employ
 const API_BASE_URL_DEL    = 'https://www.samethome.com/admin/api/logiciel/employees/delete-employee/';
 
 
+
 export const getAllEmployes = async () => {
     try {
         const response = await axios.get(API_BASE_URL_GET);
@@ -45,3 +46,5 @@ export const deleteEmploye = async (employeId) => {
         throw error;
     }
 };
+
+// getEmployeeByUserId function removed - filtering is now done directly in components
