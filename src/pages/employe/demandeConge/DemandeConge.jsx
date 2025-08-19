@@ -16,6 +16,12 @@ export default function DemandeConge() {
       startDate: '',
       endDate: ''
     },
+    dateRangePartiel: {
+      startDate: null,
+      endDate: null
+    },
+    responsable: '',
+    date_effectuer: '',
     decisionResponsable: ''
   });
   
@@ -53,7 +59,6 @@ export default function DemandeConge() {
           setLoading(false);
         }
       } else {
-        console.warn('No userID found in currentUser:', currentUser);
         setLoading(false);
       }
     };
@@ -73,15 +78,15 @@ export default function DemandeConge() {
   }, [employeeData, currentUser]);
 
   const motifOptions = [
-    'Maladie',
-    'Congé',
-    'Décès',
-    'Congés sans solde',
-    'Congé maternité',
-    'Congé parental',
-    'Mariage',
-    'Pour évènements familiaux',
-    'autre'
+    { value: 'Maladie', label: t('reason_illness') },
+    { value: 'Congé', label: t('reason_leave') },
+    { value: 'Décès', label: t('reason_death') },
+    { value: 'Congés sans solde', label: t('reason_unpaid_leave') },
+    { value: 'Congé maternité', label: t('reason_maternity_leave') },
+    { value: 'Congé parental', label: t('reason_parental_leave') },
+    { value: 'Mariage', label: t('reason_marriage') },
+    { value: 'Pour évènements familiaux', label: t('reason_family_events') },
+    { value: 'autre', label: t('reason_other') }
   ];
 
   // Decision options removed from form but kept for reference
@@ -134,6 +139,12 @@ export default function DemandeConge() {
           startDate: formData.dateRange.startDate,
           endDate: formData.dateRange.endDate
         },
+        dateRangePartiel: {
+          startDate: null,
+          endDate: null
+        },
+        responsable: '', // New field - empty by default
+        date_effectuer: '', // New field - empty by default
         decisionResponsable: '' // Leave it empty as requested
       };
       
@@ -150,6 +161,12 @@ export default function DemandeConge() {
           startDate: '',
           endDate: ''
         },
+        dateRangePartiel: {
+          startDate: null,
+          endDate: null
+        },
+        responsable: '',
+        date_effectuer: '',
         decisionResponsable: ''
       });
     } catch (error) {
@@ -166,7 +183,7 @@ export default function DemandeConge() {
 
   return (
     <div className='mt-4 px-8'>
-      <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Demande de Congé</h1>
+      <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">{t('leave_request_title')}</h1>
       
       {loading ? (
         <div className="flex justify-center items-center py-8">
@@ -180,16 +197,16 @@ export default function DemandeConge() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h3 className="mt-3 text-lg font-medium text-gray-900 dark:text-white">Demande soumise avec succès!</h3>
+            <h3 className="mt-3 text-lg font-medium text-gray-900 dark:text-white">{t('request_submitted_success')}</h3>
             <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              Votre demande de congé a été soumise et est en attente d'approbation.
+              {t('request_submitted_message')}
             </p>
             <div className="mt-6">
               <button
                 onClick={handleNewRequest}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-300"
               >
-                Nouvelle demande
+                {t('new_request')}
               </button>
             </div>
           </div>
@@ -201,7 +218,7 @@ export default function DemandeConge() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Nom et prénom
+                  {t('full_name_label')}
                 </label>
                 <input
                   type="text"
@@ -215,7 +232,7 @@ export default function DemandeConge() {
               
               <div>
                 <label htmlFor="department" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Département
+                  {t('department_label')}
                 </label>
                 <input
                   type="text"
@@ -231,7 +248,7 @@ export default function DemandeConge() {
           {/* Motif */}
           <div className="space-y-4">
             <div>
-              <label htmlFor="motif" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Motif</label>
+              <label htmlFor="motif" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('reason_label')}</label>
               <select
                 id="motif"
                 name="motif"
@@ -240,9 +257,9 @@ export default function DemandeConge() {
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                 required
               >
-                <option value="" disabled>Sélectionnez un motif</option>
+                <option value="" disabled>{t('select_reason')}</option>
                 {motifOptions.map((option, index) => (
-                  <option key={index} value={option}>{option}</option>
+                  <option key={index} value={option.value}>{option.label}</option>
                 ))}
               </select>
             </div>
@@ -250,7 +267,7 @@ export default function DemandeConge() {
             {/* Conditional input field for 'autre' */}
             {formData.motif === 'autre' && (
               <div>
-                <label htmlFor="autreMotif" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Précisez le motif</label>
+                <label htmlFor="autreMotif" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('specify_reason')}</label>
                 <input
                   type="text"
                   id="autreMotif"
@@ -265,13 +282,13 @@ export default function DemandeConge() {
           </div>
           <div className='flex'>
             <TriangleAlert className="mt-1 w-4 h-4 mr-2 text-yellow-500" />
-            <p className='text-gray-500'>Les demandes de congés doivent être soumises au minimum deux jours avant leur date effective sauf pour les congés maladies.</p>
+            <p className='text-gray-500'>{t('leave_notice')}</p>
           </div>
 
           {/* Sollicite un congé (date range) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="dateDebut" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sollicite un congé du</label>
+              <label htmlFor="dateDebut" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('request_leave_from')}</label>
               <input
                 type="date"
                 id="dateDebut"
@@ -283,7 +300,7 @@ export default function DemandeConge() {
               />
             </div>
             <div>
-              <label htmlFor="dateFin" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">au</label>
+              <label htmlFor="dateFin" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('request_leave_to')}</label>
               <input
                 type="date"
                 id="dateFin"

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { Receipt, LayoutGrid, MessageCircleMore, List, CalendarDays, QrCode, GalleryHorizontal, TicketCheck, ScrollText, ChevronDown, Clipboard, BellDot, FileText, ChevronsRight, ChevronsLeft, TrendingUp, Brain, Truck, Users, TrendingDown, UserCheck, Calendar, Wallet, Globe, Tag, Package } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../hooks/useAuth';
@@ -9,11 +9,13 @@ function Sidebar() {
   const { t } = useTranslation();
   const { isSidebarOpen, toggleSidebar } = useApp();
   const { canAccess } = useAuth();
+  const location = useLocation();
   const [isCommandesOpen, setIsCommandesOpen] = useState(false);
   const [isVentesOpen, setIsVentesOpen] = useState(false);
   const [isAchatsOpen, setIsAchatsOpen] = useState(false);
   const [isEmployeeOpen, setIsEmployeeOpen] = useState(false);
   const [isWebsiteOpen, setIsWebsiteOpen] = useState(false);
+  const [isCongeOpen, setIsCongeOpen] = useState(false);
 
   const toggleCommandes = () => {
     setIsCommandesOpen(!isCommandesOpen);
@@ -33,6 +35,10 @@ function Sidebar() {
 
   const toggleWebsite = () => {
     setIsWebsiteOpen(!isWebsiteOpen);
+  };
+
+  const toggleConge = () => {
+    setIsCongeOpen(!isCongeOpen);
   };
 
   return (
@@ -453,15 +459,49 @@ function Sidebar() {
                     </NavLink>
                   </div>
                 )}
+
+              </div>
+            </div>
+          </div>
+
+          {/* Congé Dropdown */}
+          <div>
+            <button
+              onClick={toggleConge}
+              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/dashboard/employee/demande-conge') || location.pathname.startsWith('/dashboard/employee/liste-conge')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
+              title={!isSidebarOpen ? t('conge') : undefined}
+            >
+              <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
+                <Calendar size={24} />
+              </div>
+              <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
+                {t('conge')}
+              </span>
+              <div className={`ml-auto transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
+                <div className={`transform transition-transform duration-300 ease-in-out ${isCongeOpen ? 'rotate-180' : 'rotate-0'}`}>
+                  <ChevronDown size={16} />
+                </div>
+              </div>
+            </button>
+            
+            {/* Dropdown Items with smooth animation */}
+            <div 
+              className={`ml-4 overflow-hidden transition-all duration-300 ease-in-out ${
+                isCongeOpen && isSidebarOpen 
+                  ? 'max-h-48 opacity-100 mt-1' 
+                  : 'max-h-0 opacity-0 mt-0'
+              }`}
+            >
+              <div className="space-y-1 transform transition-transform duration-300 ease-in-out">
                 {/* Demande de Congé */}
                 <div
                   className={`transform transition-all duration-300 ease-in-out ${
-                    isEmployeeOpen && isSidebarOpen
+                    isCongeOpen && isSidebarOpen
                       ? 'translate-y-0 opacity-100'
                       : '-translate-y-2 opacity-0'
                   }`}
                   style={{
-                    transitionDelay: isEmployeeOpen ? '50ms' : '0ms'
+                    transitionDelay: isCongeOpen ? '0ms' : '0ms'
                   }}
                 >
                   <NavLink
@@ -480,12 +520,12 @@ function Sidebar() {
                 {/* Liste de Demande de Congé */}
                 <div
                   className={`transform transition-all duration-300 ease-in-out ${
-                    isEmployeeOpen && isSidebarOpen
+                    isCongeOpen && isSidebarOpen
                       ? 'translate-y-0 opacity-100'
                       : '-translate-y-2 opacity-0'
                   }`}
                   style={{
-                    transitionDelay: isEmployeeOpen ? '50ms' : '0ms'
+                    transitionDelay: isCongeOpen ? '50ms' : '0ms'
                   }}
                 >
                   <NavLink
@@ -699,6 +739,12 @@ function Sidebar() {
                 </div>
               </div>
             </div>
+          </div>
+
+          <div className={`pt-2 pb-2 transition-normal duration-300 ${isSidebarOpen ? 'pl-2 text-sm' : 'pl-0 text-[11px]' }`}>
+            <p className='font-semibold uppercase whitespace-nowrap transition-all duration-300 ease-in-out text-gray-400 dark:text-gray-500'>
+              {t('caisse')}
+            </p>
           </div>
 
           {/* Caisse - Admin Only */}

@@ -12,6 +12,7 @@ function Navbar() {
   const navigate = useNavigate();
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef(null);
+  const logoPath = isDarkMode ? '/logo-samet-home-dark-mode.png' : '/logo-samet-home.png';
   
   // Close the profile menu when clicking outside of it
   useEffect(() => {
@@ -62,9 +63,11 @@ function Navbar() {
       <div className="max-w-full px-4 mx-auto">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">            
-            <h1 className="ml-2 text-xl font-semibold text-gray-800 dark:text-white">
-              {t('appTitle')}
-            </h1>
+            <img 
+              src={logoPath} 
+              alt="Samet Home Logo" 
+              className="h-10 w-auto"
+            />
           </div>
 
           <div className="flex items-center space-x-4">

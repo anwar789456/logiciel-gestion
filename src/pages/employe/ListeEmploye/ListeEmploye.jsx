@@ -499,7 +499,7 @@ export default function ListeEmploye() {
                                                 >
                                                     <option value="">{t('select_user')}</option>
                                                     {users.map(user => (
-                                                        <option key={user._id} value={user._id}>{user.username || user._id}</option>
+                                                        <option key={user.userID} value={user.userID}>{user.userID}</option>
                                                     ))}
                                                 </select>
                                             ) : (
@@ -794,7 +794,7 @@ export default function ListeEmploye() {
                                                 >
                                                     <option value="">{t('select_user')}</option>
                                                     {users.map(user => (
-                                                        <option key={user._id} value={user._id}>{user.username || user._id}</option>
+                                                        <option key={user.userID} value={user.userID}>{user.username || user.userID}</option>
                                                     ))}
                                                 </select>
                                             ) : (

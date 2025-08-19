@@ -73,22 +73,43 @@ export default function ListeConge() {
     setShowDetailsModal(true);
   };
 
-  // Handle approve/reject demande
-  const handleUpdateStatus = async (id, decision) => {
+  // Handle approve/reject demande and update fields
+  const handleUpdateStatus = async (id, decision, responsable, date_effectuer) => {
     try {
       setUpdateLoading(true);
-      await updateDemandeConge(id, { decisionResponsable: decision });
+      const updateData = { 
+        decisionResponsable: decision 
+      };
+      
+      // Add responsable and date_effectuer if provided
+      if (responsable !== undefined) {
+        updateData.responsable = responsable;
+      }
+      
+      if (date_effectuer !== undefined) {
+        updateData.date_effectuer = date_effectuer;
+      }
+      
+      // Add dateRangePartiel if decision is 'Accord partiel' and dates are provided
+      if (decision === 'Accord partiel' && selectedDemande?.dateRangePartiel) {
+        updateData.dateRangePartiel = selectedDemande.dateRangePartiel;
+      } else if (decision !== 'Accord partiel') {
+        // Reset dateRangePartiel if decision is not 'Accord partiel'
+        updateData.dateRangePartiel = { startDate: null, endDate: null };
+      }
+      
+      await updateDemandeConge(id, updateData);
       
       // Update local state
       setDemandes(prevDemandes => 
         prevDemandes.map(demande => 
-          demande._id === id ? { ...demande, decisionResponsable: decision } : demande
+          demande._id === id ? { ...demande, ...updateData } : demande
         )
       );
       
       // If we're updating the currently selected demande, update that too
       if (selectedDemande && selectedDemande._id === id) {
-        setSelectedDemande(prev => ({ ...prev, decisionResponsable: decision }));
+        setSelectedDemande(prev => ({ ...prev, ...updateData }));
       }
       
       setUpdateSuccess(true);
@@ -361,7 +382,7 @@ export default function ListeConge() {
             <div className="px-6 py-4 bg-blue-600 dark:bg-blue-700 flex justify-between items-center sticky top-0 z-10">
               <h3 className="text-lg font-bold text-white flex items-center">
                 <Eye className="mr-2" />
-                Détails de la demande de congé
+                Détails
               </h3>
               <button 
                 onClick={() => setShowDetailsModal(false)}
@@ -376,7 +397,7 @@ export default function ListeConge() {
               <div className="mb-6 flex flex-wrap justify-between items-center gap-2">
                 <div className="flex flex-wrap gap-2">
                   <button
-                    onClick={() => handleUpdateStatus(selectedDemande._id, 'Accord total')}
+                    onClick={() => handleUpdateStatus(selectedDemande._id, 'Accord total', selectedDemande.responsable, selectedDemande.date_effectuer)}
                     disabled={updateLoading}
                     className={`px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-300 flex items-center ${updateLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
@@ -384,7 +405,7 @@ export default function ListeConge() {
                     Accord total
                   </button>
                   <button
-                    onClick={() => handleUpdateStatus(selectedDemande._id, 'Accord partiel')}
+                    onClick={() => handleUpdateStatus(selectedDemande._id, 'Accord partiel', selectedDemande.responsable, selectedDemande.date_effectuer)}
                     disabled={updateLoading}
                     className={`px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-colors duration-300 flex items-center ${updateLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
@@ -392,7 +413,7 @@ export default function ListeConge() {
                     Accord partiel
                   </button>
                   <button
-                    onClick={() => handleUpdateStatus(selectedDemande._id, 'Refus')}
+                    onClick={() => handleUpdateStatus(selectedDemande._id, 'Refus', selectedDemande.responsable, selectedDemande.date_effectuer)}
                     disabled={updateLoading}
                     className={`px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-300 flex items-center ${updateLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
@@ -420,6 +441,82 @@ export default function ListeConge() {
                 </button>
               </div>
               
+              {/* Responsable and Date fields */}
+              <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Responsable</label>
+                  <input
+                    type="text"
+                    value={selectedDemande.responsable || ''}
+                    onChange={(e) => setSelectedDemande({...selectedDemande, responsable: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                    placeholder="Nom du responsable"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date d'effectuation</label>
+                  <input
+                    type="date"
+                    value={selectedDemande.date_effectuer ? new Date(selectedDemande.date_effectuer).toISOString().split('T')[0] : ''}
+                    onChange={(e) => setSelectedDemande({...selectedDemande, date_effectuer: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                  />
+                </div>
+              </div>
+              
+              {/* Partial Date Range - Only shown when Accord partiel is selected */}
+              {selectedDemande.decisionResponsable === 'Accord partiel' && (
+                <div className="mb-6 border border-gray-300 p-4 rounded-md bg-white dark:bg-gray-800">
+                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Période accordée partiellement</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date de début</label>
+                      <input
+                        type="date"
+                        value={selectedDemande.dateRangePartiel?.startDate ? new Date(selectedDemande.dateRangePartiel.startDate).toISOString().split('T')[0] : ''}
+                        onChange={(e) => setSelectedDemande({
+                          ...selectedDemande, 
+                          dateRangePartiel: {
+                            ...selectedDemande.dateRangePartiel || {},
+                            startDate: e.target.value
+                          }
+                        })}
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 dark:bg-gray-700 dark:text-white"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date de fin</label>
+                      <input
+                        type="date"
+                        value={selectedDemande.dateRangePartiel?.endDate ? new Date(selectedDemande.dateRangePartiel.endDate).toISOString().split('T')[0] : ''}
+                        onChange={(e) => setSelectedDemande({
+                          ...selectedDemande, 
+                          dateRangePartiel: {
+                            ...selectedDemande.dateRangePartiel || {},
+                            endDate: e.target.value
+                          }
+                        })}
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 dark:bg-gray-700 dark:text-white"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Save button for responsable and date */}
+              <div className="mb-6">
+                <button
+                  onClick={() => handleUpdateStatus(selectedDemande._id, selectedDemande.decisionResponsable || 'En attente', selectedDemande.responsable, selectedDemande.date_effectuer)}
+                  disabled={updateLoading}
+                  className={`px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-300 flex items-center ${updateLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                >
+                  <Check className="mr-1" size={16} />
+                  Enregistrer les modifications
+                </button>
+              </div>
+              
               {/* Document preview */}
               <div className="border border-gray-300 rounded-lg overflow-hidden w-full">
                 <CongeDocument 
@@ -428,12 +525,16 @@ export default function ListeConge() {
                     motif: selectedDemande.motif,
                     autreMotif: selectedDemande.motif,
                     dateRange: selectedDemande.dateRange,
-                    decisionResponsable: selectedDemande.decisionResponsable
+                    dateRangePartiel: selectedDemande.dateRangePartiel,
+                    decisionResponsable: selectedDemande.decisionResponsable,
+                    responsable: selectedDemande.responsable,
+                    date_effectuer: selectedDemande.date_effectuer
                   }} 
                   employeeInfo={{
                     name: selectedDemande.username,
                     department: selectedDemande.job,
-                    manager: 'Faiez Samet'
+                    manager: selectedDemande.responsable
+
                   }} 
                 />
               </div>
