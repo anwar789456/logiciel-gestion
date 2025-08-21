@@ -99,7 +99,32 @@ export const AuthProvider = ({ children }) => {
   
   // Check if user has admin role
   const isAdmin = () => {
-    return currentUser.role === 'admin';
+    return currentUser && currentUser.role === 'admin';
+  };
+  
+  // Check if user has read-write access to a specific route
+  const hasReadWriteAccess = (route) => {
+    // Admin has read-write access to everything
+    if (isAdmin()) return true;
+    
+    // If user has access_routes defined, check those permissions
+    if (currentUser && currentUser.access_routes && currentUser.access_routes.length > 0) {
+      // Find the route in user's access_routes
+      // With flat routes, we can do a direct comparison
+      const routeAccess = currentUser.access_routes.find(r => {
+        // Remove leading slash if present for consistent comparison
+        const normalizedRoute = route.startsWith('/') ? route.substring(1) : route;
+        const normalizedAccessRoute = r.access_route.startsWith('/') ? r.access_route.substring(1) : r.access_route;
+        
+        return normalizedAccessRoute === normalizedRoute;
+      });
+      
+      // Check if user has read-write access
+      return routeAccess && routeAccess.access_right === 'read and write';
+    }
+    
+    // Default to false if access_routes is not defined or route not found
+    return false;
   };
   
   // Check if user can access a specific page/feature
@@ -107,11 +132,30 @@ export const AuthProvider = ({ children }) => {
     // Admin can access everything
     if (isAdmin()) return true;
     
-    // Pages that employees cannot access
-    const restrictedPages = ['caisse', 'users/list', 'register', 'assistant-ia'];
+    // If user has access_routes defined, check those permissions
+    if (currentUser && currentUser.access_routes && currentUser.access_routes.length > 0) {
+      // Find if user has access to this route
+      // With flat routes, we can do a direct comparison
+      const routeAccess = currentUser.access_routes.find(route => {
+        // Remove leading slash if present for consistent comparison
+        const normalizedPage = page.startsWith('/') ? page.substring(1) : page;
+        const normalizedAccessRoute = route.access_route.startsWith('/') ? route.access_route.substring(1) : route.access_route;
+        
+        return normalizedAccessRoute === normalizedPage;
+      });
+      
+      // If route is found in user's access_routes, they have some level of access
+      return !!routeAccess;
+    }
+    
+    // Fallback to old behavior if access_routes is not defined
+    // Pages that employees cannot access by default - updated for flat routes
+    const restrictedPages = [];
     
     // Check if the current page is restricted
-    return !restrictedPages.some(restrictedPage => page.includes(restrictedPage));
+    // Remove leading slash if present for consistent comparison
+    const normalizedPage = page.startsWith('/') ? page.substring(1) : page;
+    return !restrictedPages.some(restrictedPage => normalizedPage === restrictedPage);
   };
   
   // Update user profile
@@ -158,6 +202,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         isAdmin,
         canAccess,
+        hasReadWriteAccess,
         updateProfile
       }}
     >

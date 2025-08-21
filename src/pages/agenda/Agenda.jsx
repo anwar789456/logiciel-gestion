@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Calendar, Plus, Trash2, Edit, X, Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getAllAgendaEvents, addAgendaEvent, updateAgendaEvent, deleteAgendaEvent } from '../../api/Agenda/Agenda'
+import { useAccessControl } from '../../hooks/useAccessControl'
 
 // Helper function to format dates in Tunisia/Ariana timezone (UTC+1)
 const formatDateToArianaTimezone = (date) => {
@@ -19,6 +20,7 @@ const formatDateToArianaTimezone = (date) => {
 
 export default function Agenda() {
   const { t } = useTranslation()
+  const { canWrite } = useAccessControl()
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -197,10 +199,12 @@ export default function Agenda() {
             {dayEvents.map((event, index) => (
               <div 
                 key={index} 
-                className="text-xs p-1 mb-1 rounded bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-white cursor-pointer truncate"
+                className={`text-xs p-1 mb-1 rounded bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-white ${canWrite() ? 'cursor-pointer' : ''} truncate`}
                 onClick={() => {
-                  setSelectedEvent(event)
-                  setShowEditModal(true)
+                  if (canWrite()) {
+                    setSelectedEvent(event)
+                    setShowEditModal(true)
+                  }
                 }}
               >
                 {event.event}
@@ -218,13 +222,15 @@ export default function Agenda() {
     <div className='pt-4 px-8 pb-8'>
       <div className="flex justify-between items-center mb-6">
         <h1 className='text-2xl font-semibold text-gray-800 dark:text-white'>Agenda</h1>
-        <button 
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Plus size={16} />
-          {t('add_event')}
-        </button>
+        {canWrite() && (
+          <button 
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Plus size={16} />
+            {t('add_event')}
+          </button>
+        )}
       </div>
 
       {error && (
@@ -303,8 +309,8 @@ export default function Agenda() {
         </div>
       </div>
 
-      {/* Add Event Modal */}
-      {showAddModal && (
+      {/* Add Event Modal - Only shown if user has write access */}
+      {showAddModal && canWrite() && (
         <div 
           className="fixed inset-0 backdrop-blur-sm bg-transparent backdrop:blur-2xl bg-opacity-30 flex items-center justify-center z-50"
           onClick={() => setShowAddModal(false)}
@@ -392,8 +398,8 @@ export default function Agenda() {
         </div>
       )}
 
-      {/* Edit Event Modal */}
-      {showEditModal && selectedEvent && (
+      {/* Edit Event Modal - Only shown if user has write access */}
+      {showEditModal && selectedEvent && canWrite() && (
         <div 
           className="fixed inset-0 backdrop-blur-sm bg-transparent backdrop:blur-2xl bg-opacity-30 flex items-center justify-center z-50"
           onClick={(e) => {
@@ -464,22 +470,24 @@ export default function Agenda() {
               </div>
 
               <div className="flex justify-between gap-2 pt-4">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    console.log('Delete button clicked, event ID:', selectedEvent._id)
-                    if (selectedEvent && selectedEvent._id) {
-                      handleDeleteEvent(selectedEvent._id)
-                    } else {
-                      console.error('No event ID found for deletion')
-                      setError(t('failed_to_delete_event'))
-                    }
-                  }}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                >
-                  <Trash2 size={16} className="inline mr-1" />
-                  {t('delete')}
-                </button>
+                {canWrite() && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      console.log('Delete button clicked, event ID:', selectedEvent._id)
+                      if (selectedEvent && selectedEvent._id) {
+                        handleDeleteEvent(selectedEvent._id)
+                      } else {
+                        console.error('No event ID found for deletion')
+                        setError(t('failed_to_delete_event'))
+                      }
+                    }}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    <Trash2 size={16} className="inline mr-1" />
+                    {t('delete')}
+                  </button>
+                )}
                 
                 <div className="flex gap-2">
                   <button
@@ -492,16 +500,18 @@ export default function Agenda() {
                   >
                     {t('cancel')}
                   </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleUpdateEvent()
-                    }}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    disabled={!selectedEvent.event || !selectedEvent.date_event_start || !selectedEvent.date_event_end}
-                  >
-                    {t('save')}
-                  </button>
+                  {canWrite() && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleUpdateEvent()
+                      }}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      disabled={!selectedEvent.event || !selectedEvent.date_event_start || !selectedEvent.date_event_end}
+                    >
+                      {t('save')}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

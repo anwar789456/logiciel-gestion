@@ -21,7 +21,7 @@ const ProtectedRoute = ({ children }) => {
   }
   
   // Check if user has access to this route
-  const path = location.pathname.substring(1); // Remove leading slash
+  const path = location.pathname.substring(1);
   if (!canAccess(path)) {
     return <Navigate to="/" replace />;
   }

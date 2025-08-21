@@ -8,11 +8,11 @@ function Commandes() {
   const navigate = useNavigate();
 
   const handleNavigateToEnCours = () => {
-    navigate('/dashboard/commandes/en-cours');
+    navigate('/commandes-en-cours');
   };
 
   const handleNavigateToHistorique = () => {
-    navigate('/dashboard/commandes/fiche');
+    navigate('/commandes-fiche');
   };
 
   return (
