@@ -20,11 +20,11 @@ const UserList = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   
   // Available routes in the application - updated to flat structure
+  // Only include actual routes that should have permissions, not dropdown containers
   const availableRoutes = [
     { path: 'dashboard', label: 'Dashboard' },
     { path: 'agenda', label: 'Agenda' },
     { path: 'factures', label: 'Factures' },
-    { path: 'commandes', label: 'Commandes' },
     { path: 'commandes-en-cours', label: 'Commandes en cours' },
     { path: 'commandes-fiche', label: 'Historique commandes' },
     { path: 'users', label: 'Liste des utilisateurs' },
