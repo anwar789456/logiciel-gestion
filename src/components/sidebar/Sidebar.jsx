@@ -30,7 +30,7 @@ function Sidebar() {
   };
   
   const hasAccessToCommandesRoutes = () => {
-    const routes = ['commandes-en-cours', 'commandes-fiche'];
+    const routes = ['commandes-fiche'];
     return routes.some(route => canAccess(route));
   };
   
