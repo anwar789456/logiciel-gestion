@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Search, ChevronLeft, ChevronRight, ChevronDown, Download, Edit, Trash2, RefreshCw, AlertCircle, Eye } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import ProductDetailsModal from './ProductDetailsModal';
+import ProductActions from './ProductActions';
 
 const TableDisplayProduct = React.forwardRef(({ 
   title, 
@@ -330,30 +331,12 @@ const TableDisplayProduct = React.forwardRef(({
                             >
                               <Eye size={16} />
                             </button>
-                            {onEdit && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onEdit(row);
-                                }}
-                                className="p-2 bg-blue-100 hover:bg-blue-200 text-blue-700 hover:text-blue-900 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-110"
-                                title="Modifier"
-                              >
-                                <Edit size={16} />
-                              </button>
-                            )}
-                            {onDelete && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onDelete(row._id);
-                                }}
-                                className="p-2 bg-red-100 hover:bg-red-200 text-red-700 hover:text-red-900 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-110"
-                                title="Supprimer"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            )}
+                            {/* Use ProductActions component to handle access control */}
+                            <ProductActions 
+                              product={row}
+                              onEdit={onEdit}
+                              onDelete={onDelete}
+                            />
                           </div>
                         </td>
                       );

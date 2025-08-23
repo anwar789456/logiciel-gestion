@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CopyPlus, Plus, LayoutTemplate, Tags, X, AlertCircle, Settings } from 'lucide-react';
+import { useAccessControl } from '../../hooks/useAccessControl';
 import { FetchAllProductItems, DeleteProductById, FetchAllProductTypeItems } from '../../api/product';
 import TableDisplayProduct from '../../components/product/TableDisplayProduct';
 import AddFormProduct from '../../components/productForm/AddFormProduct';
@@ -13,6 +14,7 @@ import { Collapse } from 'react-bootstrap';
 
 export default function Products() {
   const { t } = useTranslation();
+  const { canWrite, showIfCanWrite } = useAccessControl();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -293,17 +295,19 @@ export default function Products() {
             {t('product_management')}
           </button>
 
-          <button 
-            onClick={() => setShowAddForm(true)}
-            className='flex items-center bg-blue-600 
-            hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-xl 
-            active:scale-85
-            cursor-pointer shadow-lg hover:shadow-lg active:shadow-inner 
-            transition-all duration-400 ease-in-out'
-          >
-            <CopyPlus className='mr-2 mt-0.5' size={20} />
-            {t('ajouter_produit')}
-          </button>
+          {showIfCanWrite(
+            <button 
+              onClick={() => setShowAddForm(true)}
+              className='flex items-center bg-blue-600 
+              hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-xl 
+              active:scale-85
+              cursor-pointer shadow-lg hover:shadow-lg active:shadow-inner 
+              transition-all duration-400 ease-in-out'
+            >
+              <CopyPlus className='mr-2 mt-0.5' size={20} />
+              {t('ajouter_produit')}
+            </button>
+          )}
         </div>
       </div>
       
