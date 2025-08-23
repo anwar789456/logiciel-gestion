@@ -149,17 +149,14 @@ function Sidebar() {
                 <div
                   className={`transform transition-all duration-300 ease-in-out ${
                     isVentesOpen && isSidebarOpen
-                      ? 'translate-y-0 opacity-100'
-                      : '-translate-y-2 opacity-0'
+                      ? 'opacity-100 translate-y-0 max-h-20'
+                      : 'opacity-0 -translate-y-2 max-h-0 overflow-hidden'
                   }`}
-                  style={{
-                    transitionDelay: isVentesOpen ? '0ms' : '0ms'
-                  }}
                 >
                   <NavLink
                     to="/dashboard/devis"
                     className={({ isActive }) =>
-                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-300 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                     }
                   >
                     <div className="mr-2 flex items-center justify-center flex-shrink-0">

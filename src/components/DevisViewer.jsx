@@ -72,57 +72,30 @@ const DevisViewer = ({ devis, onEdit, onBack }) => {
         </div>
       </div>
 
-      {/* Company Header (Entreprise) */}
-      {devis.typeClient === 'entreprise' && (
-        <div className="mb-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
-          <div className="flex justify-between items-start">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{devis.societe || 'Nom Société'}</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">SAMET HOME - MEUBLES ET DECORATION</p>
-              <p className="text-xs text-gray-500 dark:text-gray-500">RC: {devis.rc || '...'} | TVA: {devis.tva || '...'}</p>
+      {/* Company Header */}
+      <div className="mb-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <div className="flex justify-between items-start">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">SAMET HOME</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">MEUBLES ET DECORATION</p>
+            <p className="text-xs text-gray-500 dark:text-gray-500">SATRACO s.a.r.l - IU:1280963K</p>
+          </div>
+          <div className="text-right">
+            <div className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 mb-1">
+              <User className="h-4 w-4" />
+              <span className="font-medium">CLIENT: {devis.clientName}</span>
             </div>
-            <div className="text-right">
-              <div className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 mb-1">
-                <User className="h-4 w-4" />
-                <span className="font-medium">CLIENT: {devis.clientName}</span>
-              </div>
-              <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 mb-1">
-                <MapPin className="h-4 w-4" />
-                <span>ADRESSE: {devis.clientAddress}</span>
-              </div>
-              <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
-                <Phone className="h-4 w-4" />
-                <span>Téléphone: {devis.clientPhone}</span>
-              </div>
+            <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 mb-1">
+              <MapPin className="h-4 w-4" />
+              <span>ADRESSE: {devis.clientAddress}</span>
+            </div>
+            <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
+              <Phone className="h-4 w-4" />
+              <span>Téléphone: {devis.clientPhone}</span>
             </div>
           </div>
         </div>
-      )}
-      {/* Header particulier (par défaut) */}
-      {devis.typeClient !== 'entreprise' && (
-        <div className="mb-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
-          <div className="flex justify-between items-start">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">SAMET HOME</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">MEUBLES ET DECORATION</p>
-            </div>
-            <div className="text-right">
-              <div className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 mb-1">
-                <User className="h-4 w-4" />
-                <span className="font-medium">CLIENT: {devis.clientName}</span>
-              </div>
-              <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 mb-1">
-                <MapPin className="h-4 w-4" />
-                <span>ADRESSE: {devis.clientAddress}</span>
-              </div>
-              <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
-                <Phone className="h-4 w-4" />
-                <span>Téléphone: {devis.clientPhone}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
 
       {/* Devis Details */}
       <div className="mb-8 text-center">
@@ -147,7 +120,7 @@ const DevisViewer = ({ devis, onEdit, onBack }) => {
                 Description
               </th>
               <th className="border border-gray-300 dark:border-gray-600 px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
-                Ref Couleur
+                Ref Color
               </th>
               <th className="border border-gray-300 dark:border-gray-600 px-4 py-3 text-right text-sm font-medium text-gray-700 dark:text-gray-300">
                 Prix Unitaire
@@ -170,7 +143,7 @@ const DevisViewer = ({ devis, onEdit, onBack }) => {
                   {item.description}
                 </td>
                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-3">
-                  {item.reference} {item.color}
+                  {item.refColor || '-'}
                 </td>
                 <td className="border border-gray-300 dark:border-gray-600 px-4 py-3 text-right">
                   {item.unitPrice.toFixed(2)} DT

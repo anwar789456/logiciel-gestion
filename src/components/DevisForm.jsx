@@ -4,24 +4,25 @@ import { createDevis, updateDevis } from '../api/devis/devis';
 
 const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
-    typeClient: 'particulier',
-    societe: '',
-    rc: '',
-    tva: '',
+    clientType: 'particulier',
     clientName: '',
     clientAddress: '',
     clientPhone: '',
     email: '',
+    // Champs entreprise
+    companyName: '',
+    rc: '',
+    taxId: '',
     items: [
       {
         quantity: 1,
         description: '',
-        reference: '',
-        color: '',
+        refColor: '',
         unitPrice: 0,
         discount: 0
       }
     ],
+    tvaRate: 19,
     deliveryDelay: '45 jours à partir de la date de confirmation',
     paymentTerms: 'Tous les paiements sont effectués avant la livraison au showroom',
     deliveryCondition: 'LA LIVRAISON EST GRATUITE UNIQUEMENT SUR LE GRAND TUNIS (TUNIS, ARIANA, MANOUBA, BEN AROUS)',
@@ -32,21 +33,25 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
   const [totals, setTotals] = useState({
     subtotal: 0,
     totalDiscount: 0,
+    totalHT: 0,
+    tvaAmount: 0,
+    totalTTC: 0,
     totalAmount: 0
   });
 
   useEffect(() => {
     if (existingDevis) {
       setFormData({
-        typeClient: existingDevis.typeClient || 'particulier',
-        societe: existingDevis.societe || '',
-        rc: existingDevis.rc || '',
-        tva: existingDevis.tva || '',
+        clientType: existingDevis.clientType || 'particulier',
         clientName: existingDevis.clientName || '',
         clientAddress: existingDevis.clientAddress || '',
         clientPhone: existingDevis.clientPhone || '',
         email: existingDevis.email || '',
-        items: existingDevis.items || [{ quantity: 1, description: '', reference: '', color: '', unitPrice: 0, discount: 0 }],
+        companyName: existingDevis.companyName || '',
+        rc: existingDevis.rc || '',
+        taxId: existingDevis.taxId || '',
+        items: existingDevis.items || [{ quantity: 1, description: '', refColor: '', unitPrice: 0, discount: 0 }],
+        tvaRate: existingDevis.tvaRate || 19,
         deliveryDelay: existingDevis.deliveryDelay || '45 jours à partir de la date de confirmation',
         paymentTerms: existingDevis.paymentTerms || 'Tous les paiements sont effectués avant la livraison au showroom',
         deliveryCondition: existingDevis.deliveryCondition || 'LA LIVRAISON EST GRATUITE UNIQUEMENT SUR LE GRAND TUNIS (TUNIS, ARIANA, MANOUBA, BEN AROUS)',
@@ -57,7 +62,7 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
 
   useEffect(() => {
     calculateTotals();
-  }, [formData.items]);
+  }, [formData.items, formData.clientType, formData.tvaRate]);
 
   const calculateTotals = () => {
     let subtotal = 0;
@@ -70,11 +75,22 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
       totalDiscount += itemDiscount;
     });
 
-    const totalAmount = subtotal - totalDiscount;
+    const totalHT = subtotal - totalDiscount;
+
+    // Calculate TVA for enterprises
+    const tvaRate = formData.clientType === 'entreprise' ? formData.tvaRate : 0;
+    const tvaAmount = formData.clientType === 'entreprise' ? (totalHT * tvaRate / 100) : 0;
+    const totalTTC = totalHT + tvaAmount;
+
+    // For particulier: totalAmount = totalHT, for entreprise: totalAmount = totalTTC
+    const totalAmount = formData.clientType === 'entreprise' ? totalTTC : totalHT;
 
     setTotals({
       subtotal,
       totalDiscount,
+      totalHT,
+      tvaAmount,
+      totalTTC,
       totalAmount
     });
   };
@@ -105,8 +121,7 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
       items: [...prev.items, {
         quantity: 1,
         description: '',
-        reference: '',
-        color: '',
+        refColor: '',
         unitPrice: 0,
         discount: 0
       }]
@@ -157,45 +172,45 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
           </span>
         </div>
       </div>
+
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Type de client */}
-        <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg mb-2">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type de client *</label>
-          <div className="flex gap-6">
-            <label className="flex items-center gap-2">
-              <input type="radio" name="typeClient" value="particulier" checked={formData.typeClient === 'particulier'} onChange={handleInputChange} />
-              Particulier
-            </label>
-            <label className="flex items-center gap-2">
-              <input type="radio" name="typeClient" value="entreprise" checked={formData.typeClient === 'entreprise'} onChange={handleInputChange} />
-              Entreprise
-            </label>
-          </div>
-        </div>
-        {/* Infos société si entreprise */}
-        {formData.typeClient === 'entreprise' && (
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 p-6 rounded-lg mb-2">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nom de la société *</label>
-                <input type="text" name="societe" value={formData.societe} onChange={handleInputChange} required={formData.typeClient === 'entreprise'} autoComplete="off" className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">RC *</label>
-                <input type="text" name="rc" value={formData.rc} onChange={handleInputChange} required={formData.typeClient === 'entreprise'} autoComplete="off" className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">TVA *</label>
-                <input type="text" name="tva" value={formData.tva} onChange={handleInputChange} required={formData.typeClient === 'entreprise'} autoComplete="off" className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
-              </div>
-            </div>
-          </div>
-        )}
         {/* Client Information */}
         <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Informations Client
           </h3>
+
+          {/* Type de Client */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Type de Client *
+            </label>
+            <div className="flex space-x-4">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="clientType"
+                  value="particulier"
+                  checked={formData.clientType === 'particulier'}
+                  onChange={handleInputChange}
+                  className="mr-2"
+                />
+                <span className="text-gray-700 dark:text-gray-300">Particulier</span>
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="clientType"
+                  value="entreprise"
+                  checked={formData.clientType === 'entreprise'}
+                  onChange={handleInputChange}
+                  className="mr-2"
+                />
+                <span className="text-gray-700 dark:text-gray-300">Entreprise</span>
+              </label>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -206,7 +221,6 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
                 name="clientName"
                 value={formData.clientName}
                 onChange={handleInputChange}
-                autoComplete="off"
                 required
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
               />
@@ -233,7 +247,6 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
                 name="clientAddress"
                 value={formData.clientAddress}
                 onChange={handleInputChange}
-                autoComplete="off"
                 required
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
               />
@@ -251,6 +264,70 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
               />
             </div>
           </div>
+
+          {/* Champs spécifiques à l'entreprise */}
+          {formData.clientType === 'entreprise' && (
+            <div className="mt-6 pt-6 border-t border-gray-300 dark:border-gray-600">
+              <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-4">
+                Informations Entreprise
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Nom de l'Entreprise *
+                  </label>
+                  <input
+                    type="text"
+                    name="companyName"
+                    value={formData.companyName}
+                    onChange={handleInputChange}
+                    required={formData.clientType === 'entreprise'}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Registre de Commerce (RC) *
+                  </label>
+                  <input
+                    type="text"
+                    name="rc"
+                    value={formData.rc}
+                    onChange={handleInputChange}
+                    required={formData.clientType === 'entreprise'}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Identifiant Fiscal
+                  </label>
+                  <input
+                    type="text"
+                    name="taxId"
+                    value={formData.taxId}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Taux TVA (%)
+                  </label>
+                  <input
+                    type="number"
+                    name="tvaRate"
+                    value={formData.tvaRate}
+                    onChange={handleInputChange}
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Items */}
@@ -280,10 +357,7 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
                     Description
                   </th>
                   <th className="border border-gray-300 dark:border-gray-500 px-3 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Référence
-                  </th>
-                  <th className="border border-gray-300 dark:border-gray-500 px-3 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Couleur
+                    Ref Color
                   </th>
                   <th className="border border-gray-300 dark:border-gray-500 px-3 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
                     Prix Unit.
@@ -318,7 +392,6 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
                           type="text"
                           value={item.description}
                           onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                          autoComplete="off"
                           className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-gray-800 dark:text-white"
                           placeholder="Description de l'article"
                         />
@@ -326,21 +399,10 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
                       <td className="border border-gray-300 dark:border-gray-500 px-3 py-2">
                         <input
                           type="text"
-                          value={item.reference}
-                          onChange={(e) => handleItemChange(index, 'reference', e.target.value)}
-                          autoComplete="off"
+                          value={item.refColor}
+                          onChange={(e) => handleItemChange(index, 'refColor', e.target.value)}
                           className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-gray-800 dark:text-white"
-                          placeholder="Référence"
-                        />
-                      </td>
-                      <td className="border border-gray-300 dark:border-gray-500 px-3 py-2">
-                        <input
-                          type="text"
-                          value={item.color}
-                          onChange={(e) => handleItemChange(index, 'color', e.target.value)}
-                          autoComplete="off"
-                          className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-gray-800 dark:text-white"
-                          placeholder="Couleur"
+                          placeholder="Ref Color"
                         />
                       </td>
                       <td className="border border-gray-300 dark:border-gray-500 px-3 py-2">
@@ -395,9 +457,27 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
                 <div className="font-semibold text-red-600">-{totals.totalDiscount.toFixed(2)} DT</div>
               </div>
               <div className="text-right">
-                <div className="text-sm text-gray-600 dark:text-gray-400">Total final:</div>
-                <div className="text-xl font-bold text-green-600">{totals.totalAmount.toFixed(2)} DT</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Total HT:</div>
+                <div className="font-semibold">{totals.totalHT.toFixed(2)} DT</div>
               </div>
+              {formData.clientType === 'entreprise' && (
+                <>
+                  <div className="text-right">
+                    <div className="text-sm text-gray-600 dark:text-gray-400">TVA ({formData.tvaRate}%):</div>
+                    <div className="font-semibold text-blue-600">{totals.tvaAmount.toFixed(2)} DT</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Total TTC:</div>
+                    <div className="text-xl font-bold text-green-600">{totals.totalTTC.toFixed(2)} DT</div>
+                  </div>
+                </>
+              )}
+              {formData.clientType === 'particulier' && (
+                <div className="text-right">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Total final:</div>
+                  <div className="text-xl font-bold text-green-600">{totals.totalAmount.toFixed(2)} DT</div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -417,7 +497,6 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
                 name="deliveryDelay"
                 value={formData.deliveryDelay}
                 onChange={handleInputChange}
-                autoComplete="off"
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
               />
             </div>

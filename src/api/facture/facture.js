@@ -2,65 +2,65 @@ import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:5007';
 
-// Get all devis
-export const getAllDevis = async () => {
+// Get all factures
+export const getAllFactures = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/admin/api/logiciel/get-devis`);
+    const response = await axios.get(`${API_BASE_URL}/admin/api/logiciel/get-factures`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching devis:', error);
+    console.error('Error fetching factures:', error);
     throw error;
   }
 };
 
-// Get devis by ID
-export const getDevisById = async (id) => {
+// Get facture by ID
+export const getFactureById = async (id) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/admin/api/logiciel/get-devis/${id}`);
+    const response = await axios.get(`${API_BASE_URL}/admin/api/logiciel/get-factures/${id}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching devis:', error);
+    console.error('Error fetching facture:', error);
     throw error;
   }
 };
 
-// Create new devis
-export const createDevis = async (devisData) => {
+// Create new facture
+export const createFacture = async (factureData) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/admin/api/logiciel/create-devis`, devisData);
+    const response = await axios.post(`${API_BASE_URL}/admin/api/logiciel/create-facture`, factureData);
     return response.data;
   } catch (error) {
-    console.error('Error creating devis:', error);
+    console.error('Error creating facture:', error);
     throw error;
   }
 };
 
-// Update devis
-export const updateDevis = async (id, devisData) => {
+// Update facture
+export const updateFacture = async (id, factureData) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/admin/api/logiciel/update-devis/${id}`, devisData);
+    const response = await axios.put(`${API_BASE_URL}/admin/api/logiciel/update-facture/${id}`, factureData);
     return response.data;
   } catch (error) {
-    console.error('Error updating devis:', error);
+    console.error('Error updating facture:', error);
     throw error;
   }
 };
 
-// Delete devis
-export const deleteDevis = async (id) => {
+// Delete facture
+export const deleteFacture = async (id) => {
   try {
-    const response = await axios.delete(`${API_BASE_URL}/admin/api/logiciel/delete-devis/${id}`);
+    const response = await axios.delete(`${API_BASE_URL}/admin/api/logiciel/delete-facture/${id}`);
     return response.data;
   } catch (error) {
-    console.error('Error deleting devis:', error);
+    console.error('Error deleting facture:', error);
     throw error;
   }
 };
 
 // Generate and download PDF
-export const downloadDevisPDF = async (id) => {
+export const downloadFacturePDF = async (id) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/admin/api/logiciel/devis-pdf/${id}`, {
+    const response = await axios.get(`${API_BASE_URL}/admin/api/logiciel/facture-pdf/${id}`, {
       responseType: 'blob'
     });
     
@@ -71,7 +71,7 @@ export const downloadDevisPDF = async (id) => {
     
     // Get filename from response headers or use default
     const contentDisposition = response.headers['content-disposition'];
-    let filename = 'devis.pdf';
+    let filename = 'facture.pdf';
     if (contentDisposition) {
       const filenameMatch = contentDisposition.match(/filename="(.+)"/);
       if (filenameMatch) {

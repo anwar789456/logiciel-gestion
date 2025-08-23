@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Download, Edit, Trash2, Eye, Plus, Search, Filter } from 'lucide-react';
-import { getAllDevis, deleteDevis, downloadDevisPDF } from '../api/devis/devis';
+import { getAllFactures, deleteFacture, downloadFacturePDF } from '../api/facture/facture';
 
-const DevisList = ({ onCreateNew, onEdit, onView }) => {
-  const [devisList, setDevisList] = useState([]);
+const FacturesList = ({ onCreateNew, onEdit, onView }) => {
+  const [facturesList, setFacturesList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -11,36 +11,36 @@ const DevisList = ({ onCreateNew, onEdit, onView }) => {
   const [sortOrder, setSortOrder] = useState('desc');
 
   useEffect(() => {
-    fetchDevis();
+    fetchFactures();
   }, []);
 
-  const fetchDevis = async () => {
+  const fetchFactures = async () => {
     try {
       setLoading(true);
-      const data = await getAllDevis();
-      setDevisList(data);
+      const data = await getAllFactures();
+      setFacturesList(data);
     } catch (error) {
-      console.error('Error fetching devis:', error);
+      console.error('Error fetching factures:', error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce devis ?')) {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette facture ?')) {
       try {
-        await deleteDevis(id);
-        await fetchDevis(); // Refresh list
+        await deleteFacture(id);
+        await fetchFactures(); // Refresh list
       } catch (error) {
-        console.error('Error deleting devis:', error);
-        alert('Erreur lors de la suppression du devis');
+        console.error('Error deleting facture:', error);
+        alert('Erreur lors de la suppression de la facture');
       }
     }
   };
 
   const handleDownloadPDF = async (id) => {
     try {
-      await downloadDevisPDF(id);
+      await downloadFacturePDF(id);
     } catch (error) {
       console.error('Error downloading PDF:', error);
       alert('Erreur lors du téléchargement du PDF');
@@ -49,14 +49,13 @@ const DevisList = ({ onCreateNew, onEdit, onView }) => {
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      draft: { color: 'bg-gray-100 text-gray-800', label: 'Brouillon' },
-      sent: { color: 'bg-blue-100 text-blue-800', label: 'Envoyé' },
-      accepted: { color: 'bg-green-100 text-green-800', label: 'Accepté' },
-      rejected: { color: 'bg-red-100 text-red-800', label: 'Rejeté' },
-      expired: { color: 'bg-orange-100 text-orange-800', label: 'Expiré' }
+      paid: { color: 'bg-green-100 text-green-800', label: 'Payée' },
+      unpaid: { color: 'bg-red-100 text-red-800', label: 'Non payée' },
+      partial: { color: 'bg-yellow-100 text-yellow-800', label: 'Partiellement payée' },
+      cancelled: { color: 'bg-gray-100 text-gray-800', label: 'Annulée' }
     };
 
-    const config = statusConfig[status] || statusConfig.draft;
+    const config = statusConfig[status] || statusConfig.unpaid;
     return (
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
         {config.label}
@@ -64,12 +63,12 @@ const DevisList = ({ onCreateNew, onEdit, onView }) => {
     );
   };
 
-  const filteredAndSortedDevis = devisList
-    .filter(devis => {
-      const matchesSearch = (devis.clientName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           (devis.devisNumber || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           (devis.clientPhone || '').includes(searchTerm);
-      const matchesStatus = statusFilter === 'all' || devis.status === statusFilter;
+  const filteredAndSortedFactures = facturesList
+    .filter(facture => {
+      const matchesSearch = (facture.clientName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (facture.factureNumber || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (facture.clientPhone || '').includes(searchTerm);
+      const matchesStatus = statusFilter === 'all' || facture.status === statusFilter;
       return matchesSearch && matchesStatus;
     })
     .sort((a, b) => {
@@ -88,8 +87,8 @@ const DevisList = ({ onCreateNew, onEdit, onView }) => {
           bValue = b.totalAmount || 0;
           break;
         case 'number':
-          aValue = a.devisNumber || '';
-          bValue = b.devisNumber || '';
+          aValue = a.factureNumber || '';
+          bValue = b.factureNumber || '';
           break;
         default:
           return 0;
@@ -117,7 +116,7 @@ const DevisList = ({ onCreateNew, onEdit, onView }) => {
         <div className="flex items-center space-x-3">
           <FileText className="h-8 w-8 text-blue-600" />
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Gestion des Devis
+            Gestion des Factures
           </h2>
         </div>
         <button
@@ -125,7 +124,7 @@ const DevisList = ({ onCreateNew, onEdit, onView }) => {
           className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="h-5 w-5" />
-          <span>Nouveau Devis</span>
+          <span>Nouvelle Facture</span>
         </button>
       </div>
 
@@ -138,7 +137,7 @@ const DevisList = ({ onCreateNew, onEdit, onView }) => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Rechercher par nom, numéro de devis ou téléphone..."
+                placeholder="Rechercher par nom, numéro de facture ou téléphone..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
@@ -155,11 +154,10 @@ const DevisList = ({ onCreateNew, onEdit, onView }) => {
               className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
             >
               <option value="all">Tous les statuts</option>
-              <option value="draft">Brouillon</option>
-              <option value="sent">Envoyé</option>
-              <option value="accepted">Accepté</option>
-              <option value="rejected">Rejeté</option>
-              <option value="expired">Expiré</option>
+              <option value="paid">Payée</option>
+              <option value="unpaid">Non payée</option>
+              <option value="partial">Partiellement payée</option>
+              <option value="cancelled">Annulée</option>
             </select>
           </div>
 
@@ -185,16 +183,16 @@ const DevisList = ({ onCreateNew, onEdit, onView }) => {
         </div>
       </div>
 
-      {/* Devis List */}
+      {/* Factures List */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-        {filteredAndSortedDevis.length === 0 ? (
+        {filteredAndSortedFactures.length === 0 ? (
           <div className="text-center py-12">
             <FileText className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">Aucun devis</h3>
+            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">Aucune facture</h3>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {searchTerm || statusFilter !== 'all' 
-                ? 'Aucun devis ne correspond à vos critères de recherche.'
-                : 'Commencez par créer votre premier devis.'
+                ? 'Aucune facture ne correspond à vos critères de recherche.'
+                : 'Commencez par créer votre première facture.'
               }
             </p>
             {(!searchTerm && statusFilter === 'all') && (
@@ -204,7 +202,7 @@ const DevisList = ({ onCreateNew, onEdit, onView }) => {
                   className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  Nouveau Devis
+                  Nouvelle Facture
                 </button>
               </div>
             )}
@@ -235,59 +233,59 @@ const DevisList = ({ onCreateNew, onEdit, onView }) => {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {filteredAndSortedDevis.map((devis) => (
-                  <tr key={devis._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                {filteredAndSortedFactures.map((facture) => (
+                  <tr key={facture._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900 dark:text-white">
-                        {devis.devisNumber || 'N/A'}
+                        {facture.factureNumber || 'N/A'}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900 dark:text-white">
-                        {devis.clientName || 'N/A'}
+                        {facture.clientName || 'N/A'}
                       </div>
                       <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {devis.clientPhone || 'N/A'}
+                        {facture.clientPhone || 'N/A'}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900 dark:text-white">
-                        {new Date(devis.createdAt).toLocaleDateString('fr-FR')}
+                        {new Date(facture.createdAt).toLocaleDateString('fr-FR')}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                        {devis.totalAmount?.toFixed(2) || '0.00'} DT
+                        {facture.totalAmount?.toFixed(2) || '0.00'} DT
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {getStatusBadge(devis.status)}
+                      {getStatusBadge(facture.status)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
                         <button
-                          onClick={() => onView && onView(devis)}
+                          onClick={() => onView && onView(facture)}
                           className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
                           title="Voir"
                         >
                           <Eye className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => onEdit && onEdit(devis)}
+                          onClick={() => onEdit && onEdit(facture)}
                           className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                           title="Modifier"
                         >
                           <Edit className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => handleDownloadPDF(devis._id)}
+                          onClick={() => handleDownloadPDF(facture._id)}
                           className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
                           title="Télécharger PDF"
                         >
                           <Download className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => handleDelete(devis._id)}
+                          onClick={() => handleDelete(facture._id)}
                           className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                           title="Supprimer"
                         >
@@ -304,15 +302,15 @@ const DevisList = ({ onCreateNew, onEdit, onView }) => {
       </div>
 
       {/* Summary */}
-      {filteredAndSortedDevis.length > 0 && (
+      {filteredAndSortedFactures.length > 0 && (
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
           <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
             <span>
-              {filteredAndSortedDevis.length} devis trouvé{filteredAndSortedDevis.length > 1 ? 's' : ''}
-              {(searchTerm || statusFilter !== 'all') && ` sur ${devisList.length} total`}
+              {filteredAndSortedFactures.length} facture{filteredAndSortedFactures.length > 1 ? 's' : ''} trouvée{filteredAndSortedFactures.length > 1 ? 's' : ''}
+              {(searchTerm || statusFilter !== 'all') && ` sur ${facturesList.length} total`}
             </span>
             <span>
-              Total: {filteredAndSortedDevis.reduce((sum, devis) => sum + (devis.totalAmount || 0), 0).toFixed(2)} DT
+              Total: {filteredAndSortedFactures.reduce((sum, facture) => sum + (facture.totalAmount || 0), 0).toFixed(2)} DT
             </span>
           </div>
         </div>
@@ -321,4 +319,4 @@ const DevisList = ({ onCreateNew, onEdit, onView }) => {
   );
 };
 
-export default DevisList;
+export default FacturesList;

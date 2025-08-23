@@ -16,7 +16,7 @@ import CommandesEnCours from './pages/commandes/Encours/EnCours';
 import HistoriqueCommande from './pages/commandes/Historique/Historique';
 import Commandes from './pages/commandes/Commandes';
 import AssistantIA from './pages/assistant/AssistantIA'
-import RecuDePaiement from './pages/recuPaiement/RecuDePaiement';
+import RecuPaiement from './pages/recuPaiement/RecuPaiement';
 import BonLivraison from './pages/bonLivraison/BonLivraison';
 import Clients from './pages/clients/Clients';
 import UserList from './pages/users/UserList';
@@ -63,12 +63,13 @@ function App() {
                 <Route path="employee/demande-conge" element={<DemandeConge />} />
                 <Route path="employee/liste-conge" element={<ListeConge />} />
                 <Route path="clients" element={<Clients />} />
-                <Route path="recue-de-paiement-sur-commande" element={<RecuDePaiement />} />
+                <Route path="recue-de-paiement-sur-commande" element={<RecuPaiement />} />
                 <Route path="bon-livraison" element={<BonLivraison />} />
                 <Route path="messages" element={<Messages />} />
                 {/* <Route path="stock" element={<Stock />} /> */}
                 <Route path="fournisseur" element={<Fournisseur />} />
                 <Route path="devis" element={<Devis />} />
+                <Route path="factures" element={<Factures />} />
                 <Route path="assistant-ia" element={<AssistantIA />} />
                 <Route path="caisse" element={<Caisse />} />
                 <Route path="products" element={<Products />} />

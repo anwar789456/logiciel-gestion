@@ -1,47 +1,69 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CopyPlus, FolderOutput } from 'lucide-react';
+import FacturesList from '../../components/FacturesList';
+import FactureForm from '../../components/FactureForm';
+import FactureViewer from '../../components/FactureViewer';
 
 function Factures() {
   const { t } = useTranslation();
+  const [currentView, setCurrentView] = useState('list'); // 'list', 'create', 'edit', 'view'
+  const [selectedFacture, setSelectedFacture] = useState(null);
+
+  const handleCreateNew = () => {
+    setSelectedFacture(null);
+    setCurrentView('create');
+  };
+
+  const handleEdit = (facture) => {
+    setSelectedFacture(facture);
+    setCurrentView('edit');
+  };
+
+  const handleView = (facture) => {
+    setSelectedFacture(facture);
+    setCurrentView('view');
+  };
+
+  const handleSuccess = () => {
+    setCurrentView('list');
+    setSelectedFacture(null);
+  };
+
+  const handleCancel = () => {
+    setCurrentView('list');
+    setSelectedFacture(null);
+  };
+
+  const handleBack = () => {
+    setCurrentView('list');
+    setSelectedFacture(null);
+  };
 
   return (
-    <div>
-      <div className='pl-8 pt-4 pb-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-700'>
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
-            {t('factures')}
-          </h1>
-        </div>
-        <div className='flex pr-8'>
-          <button
-            className='flex items-center bg-transparent border border-blue-600
-              hover:bg-blue-600 text-blue-600 font-bold 
-              hover:text-white
-              py-2 px-4 rounded-xl cursor-pointer
-              mr-2
-              shadow-lg hover:shadow-lg active:shadow-inner
-              active:scale-85
-              transition-all duration-400 ease-in-out'
-          >
-
-            <FolderOutput className='mr-2 mt-0.5' size={20} />
-            {t('export_button')}
-          </button>
-
-          <button 
-            className='flex items-center bg-blue-600 
-            hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-xl 
-            active:scale-85
-            cursor-pointer shadow-lg hover:shadow-lg active:shadow-inner 
-            transition-all duration-400 ease-in-out'
-          >
-            <CopyPlus className='mr-2 mt-0.5' size={20} />
-            {t('ajouter_facture')}
-          </button>
-
-        </div>
-      </div>
+    <div className="p-6">
+      {currentView === 'list' && (
+        <FacturesList
+          onCreateNew={handleCreateNew}
+          onEdit={handleEdit}
+          onView={handleView}
+        />
+      )}
+      
+      {(currentView === 'create' || currentView === 'edit') && (
+        <FactureForm
+          existingFacture={currentView === 'edit' ? selectedFacture : null}
+          onSuccess={handleSuccess}
+          onCancel={handleCancel}
+        />
+      )}
+      
+      {currentView === 'view' && selectedFacture && (
+        <FactureViewer
+          facture={selectedFacture}
+          onEdit={handleEdit}
+          onBack={handleBack}
+        />
+      )}
     </div>
   );
 }
