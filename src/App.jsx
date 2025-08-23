@@ -15,9 +15,11 @@ import NewMessageNotification from './components/common/NewMessageNotification';
 import CommandesEnCours from './pages/commandes/Encours/EnCours';
 import HistoriqueCommande from './pages/commandes/Historique/Historique';
 import Commandes from './pages/commandes/Commandes';
+import CommandesClient from './pages/commandes/CommandesClient/CommandesClient';
 import AssistantIA from './pages/assistant/AssistantIA'
 import RecuDePaiement from './pages/recuPaiement/RecuDePaiement';
 import BonLivraison from './pages/bonLivraison/BonLivraison';
+import BonDeSortie from './pages/bonDeSortie/BonDeSortie';
 import Clients from './pages/clients/Clients';
 import UserList from './pages/users/UserList';
 import DemandeConge from './pages/employe/demandeConge/DemandeConge';
@@ -174,6 +176,13 @@ function App() {
               }>
                 <Route index element={<BonLivraison />} />
               </Route>
+              <Route path="/bon-de-sortie" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<BonDeSortie />} />
+              </Route>
               <Route path="/messages" element={
                 <ProtectedRoute>
                   <Layout />
@@ -250,6 +259,13 @@ function App() {
                 </ProtectedRoute>
               }>
                 <Route index element={<Carousel />} />
+              </Route>
+              <Route path="/commandes-client" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<CommandesClient />} />
               </Route>
               <Route path="/settings" element={
                 <ProtectedRoute>
