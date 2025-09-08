@@ -11,6 +11,7 @@ const TableDisplayProduct = React.forwardRef(({
   searchPlaceholder,
   onRowClick = null,
   onEdit = null,
+  onClone = null,
   onDelete = null,
   exportData = null 
 }, ref) => {
@@ -335,6 +336,7 @@ const TableDisplayProduct = React.forwardRef(({
                             <ProductActions 
                               product={row}
                               onEdit={onEdit}
+                              onClone={onClone}
                               onDelete={onDelete}
                             />
                           </div>

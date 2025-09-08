@@ -558,6 +558,31 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
       options: updatedOptions
     }));
   };
+
+  const addMousse = () => {
+    setFormData(prev => ({
+      ...prev,
+      mousse: [...prev.mousse, { mousse_name: '', mousse_prix: '' }]
+    }));
+  };
+
+  const handleMousseChange = (index, field, value) => {
+    const updatedMousse = [...formData.mousse];
+    updatedMousse[index][field] = value;
+    setFormData(prev => ({
+      ...prev,
+      mousse: updatedMousse
+    }));
+  };
+
+  const removeMousse = (index) => {
+    const updatedMousse = [...formData.mousse];
+    updatedMousse.splice(index, 1);
+    setFormData(prev => ({
+      ...prev,
+      mousse: updatedMousse
+    }));
+  };
   
   const handleOptionSelect = (e) => {
     const { name, value } = e.target;
@@ -602,7 +627,23 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
   const addSize = () => {
     setFormData(prev => ({
       ...prev,
-      sizes: [...prev.sizes, { longueur: '', largeur: '', prix_option: '', prix_coffre: '' }]
+      sizes: [...prev.sizes, { longueur: '', largeur: '', prix_option: '', prix_coffre: '', img_path: '' }]
+    }));
+  };
+
+  const addDimension = () => {
+    setFormData(prev => ({
+      ...prev,
+      dimensions: [...prev.dimensions, { thedimensiontype: '', display: 'oui', longueur: '', largeur: '', hauteur: '', long: '', larg: '', image_url: '' }]
+    }));
+  };
+
+  const removeDimension = (index) => {
+    const updatedDimensions = [...formData.dimensions];
+    updatedDimensions.splice(index, 1);
+    setFormData(prev => ({
+      ...prev,
+      dimensions: updatedDimensions
     }));
   };
 
@@ -791,7 +832,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
                 value={formData.maxPrice}
               onChange={handleChange}
               autoComplete="off"
-              className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+              className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
               />
             </div>
           </div>
@@ -912,7 +953,6 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
                 <option value="">{t('select_direction')}</option>
                 <option value="Gauche">{t('left')}</option>
                 <option value="Droite">{t('right')}</option>
-                <option value="Gauche et Droite">{t('left_and_right')}</option>
               </select>
             </div>
             
@@ -1036,6 +1076,13 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
       <div className="space-y-4 mb-6">
         <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2">
           <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{t('options')}</h3>
+          <button
+            type="button"
+            onClick={addOption}
+            className="px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors flex items-center"
+          >
+            <Plus size={16} className="mr-1" /> {t('add')}
+          </button>
         </div>
         
         <div className="form-item mb-4">
@@ -1057,22 +1104,59 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
           </select>
         </div>
         
-        {/* {formData.options.length === 0 ? (
-          <div className="text-center py-6 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
-            <p className="text-gray-500 dark:text-gray-400">{t('no_options_added')}</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{t('select_from_dropdown')}</p>
+        {formData.options.length > 0 && (
+          <div className="space-y-4 mt-4">
+            <h4 className="text-md font-medium text-gray-800 dark:text-gray-200 mb-2">{t('tarification_des_options')}</h4>
+            {formData.options.map((optionItem, index) => (
+              <div key={`option-${index}`} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800/50 shadow-sm">
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">{optionItem.option_name}</h4>
+                  <button
+                    type="button"
+                    onClick={() => removeOption(index)}
+                    className="text-red-500 hover:text-red-700 focus:outline-none"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('option_name')}</label>
+                    <input
+                      type="text"
+                      value={optionItem.option_name}
+                      onChange={(e) => handleOptionChange(index, 'option_name', e.target.value)}
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('option_price')}</label>
+                    <input
+                      type="text"
+                      value={optionItem.prix_option}
+                      onChange={(e) => handleOptionChange(index, 'prix_option', e.target.value)}
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        ) : (
-          <div className="py-3 px-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
-            <p className="text-sm text-gray-700 dark:text-gray-300">{t('options_selected')}: <span className="font-medium">{formData.options.length}</span></p>
-          </div>
-        )} */}
+        )}
       </div>
       
       {/* Sizes */}
       <div className="space-y-4 mb-6">
         <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2">
           <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{t('sizes')}</h3>
+          <button
+            type="button"
+            onClick={addSize}
+            className="px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors flex items-center"
+          >
+            <Plus size={16} className="mr-1" /> {t('add')}
+          </button>
         </div>
         
         <div className="form-item mb-4">
@@ -1094,22 +1178,72 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
           </select>
         </div>
         
-        {/* {formData.sizes.length === 0 ? (
-          <div className="text-center py-6 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
-            <p className="text-gray-500 dark:text-gray-400">{t('no_sizes_added')}</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{t('select_from_dropdown')}</p>
+        {formData.sizes.length > 0 && (
+          <div className="space-y-4">
+            {formData.sizes.map((size, index) => (
+              <div key={`size-${index}`} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800/50 shadow-sm">
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">{size.longueur} x {size.largeur}</h4>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const updatedSizes = [...formData.sizes];
+                      updatedSizes.splice(index, 1);
+                      setFormData(prev => ({ ...prev, sizes: updatedSizes }));
+                    }}
+                    className="text-red-500 hover:text-red-700 focus:outline-none"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('image_url')}</label>
+                    <input
+                      type="text"
+                      value={size.img_path || ''}
+                      onChange={(e) => {
+                        const updatedSizes = [...formData.sizes];
+                        updatedSizes[index].img_path = e.target.value;
+                        setFormData(prev => ({ ...prev, sizes: updatedSizes }));
+                      }}
+                      placeholder="https://example.com/image.jpg"
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                    />
+                  </div>
+                  
+                  {size.img_path && (
+                    <div className="flex items-center">
+                      <img 
+                        src={size.img_path} 
+                        alt={`${size.longueur}x${size.largeur}`} 
+                        className="h-20 w-20 object-cover rounded-md border border-gray-200 dark:border-gray-700" 
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://via.placeholder.com/100?text=Error';
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
-        ) : (
-          <div className="py-3 px-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
-            <p className="text-sm text-gray-700 dark:text-gray-300">{t('sizes_selected')}: <span className="font-medium">{formData.sizes.length}</span></p>
-          </div>
-        )} */}
+        )}
       </div>
       
       {/* Mousse */}
       <div className="space-y-4 mb-6">
         <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2">
           <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{t('foam')}</h3>
+          <button
+            type="button"
+            onClick={addMousse}
+            className="px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors flex items-center"
+          >
+            <Plus size={16} className="mr-1" /> {t('add')}
+          </button>
         </div>
         
         <div className="form-item mb-4">
@@ -1131,22 +1265,59 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
           </select>
         </div>
         
-        {/* {formData.mousse.length === 0 ? (
-          <div className="text-center py-6 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
-            <p className="text-gray-500 dark:text-gray-400">{t('no_mousse_added')}</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{t('select_from_dropdown')}</p>
+        {formData.mousse.length > 0 && (
+          <div className="space-y-4 mt-4">
+            <h4 className="text-md font-medium text-gray-800 dark:text-gray-200 mb-2">{t('tarification_des_mousses')}</h4>
+            {formData.mousse.map((mousseItem, index) => (
+              <div key={`mousse-${index}`} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800/50 shadow-sm">
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">{mousseItem.mousse_name}</h4>
+                  <button
+                    type="button"
+                    onClick={() => removeMousse(index)}
+                    className="text-red-500 hover:text-red-700 focus:outline-none"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('mousse_name')}</label>
+                    <input
+                      type="text"
+                      value={mousseItem.mousse_name}
+                      onChange={(e) => handleMousseChange(index, 'mousse_name', e.target.value)}
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('mousse_price')}</label>
+                    <input
+                      type="text"
+                      value={mousseItem.mousse_prix}
+                      onChange={(e) => handleMousseChange(index, 'mousse_prix', e.target.value)}
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        ) : (
-          <div className="py-3 px-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
-            <p className="text-sm text-gray-700 dark:text-gray-300">{t('foam_selected')}: <span className="font-medium">{formData.mousse.length}</span></p>
-          </div>
-        )} */}
+        )}
       </div>
       
       {/* Additional Dimensions */}
       <div className="space-y-4">
         <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2">
           <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{t('additional_dimensions')}</h3>
+          <button
+            type="button"
+            onClick={addDimension}
+            className="px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors flex items-center"
+          >
+            <Plus size={16} className="mr-1" /> {t('add')}
+          </button>
         </div>
         
         {formData.dimensions.length === 0 ? (
@@ -1156,21 +1327,35 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
         ) : (
           formData.dimensions.map((dimension, index) => (
             <div key={`dimension-${index}-${dimension.thedimensiontype}`} className="space-y-4 p-5 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800/50 shadow-sm hover:shadow-md transition-shadow duration-200">
+              <div className="flex justify-between items-center">
+                <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">{t('dimension')} {index + 1}</h4>
+                <button
+                  type="button"
+                  onClick={() => removeDimension(index)}
+                  className="text-red-500 hover:text-red-700 focus:outline-none"
+                >
+                  <Trash2 size={18} />
+                </button>
+              </div>
+              
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('dimension_type')}</label>
-                  <input
-                    type="text"
-                    value={dimension.thedimensiontype}
+                  <select
+                    value={dimension.thedimensiontype || ''}
                     onChange={(e) => handleDimensionChange(index, 'thedimensiontype', e.target.value)}
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
-                  />
+                  >
+                    <option value="" disabled>{t('select')}</option>
+                    <option value="image">{t('image')}</option>
+                    <option value="Longueur x Largeur">Longueur x Largeur</option>
+                  </select>
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('display')}</label>
                   <select
-                    value={dimension.display}
+                    value={dimension.display || 'oui'}
                     onChange={(e) => handleDimensionChange(index, 'display', e.target.value)}
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
                   >
@@ -1180,72 +1365,104 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
                 </div>
               </div>
               
-              <div className="grid grid-cols-3 gap-4">
+              {/* Size selection from existing sizes */}
+              {formData.sizes && formData.sizes.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('length')}</label>
-                  <input
-                    type="text"
-                    value={dimension.longueur}
-                    onChange={(e) => handleDimensionChange(index, 'longueur', e.target.value)}
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('size')}</label>
+                  <select
+                    value={dimension.longueur && dimension.largeur ? `${dimension.longueur}x${dimension.largeur}` : ''}
+                    onChange={(e) => {
+                      if (e.target.value) {
+                        const [longueur, largeur] = e.target.value.split('x');
+                        handleDimensionChange(index, 'longueur', longueur);
+                        handleDimensionChange(index, 'largeur', largeur);
+                      }
+                    }}
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
-                  />
+                  >
+                    <option value="" disabled>{t('select_size')}</option>
+                    {formData.sizes.map((size, sizeIndex) => (
+                      <option key={sizeIndex} value={`${size.longueur}x${size.largeur}`}>
+                        {size.longueur} x {size.largeur}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('width')}</label>
-                  <input
-                    type="text"
-                    value={dimension.largeur}
-                    onChange={(e) => handleDimensionChange(index, 'largeur', e.target.value)}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('height')}</label>
-                  <input
-                    type="text"
-                    value={dimension.hauteur}
-                    onChange={(e) => handleDimensionChange(index, 'hauteur', e.target.value)}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
-                  />
-                </div>
-              </div>
+              )}
               
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('long')}</label>
-                  <input
-                    type="text"
-                    value={dimension.long}
-                    onChange={(e) => handleDimensionChange(index, 'long', e.target.value)}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
-                  />
+              {/* Show additional fields based on type */}
+              {dimension.thedimensiontype === 'Longueur x Largeur' && (
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('long')}</label>
+                    <input
+                      type="text"
+                      value={dimension.long || ''}
+                      onChange={(e) => handleDimensionChange(index, 'long', e.target.value)}
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                      placeholder={t('long')}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('larg')}</label>
+                    <input
+                      type="text"
+                      value={dimension.larg || ''}
+                      onChange={(e) => handleDimensionChange(index, 'larg', e.target.value)}
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                      placeholder={t('larg')}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('height')}</label>
+                    <input
+                      type="text"
+                      value={dimension.hauteur || ''}
+                      onChange={(e) => handleDimensionChange(index, 'hauteur', e.target.value)}
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                      placeholder={t('height')}
+                    />
+                  </div>
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('larg')}</label>
-                  <input
-                    type="text"
-                    value={dimension.larg}
-                    onChange={(e) => handleDimensionChange(index, 'larg', e.target.value)}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
-                  />
-                </div>
-              </div>
+              )}
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('image_url')}</label>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="text"
-                    value={dimension.image_url}
-                    onChange={(e) => handleDimensionChange(index, 'image_url', e.target.value)}
-                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
-                  />
+              {/* Show image URL field only for "image" type */}
+              {dimension.thedimensiontype === 'image' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('image_url')}</label>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      value={dimension.image_url || ''}
+                      onChange={(e) => handleDimensionChange(index, 'image_url', e.target.value)}
+                      className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                      placeholder={t('dimension_image_url')}
+                    />
+                  </div>
+                  
+                  {/* Show image preview when URL exists */}
+                  {dimension.image_url && (
+                    <div className="mt-2">
+                      <img
+                        src={dimension.image_url}
+                        alt={`${t('dimension')} ${index + 1}`}
+                        className="max-w-xs rounded-md border border-gray-200 dark:border-gray-700"
+                      />
+                    </div>
+                  )}
                 </div>
+              )}
+              
+              {/* Hidden fields for compatibility */}
+              {dimension.thedimensiontype === 'image' && (
+                <div className="hidden">
+                  <input type="hidden" value={dimension.longueur || ''} />
+                  <input type="hidden" value={dimension.largeur || ''} />
+                </div>
+              )}
               </div>
-            </div>
           ))
         )}
       </div>
