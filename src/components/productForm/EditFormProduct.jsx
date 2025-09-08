@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { X, Plus, Trash2, Upload, GripVertical } from 'lucide-react'
-import { UpdateProductById, FetchAllProductTypeItems } from '../../api/product'
+import { UpdateProductById, FetchAllProductTypeItems, FetchAllProductItems } from '../../api/product'
 import { FetchAllCategoryItems } from '../../api/Category/category'
 import { FetchAllOptionItems } from '../../api/options/Options'
 import {
@@ -306,9 +306,6 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
         category.href.replace("/Shop/", "") === product.subcategorie
       );
       
-      console.log('Looking for main category with href:', product.subcategorie);
-      console.log('Found main category:', mainCategory ? mainCategory.title : 'Not found');
-      
       if (mainCategory) {
         // Set the main category as the selected category
         setSelectedCategory(mainCategory.href.replace("/Shop/", ""));
@@ -323,8 +320,6 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
             subLink.href.replace("/Shop/", "") === product.categorie
           );
           
-          console.log('Looking for subcategory with href:', product.categorie);
-          console.log('Found subcategory:', subCategory ? subCategory.title : 'Not found');
           
           // Update formData with the correct category and subcategory
           setFormData(prev => ({
@@ -333,7 +328,6 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
             subcategorie: product.categorie // Use product.categorie directly as it should match subcategory href
           }));
         } else {
-          console.log('No subcategories found for this category');
           setSubCategories([]);
           
           // Update formData with main category only
@@ -367,19 +361,13 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
       // Find the selected category object by its href
       const selectedCat = categories.find(cat => cat.href.replace("/Shop/", "") === value);
       
-      console.log('Category changed to:', value);
-      console.log('Selected category object:', selectedCat);
-      
       // Update the selected category state
       setSelectedCategory(value);
       
       // Update subcategories list and reset subcategory
       if (selectedCat && selectedCat.subLinks && selectedCat.subLinks.length > 0) {
-        console.log('Setting subcategories from selected category:', selectedCat.subLinks.length, 'items');
-        console.log('First subcategory:', selectedCat.subLinks[0].title, selectedCat.subLinks[0].href);
         setSubCategories(selectedCat.subLinks);
       } else {
-        console.log('No subcategories found for this category');
         setSubCategories([]);
       }
       
@@ -391,8 +379,6 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
         categorie_changed: true // Flag to indicate user changed the category
       }));
     } else if (name === 'subcategorie') {
-      // For subcategory changes, update the subcategory field and keep the main category
-      console.log('Subcategory changed to:', value);
       
       // Find the selected subcategory object
       const selectedSubCat = subCategories.find(sub => sub.href.replace("/Shop/", "") === value);
@@ -624,6 +610,44 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
     });
   };
 
+  const handleSizeChange = (index, field, value) => {
+    const updatedSizes = [...formData.sizes];
+    
+    // Validate img_path URL if the field being changed is img_path
+    if (field === 'img_path' && value.trim() !== '') {
+      try {
+        new URL(value); // This will throw an error if the URL is invalid
+      } catch (e) {
+        console.error('Invalid URL format:', value);
+        setError(t('invalid_image_url')); // Show error message to user
+        setTimeout(() => setError(''), 3000); // Clear error after 3 seconds
+        return; // Don't update if URL is invalid
+      }
+    }
+    
+    // Clear error if it was previously set
+    if (error) {
+      setError('');
+    }
+    
+    updatedSizes[index][field] = value;
+    console.log(`Updating size[${index}].${field} to:`, value);
+    console.log('Updated sizes array:', updatedSizes);
+    setFormData(prev => ({
+      ...prev,
+      sizes: updatedSizes
+    }));
+  };
+
+  const removeSize = (index) => {
+    const updatedSizes = [...formData.sizes];
+    updatedSizes.splice(index, 1);
+    setFormData(prev => ({
+      ...prev,
+      sizes: updatedSizes
+    }));
+  };
+
   const addSize = () => {
     setFormData(prev => ({
       ...prev,
@@ -673,18 +697,40 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
       // Log the form data before submission
       console.log('Form data before submission:', {
         categorie: cleanedData.categorie,
-        subcategorie: cleanedData.subcategorie
+        subcategorie: cleanedData.subcategorie,
+        sizes: cleanedData.sizes
       });
+      
+      // Log sizes array specifically
+      console.log('Sizes array before cleaning:', cleanedData.sizes);
       
       if (cleanedData.options.length === 0 || 
           (cleanedData.options.length === 1 && !cleanedData.options[0].option_name)) {
         cleanedData.options = [];
       }
       
-      if (cleanedData.sizes.length === 0 || 
-          (cleanedData.sizes.length === 1 && !cleanedData.sizes[0].longueur)) {
-        cleanedData.sizes = [];
+      // Clean and validate sizes array while preserving img_path
+      const invalidUrls = [];
+      cleanedData.sizes = cleanedData.sizes.map(size => {
+        // Check if size has any data
+        const hasData = size.longueur || size.largeur || size.prix_option || size.prix_coffre || size.img_path;
+        
+        if (!hasData) return null;
+
+        // Keep the existing size object if it has data
+        return size;
+      }).filter(Boolean); // Remove null entries
+      
+      // Show error if any invalid URLs were found
+      if (invalidUrls.length > 0) {
+        throw new Error(t('invalid_image_urls_found') + ': ' + invalidUrls.join(', '));
       }
+      
+      // Log sizes array after filtering
+      console.log('Sizes array after filtering:', cleanedData.sizes);
+      
+      // Log sizes array after cleaning
+      console.log('Sizes array after cleaning:', cleanedData.sizes);
       
       if (cleanedData.mousse.length === 0 || 
           (cleanedData.mousse.length === 1 && !cleanedData.mousse[0].mousse_name)) {
@@ -716,7 +762,34 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
       // Remove the category_changed flag as it's only used for UI logic
       delete cleanedData.categorie_changed;
 
+      // Log the final data being sent to the API
+      console.log('Sending update request to API:', {
+        productId: product._id,
+        sizes: cleanedData.sizes
+      });
+
+      // Update the product
       await UpdateProductById(product._id, cleanedData);
+      
+      try {
+        // Fetch the updated product data
+        const updatedProducts = await FetchAllProductItems();
+        const updatedProduct = updatedProducts.find(p => p._id === product._id);
+        
+        if (updatedProduct) {
+          // Update the form with fresh data
+          setFormData(prevData => ({
+            ...prevData,
+            ...updatedProduct,
+            // Preserve selected names that aren't in the API response
+            selectedOptionName: prevData.selectedOptionName,
+            selectedSizeName: prevData.selectedSizeName,
+            selectedMousseName: prevData.selectedMousseName
+          }));
+        }
+      } catch (fetchError) {
+        console.error('Error fetching updated product:', fetchError);
+      }
 
       onSuccess();
     } catch (error) {
@@ -1183,16 +1256,52 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
             {formData.sizes.map((size, index) => (
               <div key={`size-${index}`} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800/50 shadow-sm">
                 <div className="flex justify-between items-center mb-3">
-                  <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">{size.longueur} x {size.largeur}</h4>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const updatedSizes = [...formData.sizes];
-                      updatedSizes.splice(index, 1);
-                      setFormData(prev => ({ ...prev, sizes: updatedSizes }));
-                    }}
-                    className="text-red-500 hover:text-red-700 focus:outline-none"
-                  >
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('length')}</label>
+                      <input
+                        type="text"
+                        value={size.longueur || ''}
+                        onChange={(e) => handleSizeChange(index, 'longueur', e.target.value)}
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('width')}</label>
+                      <input
+                        type="text"
+                        value={size.largeur || ''}
+                        onChange={(e) => handleSizeChange(index, 'largeur', e.target.value)}
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('option_price')}</label>
+                      <input
+                        type="text"
+                        value={size.prix_option || ''}
+                        onChange={(e) => handleSizeChange(index, 'prix_option', e.target.value)}
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('coffre_price')}</label>
+                      <input
+                        type="text"
+                        value={size.prix_coffre || ''}
+                        onChange={(e) => handleSizeChange(index, 'prix_coffre', e.target.value)}
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end mt-4">
+                    <button
+                      type="button"
+                      onClick={() => removeSize(index)}
+                      className="text-red-500 hover:text-red-700 focus:outline-none"
+                    >
                     <Trash2 size={18} />
                   </button>
                 </div>
@@ -1203,11 +1312,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
                     <input
                       type="text"
                       value={size.img_path || ''}
-                      onChange={(e) => {
-                        const updatedSizes = [...formData.sizes];
-                        updatedSizes[index].img_path = e.target.value;
-                        setFormData(prev => ({ ...prev, sizes: updatedSizes }));
-                      }}
+                      onChange={(e) => handleSizeChange(index, 'img_path', e.target.value)}
                       placeholder="https://example.com/image.jpg"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
                     />
@@ -1228,12 +1333,12 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
                   )}
                 </div>
               </div>
+              </div>
             ))}
           </div>
-        )}
+      )}
       </div>
       
-      {/* Mousse */}
       <div className="space-y-4 mb-6">
         <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2">
           <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{t('foam')}</h3>

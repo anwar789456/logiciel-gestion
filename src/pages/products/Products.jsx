@@ -242,12 +242,54 @@ export default function Products() {
       
       await DeleteProductById(id);
       setDeleteConfirmation({ show: false, productId: null, password: '' });
-      // Refresh the product list
-      fetchProducts();
-      toast.success(t('product_deleted_successfully'));
+      
+      // Get the current page from tableRef and refresh while maintaining the page
+      if (tableRef.current) {
+        const currentPage = tableRef.current.getCurrentPage();
+        tableRef.current.refreshData(currentPage);
+      }
+      
+      // Show custom success message
+      toast.custom(
+        (t) => (
+          <div className="flex items-center w-full max-w-sm bg-white dark:bg-gray-800 border-l-4 border-green-500 shadow-lg rounded-lg pointer-events-auto">
+            <div className="flex-shrink-0 p-4 bg-green-50 dark:bg-green-900/20">
+              <svg className="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div className="flex-1 p-4">
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                {t('product_deleted_successfully')}
+              </p>
+            </div>
+            <div className="flex border-l border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => toast.dismiss(t.id)}
+                className="w-full p-4 flex items-center justify-center text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                {t('close')}
+              </button>
+            </div>
+          </div>
+        ),
+        {
+          duration: 3000,
+          position: "top-right"
+        }
+      );
     } catch (error) {
       console.error('Error deleting product:', error);
-      toast.error(t('error_deleting_product'));
+      toast.error(t('error_deleting_product'), {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        className: 'bg-red-500 text-white'
+      });
     }
   };
 

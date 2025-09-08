@@ -198,6 +198,8 @@ i18n
           'seat_depth': 'Seat Depth',
           'images': 'Images',
           'add_image': 'Add Image',
+          'close': 'Close',
+          'product_deleted_successfully': 'Product deleted successfully',
           'image_url': 'Image URL',
           'remove': 'Remove',
           'no_images_added': 'No images added yet',
