@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CopyPlus, Plus, LayoutTemplate, Tags, X, AlertCircle, Settings } from 'lucide-react';
+import { CopyPlus, Plus, LayoutTemplate, Tags, X, AlertCircle, Settings, GripVertical, CheckCircle } from 'lucide-react';
 import { useAccessControl } from '../../hooks/useAccessControl';
 import { FetchAllProductItems, DeleteProductById, FetchAllProductTypeItems } from '../../api/product';
+import { ReorderProducts } from '../../api/Category/category';
 import TableDisplayProduct from '../../components/product/TableDisplayProduct';
 import AddFormProduct from '../../components/productForm/AddFormProduct';
 import EditFormProduct from '../../components/productForm/EditFormProduct';
@@ -10,6 +11,7 @@ import ProductTypesModal from '../../components/productTypes/ProductTypesModal';
 import AdvancedProductFilters from '../../components/product/AdvancedProductFilters';
 import Options from '../../components/optionsProduct/OptionsProduct';
 import { Collapse } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 
 
 export default function Products() {
@@ -22,8 +24,18 @@ export default function Products() {
   const [showProductTypesModal, setShowProductTypesModal] = useState(false);
   const [showOptionsModal, setShowOptionsModal] = useState(false);
   const [showOptionsForm, setShowOptionsForm] = useState(false);
+  const [showProductOrderingModal, setShowProductOrderingModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedSubcategory, setSelectedSubcategory] = useState('');
+  const [subcategories, setSubcategories] = useState([]);
+  const [productsToOrder, setProductsToOrder] = useState([]);
+  const [isReordering, setIsReordering] = useState(false);
+  const [draggedItem, setDraggedItem] = useState(null);
+  const [draggedOverItem, setDraggedOverItem] = useState(null);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const dragNode = useRef();
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [deleteConfirmation, setDeleteConfirmation] = useState({ show: false, productId: null });
+  const [deleteConfirmation, setDeleteConfirmation] = useState({ show: false, productId: null, password: '' });
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false); // Advanced filters closed by default
   const [advancedFilters, setAdvancedFilters] = useState({
     // dateRange removed as requested
@@ -42,6 +54,7 @@ export default function Products() {
   
   // Get unique categories and types from products
   const [categories, setCategories] = useState([]);
+  const [categoriesWithSubcategories, setCategoriesWithSubcategories] = useState([]);
   const [productTypes, setProductTypes] = useState([]);
   
   // Store the mapping between valueSous and titleSous for product types
@@ -60,6 +73,25 @@ export default function Products() {
         // Extract unique product types
         const uniqueTypes = [...new Set(data.map(product => product.typeProd).filter(Boolean))];
         setProductTypes(uniqueTypes);
+        
+        // Create a map of categories with their subcategories
+        const categoryMap = {};
+        data.forEach(product => {
+          if (product.categorie && product.subcategorie) {
+            if (!categoryMap[product.categorie]) {
+              categoryMap[product.categorie] = new Set();
+            }
+            categoryMap[product.categorie].add(product.subcategorie);
+          }
+        });
+        
+        // Convert to array format
+        const categoriesWithSubs = Object.keys(categoryMap).map(category => ({
+          name: category,
+          subcategories: Array.from(categoryMap[category])
+        }));
+        
+        setCategoriesWithSubcategories(categoriesWithSubs);
       } catch (error) {
         console.error('Error fetching categories and types:', error);
       }
@@ -201,18 +233,32 @@ export default function Products() {
 
   const handleDeleteProduct = async (id) => {
     try {
+      // Check if password is correct
+      if (deleteConfirmation.password !== "123") {
+        // Show error message
+        toast.error(t('incorrect_password'));
+        return;
+      }
+      
       await DeleteProductById(id);
-      setDeleteConfirmation({ show: false, productId: null });
+      setDeleteConfirmation({ show: false, productId: null, password: '' });
       // Refresh the product list
       fetchProducts();
+      toast.success(t('product_deleted_successfully'));
     } catch (error) {
       console.error('Error deleting product:', error);
+      toast.error(t('error_deleting_product'));
     }
   };
 
   const handleEditProduct = (product) => {
     setSelectedProduct(product);
     setShowEditForm(true);
+  };
+
+  const handleCloneProduct = (product) => {
+    setSelectedProduct(product); // Store the product data to be cloned
+    setShowAddForm(true); // Open the add form
   };
 
   const columns = [
@@ -243,6 +289,129 @@ export default function Products() {
       width: '20%'
     },
   ];
+
+  // Handle subcategory change (now first selection)
+  const handleSublinkChange = (e) => {
+    const subcategory = e.target.value;
+    setSelectedSubcategory(subcategory);
+    
+    // Find categories that have this subcategory
+    const categoriesWithThisSubcategory = categoriesWithSubcategories.filter(c => 
+      c.subcategories.includes(subcategory)
+    );
+    
+    // If there's only one category with this subcategory, select it automatically
+    if (categoriesWithThisSubcategory.length === 1) {
+      const category = categoriesWithThisSubcategory[0].name;
+      setSelectedCategory(category);
+      
+      // Fetch products for the selected category and subcategory
+      fetchProductsForOrdering(category, subcategory);
+    } else {
+      // Reset category if multiple categories have this subcategory
+      setSelectedCategory('');
+    }
+  };
+
+  // Handle category change (now second selection)
+  const handleCategoryChange = (e) => {
+    const category = e.target.value;
+    setSelectedCategory(category);
+    
+    // Fetch products for the selected category and subcategory
+    if (selectedSubcategory) {
+      fetchProductsForOrdering(category, selectedSubcategory);
+    }
+  };
+
+  // Fetch products for ordering
+  const fetchProductsForOrdering = async (category, subcategory) => {
+    if (!category || !subcategory) return;
+    
+    try {
+      const data = await FetchAllProductItems();
+      const filteredProducts = data.filter(product => 
+        product.categorie === category && product.subcategorie === subcategory
+      );
+      
+      // Map to simpler structure for UI
+      const mappedProducts = filteredProducts.map(product => ({
+        id: product._id,
+        name: product.nom,
+        image: product.images && product.images.length > 0 ? product.images[0].url : null,
+        order: product.order || 0
+      }));
+      
+      // Sort by existing order if available
+      mappedProducts.sort((a, b) => a.order - b.order);
+      
+      setProductsToOrder(mappedProducts);
+    } catch (error) {
+      console.error('Error fetching products for ordering:', error);
+    }
+  };
+
+  // Drag and drop handlers
+  const handleDragStart = (e, index) => {
+    setDraggedItem(index);
+    dragNode.current = e.target;
+    setTimeout(() => {
+      e.target.classList.add('opacity-50');
+    }, 0);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedItem(null);
+    setDraggedOverItem(null);
+    dragNode.current.classList.remove('opacity-50');
+    dragNode.current = null;
+  };
+
+  const handleDrop = (e, dropIndex) => {
+    if (draggedItem === null) return;
+    
+    // Reorder the products array
+    const newProductsOrder = [...productsToOrder];
+    const draggedItemContent = newProductsOrder[draggedItem];
+    newProductsOrder.splice(draggedItem, 1);
+    newProductsOrder.splice(dropIndex, 0, draggedItemContent);
+    
+    setProductsToOrder(newProductsOrder);
+  };
+
+  // Save the new product order
+   const saveProductOrder = async () => {
+     if (!selectedCategory || !selectedSubcategory || productsToOrder.length === 0) return;
+     
+     setIsReordering(true);
+     
+     try {
+       // Extract product IDs in the correct order
+       const productIds = productsToOrder.map(product => product.id);
+       
+       // Call API to save order
+       await ReorderProducts(
+         selectedCategory,
+         selectedSubcategory,
+         productIds
+       );
+       
+       // Show success message
+       setShowSuccessMessage(true);
+       setTimeout(() => setShowSuccessMessage(false), 3000);
+       
+       // Close modal
+       setShowProductOrderingModal(false);
+       setSelectedCategory('');
+       setSelectedSubcategory('');
+       setProductsToOrder([]);
+     } catch (error) {
+       console.error('Error saving product order:', error);
+       toast.error(t('common.error') + ': ' + (error.message || t('common.unknown_error')));
+     } finally {
+       setIsReordering(false);
+     }
+   };
 
   return (
     <div className='pt-4'>
@@ -282,6 +451,7 @@ export default function Products() {
             {t('options')}
           </button>
           <button
+            onClick={() => setShowProductOrderingModal(true)}
             className='flex items-center bg-transparent border border-blue-600
               hover:bg-blue-600 text-blue-600 font-bold 
               hover:text-white
@@ -349,6 +519,7 @@ export default function Products() {
           searchPlaceholder={t('search_products')}
           onRowClick={(product) => handleEditProduct(product)}
           onEdit={handleEditProduct}
+          onClone={handleCloneProduct}
           onDelete={(id) => setDeleteConfirmation({ show: true, productId: id })}
         />
       </div>
@@ -361,6 +532,7 @@ export default function Products() {
             // Close modal when clicking outside
             if (e.target === e.currentTarget) {
               setShowAddForm(false);
+              setSelectedProduct(null);
             }
           }}
         >
@@ -369,7 +541,10 @@ export default function Products() {
             <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('add_product')}</h2>
               <button 
-                onClick={() => setShowAddForm(false)}
+                onClick={() => {
+                  setShowAddForm(false);
+                  setSelectedProduct(null);
+                }}
                 className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
               >
                 <X size={20} />
@@ -378,10 +553,18 @@ export default function Products() {
             
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto p-6">
-              <AddFormProduct onClose={() => setShowAddForm(false)} onSuccess={() => {
-                setShowAddForm(false);
-                fetchProducts();
-              }} />
+              <AddFormProduct 
+                initialData={selectedProduct} 
+                onClose={() => {
+                  setShowAddForm(false);
+                  setSelectedProduct(null);
+                }} 
+                onSuccess={() => {
+                  setShowAddForm(false);
+                  setSelectedProduct(null);
+                  fetchProducts();
+                }} 
+              />
             </div>
             
             {/* Modal Footer */}
@@ -389,7 +572,10 @@ export default function Products() {
               <div className="flex justify-end space-x-3">
                 <button
                   type="button"
-                  onClick={() => setShowAddForm(false)}
+                  onClick={() => {
+                    setShowAddForm(false);
+                    setSelectedProduct(null);
+                  }}
                   className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors"
                 >
                   {t('cancel')}
@@ -458,11 +644,26 @@ export default function Products() {
               <AlertCircle className="mr-2" size={24} />
               <h2 className="text-xl font-semibold">{t('confirm_delete')}</h2>
             </div>
-            <p className="mb-6">{t('delete_product_confirmation')}</p>
+            <p className="mb-4">{t('delete_product_confirmation')}</p>
+            
+            {/* Password input field */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('enter_password')}
+              </label>
+              <input 
+                type="password" 
+                value={deleteConfirmation.password}
+                onChange={(e) => setDeleteConfirmation(prev => ({ ...prev, password: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                placeholder="********"
+              />
+            </div>
+            
             <div className="flex justify-end space-x-3">
               <button
-                onClick={() => setDeleteConfirmation({ show: false, productId: null })}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700"
+                onClick={() => setDeleteConfirmation({ show: false, productId: null, password: '' })}
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700 dark:text-gray-200"
               >
                 {t('cancel')}
               </button>
@@ -523,6 +724,180 @@ export default function Products() {
               <Options initialShowForm={showOptionsForm} onFormClose={() => setShowOptionsForm(false)} />
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Product Ordering Modal */}
+      {showProductOrderingModal && (
+        <div 
+          className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+          onClick={(e) => {
+            // Close modal when clicking outside
+            if (e.target === e.currentTarget) {
+              setShowProductOrderingModal(false);
+            }
+          }}
+        >
+          <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl max-h-[90vh] overflow-hidden shadow-xl flex flex-col">
+            {/* Modal Header */}
+            <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('product_management')}</h2>
+              <button 
+                onClick={() => setShowProductOrderingModal(false)}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="space-y-6">
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                  <h3 className="text-lg font-medium text-blue-800 dark:text-blue-300 mb-2">{t('product_order_instructions')}</h3>
+                  <p className="text-blue-700 dark:text-blue-400">
+                    {t('drag_drop_products_instruction')}
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Category Selection - Reversed order */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                      {t('categories')}
+                    </h3>
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {t('select_subcategory')}
+                      </label>
+                      <select 
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                        value={selectedSubcategory || ''}
+                        onChange={handleSublinkChange}
+                      >
+                        <option value="">{t('select_subcategory')}</option>
+                        {/* Get all unique subcategories across all categories */}
+                        {[...new Set(categoriesWithSubcategories.flatMap(c => c.subcategories))].map((subcategory) => (
+                          <option key={subcategory} value={subcategory}>
+                            {subcategory}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {t('select_category')}
+                      </label>
+                      <select 
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                        disabled={!selectedSubcategory}
+                        value={selectedCategory || ''}
+                        onChange={handleCategoryChange}
+                      >
+                        <option value="">{t('select_category')}</option>
+                        {/* Only show categories that have the selected subcategory */}
+                        {selectedSubcategory ? 
+                          categoriesWithSubcategories
+                            .filter(c => c.subcategories.includes(selectedSubcategory))
+                            .map((category) => (
+                              <option key={category.name} value={category.name}>
+                                {category.name}
+                              </option>
+                            ))
+                          : categoriesWithSubcategories.map((category) => (
+                              <option key={category.name} value={category.name}>
+                                {category.name}
+                              </option>
+                            ))
+                        }
+                      </select>
+                    </div>
+                  </div>
+                  
+                  {/* Products Order */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                      {t('products_order')}
+                    </h3>
+                    <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 min-h-[300px]">
+                      {productsToOrder.length > 0 ? (
+                        <div className="space-y-2">
+                          {productsToOrder.map((product, index) => (
+                            <div 
+                              key={product.id}
+                              className={`flex items-center p-2 bg-white dark:bg-gray-600 rounded-md shadow-sm cursor-move ${draggedItem === index ? 'opacity-50' : ''} ${draggedOverItem === index ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+                              draggable="true"
+                              onDragStart={(e) => handleDragStart(e, index)}
+                              onDragEnd={handleDragEnd}
+                              onDragOver={(e) => {
+                                e.preventDefault();
+                                e.currentTarget.classList.add('bg-blue-50', 'dark:bg-blue-900/20');
+                              }}
+                              onDragLeave={(e) => {
+                                e.currentTarget.classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
+                              }}
+                              onDrop={(e) => {
+                                e.preventDefault();
+                                e.currentTarget.classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
+                                handleDrop(e, index);
+                              }}
+                            >
+                              <div className="flex-shrink-0 text-gray-400 dark:text-gray-300 mr-2">
+                                <GripVertical size={18} />
+                              </div>
+                              <div className="flex-shrink-0 w-12 h-12 mr-3 overflow-hidden rounded-md">
+                                {product.image ? (
+                                  <img 
+                                    src={product.image} 
+                                    alt={product.name} 
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                    <Tags size={20} className="text-gray-400" />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-1">
+                                <p className="font-medium text-gray-800 dark:text-white">{product.name}</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-300">ID: {product.id}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 dark:text-gray-400 text-center">
+                          {t('select_category_and_subcategory')}
+                        </p>
+                      )}
+                    </div>
+                    
+                    <div className="flex justify-end">
+                      <button
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 flex items-center"
+                        disabled={!productsToOrder.length || isReordering}
+                        onClick={saveProductOrder}
+                      >
+                        {isReordering ? t('saving') : t('save')}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Success Message */}
+      {showSuccessMessage && (
+        <div className="fixed bottom-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md z-50 flex items-center">
+          <CheckCircle size={20} className="mr-2" />
+          <span>{t('product_order_saved')}</span>
+          <button className="ml-4 text-green-500 hover:text-green-700" onClick={() => setShowSuccessMessage(false)}>
+            <X size={16} />
+          </button>
         </div>
       )}
     </div>

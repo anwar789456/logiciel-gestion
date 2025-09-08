@@ -320,16 +320,57 @@ export const DeleteCategoryItem = async (id) => {
  * @param {Array} productIds - Array of product IDs in the desired order
  */
 export const ReorderProducts = async (categoryHref, sublinkHref, productIds) => {
+    console.log('ReorderProducts called with:', { categoryHref, sublinkHref, productIds });
+    console.log('Using API endpoint:', API_BASE_URL_PROD_ORDER);
+    
+    // Validate input parameters
+    if (!categoryHref) {
+      console.error('Missing categoryHref parameter');
+      throw new Error('Category is required');
+    }
+    
+    if (!sublinkHref) {
+      console.error('Missing sublinkHref parameter');
+      throw new Error('Subcategory is required');
+    }
+    
+    if (!productIds || !Array.isArray(productIds) || productIds.length === 0) {
+      console.error('Invalid productIds parameter:', productIds);
+      throw new Error('Product IDs array is required');
+    }
+    
     try {
-      const response = await axios.put(API_BASE_URL_PROD_ORDER, {
+      const requestData = {
         categoryHref,
         sublinkHref,
         productIds
-      });
+      };
+      
+      console.log('Sending request with data:', requestData);
+      
+      const response = await axios.put(API_BASE_URL_PROD_ORDER, requestData);
+      console.log('ReorderProducts response:', response.data);
       return response.data;
     } catch (error) {
       console.error('Error reordering products:', error);
-      throw error;
+      
+      // Enhanced error logging
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error('Error response data:', error.response.data);
+        console.error('Error response status:', error.response.status);
+        console.error('Error response headers:', error.response.headers);
+        throw new Error(`Server error: ${error.response.status} - ${error.response.data?.message || 'Unknown error'}`);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error('Error request:', error.request);
+        throw new Error('No response received from server');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error('Error message:', error.message);
+        throw new Error(`Request setup error: ${error.message}`);
+      }
     }
 };
 

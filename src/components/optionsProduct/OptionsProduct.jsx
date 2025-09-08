@@ -1,7 +1,175 @@
 import React, { useEffect, useState } from 'react';
 import { FetchAllOptionItems, DeleteOptionById, UpdateOptionById, addOption } from '../../api/options/Options';
-import { Pencil, Trash2, X, Plus } from 'lucide-react';
-import { OptionsDisplay } from './OptionsDisplay'
+import { Pencil, Trash2, X, Plus, GripVertical } from 'lucide-react';
+import { OptionsDisplay } from './OptionsDisplay';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities'
+
+// Sortable row component for mousse options
+const SortableMousseOptionRow = ({ id, mousse, index, handleEditMousseOption, handleRemoveMousseOption }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id });
+  
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+  
+  return (
+    <tr ref={setNodeRef} style={style} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+      <td className="px-2 py-4 whitespace-nowrap text-sm">
+        <button 
+          type="button" 
+          className="cursor-grab text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+          {...attributes}
+          {...listeners}
+        >
+          <GripVertical size={18} />
+        </button>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{mousse.mousse_name}</td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{mousse.mousse_prix}</td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm">
+        <button 
+          type="button" 
+          onClick={() => handleEditMousseOption(index)} 
+          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+        >
+          <Pencil size={18} />
+        </button>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm">
+        <button 
+          type="button" 
+          onClick={() => handleRemoveMousseOption(index)} 
+          className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+        >
+          <Trash2 size={18} />
+        </button>
+      </td>
+    </tr>
+  );
+};
+
+// Sortable row component for size options
+const SortableSizeOptionRow = ({ id, size, index, handleEditSizeOption, handleRemoveSizeOption }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id });
+  
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+  
+  return (
+    <tr ref={setNodeRef} style={style} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+      <td className="px-2 py-4 whitespace-nowrap text-sm">
+        <button 
+          type="button" 
+          className="cursor-grab text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+          {...attributes}
+          {...listeners}
+        >
+          <GripVertical size={18} />
+        </button>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{size.longueur}</td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{size.largeur}</td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{size.prix_option}</td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{size.prix_coffre}</td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+        {size.img_path ? (
+          <div className="flex items-center">
+            <img src={size.img_path} alt="Size preview" className="h-10 w-10 object-cover rounded-md mr-2" />
+            <span className="text-xs truncate max-w-[100px]">{size.img_path}</span>
+          </div>
+        ) : (
+          <span className="text-gray-400">Aucune image</span>
+        )}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm">
+        <button 
+          type="button" 
+          onClick={() => handleEditSizeOption(index)} 
+          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+        >
+          <Pencil size={18} />
+        </button>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm">
+        <button 
+          type="button" 
+          onClick={() => handleRemoveSizeOption(index)} 
+          className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+        >
+          <Trash2 size={18} />
+        </button>
+      </td>
+    </tr>
+  );
+};
+
+// Sortable row component for custom options
+const SortableCustomOptionRow = ({ id, custom, index, handleEditCustomOption, handleRemoveCustomOption }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id });
+  
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+  
+  return (
+    <tr ref={setNodeRef} style={style} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+      <td className="px-2 py-4 whitespace-nowrap text-sm">
+        <button 
+          type="button" 
+          className="cursor-grab text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+          {...attributes}
+          {...listeners}
+        >
+          <GripVertical size={18} />
+        </button>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{custom.option_name}</td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{custom.prix_option}</td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm">
+        <button 
+          type="button" 
+          onClick={() => handleEditCustomOption(index)} 
+          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+        >
+          <Pencil size={18} />
+        </button>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm">
+        <button 
+          type="button" 
+          onClick={() => handleRemoveCustomOption(index)} 
+          className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+        >
+          <Trash2 size={18} />
+        </button>
+      </td>
+    </tr>
+  );
+};
 
 const Options = ({ initialShowForm = false, onFormClose }) => {
   const [options, setOptions] = useState([]);
@@ -9,11 +177,19 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
   const [editId, setEditId] = useState(null);
   const [customOption, setCustomOption] = useState({ option_name: '', prix_option: '' });
   const [customEditIndex, setCustomEditIndex] = useState(null);
-  const [sizeOption, setSizeOption] = useState({ longueur: '', largeur: '', prix_option: '', prix_coffre: '' });
+  const [sizeOption, setSizeOption] = useState({ longueur: '', largeur: '', prix_option: '', prix_coffre: '', img_path: '' });
   const [sizeEditIndex, setSizeEditIndex] = useState(null);
   const [mousseOption, setMousseOption] = useState({ mousse_name: '', mousse_prix: '' });
   const [mousseEditIndex, setMousseEditIndex] = useState(null);
   const [showForm, setShowForm] = useState(initialShowForm);
+  
+  // Move useSensors hook to the top level of the component
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
   
   // Écouter les changements de initialShowForm
   useEffect(() => {
@@ -146,6 +322,69 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
       ...prev,
       customOptions: prev.customOptions.filter((_, i) => i !== index),
     }));
+  };
+  
+  // Handle drag end for custom options
+  const handleDragEndCustomOptions = (event) => {
+    const { active, over } = event;
+    
+    if (active.id !== over.id) {
+      setFormData((prev) => {
+        const oldIndex = parseInt(active.id.split('-')[1]);
+        const newIndex = parseInt(over.id.split('-')[1]);
+        
+        const newCustomOptions = [...prev.customOptions];
+        const [movedItem] = newCustomOptions.splice(oldIndex, 1);
+        newCustomOptions.splice(newIndex, 0, movedItem);
+        
+        return {
+          ...prev,
+          customOptions: newCustomOptions,
+        };
+      });
+    }
+  };
+  
+  // Handle drag end for size options
+  const handleDragEndSizeOptions = (event) => {
+    const { active, over } = event;
+    
+    if (active.id !== over.id) {
+      setFormData((prev) => {
+        const oldIndex = parseInt(active.id.split('-')[1]);
+        const newIndex = parseInt(over.id.split('-')[1]);
+        
+        const newSizesOptions = [...prev.sizesOptions];
+        const [movedItem] = newSizesOptions.splice(oldIndex, 1);
+        newSizesOptions.splice(newIndex, 0, movedItem);
+        
+        return {
+          ...prev,
+          sizesOptions: newSizesOptions,
+        };
+      });
+    }
+  };
+  
+  // Handle drag end for mousse options
+  const handleDragEndMousseOptions = (event) => {
+    const { active, over } = event;
+    
+    if (active.id !== over.id) {
+      setFormData((prev) => {
+        const oldIndex = parseInt(active.id.split('-')[1]);
+        const newIndex = parseInt(over.id.split('-')[1]);
+        
+        const newMouseOptions = [...prev.mousseOptions];
+        const [movedItem] = newMouseOptions.splice(oldIndex, 1);
+        newMouseOptions.splice(newIndex, 0, movedItem);
+        
+        return {
+          ...prev,
+          mousseOptions: newMouseOptions,
+        };
+      });
+    }
   };
   
   const handleSubmit = async (e) => {
@@ -296,7 +535,7 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
               {formData.typeOption === 'sizes' && (
                 <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3">Size Options</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-3">
+                  <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-3">
                     <input 
                       type="text" 
                       name="longueur" 
@@ -330,6 +569,15 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
                       autoComplete="off" 
                       value={sizeOption.prix_coffre} 
                       placeholder="Prix Coffre" 
+                      onChange={handleSizeOptionChange}
+                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                    />
+                    <input 
+                      type="text" 
+                      name="img_path" 
+                      autoComplete="off" 
+                      value={sizeOption.img_path} 
+                      placeholder="URL de l'image (HTTPS)" 
                       onChange={handleSizeOptionChange}
                       className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                     />
@@ -387,6 +635,7 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
                     <tr>
                       {formData.typeOption === 'options' && (
                         <>
+                          <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ordre</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom de l'option</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Prix de l'option</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Modifier</th>
@@ -395,16 +644,19 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
                       )}
                       {formData.typeOption === 'sizes' && (
                         <>
+                          <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ordre</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Longueur</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Largeur</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Prix Dimension</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Prix Coffre</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Image</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Edit</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Delete</th>
                         </>
                       )}
                       {formData.typeOption === 'mousse' && (
                         <>
+                          <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ordre</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom de la mousse</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Prix de la mousse</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Modifier</th>
@@ -414,89 +666,81 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                    {formData.typeOption === 'options' &&
-                      formData.customOptions.map((custom, index) => (
-                        <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{custom.option_name}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{custom.prix_option}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            <button 
-                              type="button" 
-                              onClick={() => handleEditCustomOption(index)} 
-                              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                            >
-                              <Pencil size={18} />
-                            </button>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            <button 
-                              type="button" 
-                              onClick={() => handleRemoveCustomOption(index)} 
-                              className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-                            >
-                              <Trash2 size={18} />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    {formData.typeOption === 'sizes' &&
-                      formData.sizesOptions.map((size, index) => (
-                        <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{size.longueur}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{size.largeur}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{size.prix_option}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{size.prix_coffre}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            <button 
-                              type="button" 
-                              onClick={() => handleEditSizeOption(index)} 
-                              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                            >
-                              <Pencil size={18} />
-                            </button>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            <button 
-                              type="button" 
-                              onClick={() => setFormData((prev) => ({
+                    {formData.typeOption === 'options' && (
+                      <DndContext 
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleDragEndCustomOptions}
+                      >
+                        <SortableContext 
+                          items={formData.customOptions.map((_, index) => `custom-${index}`)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          {formData.customOptions.map((custom, index) => (
+                            <SortableCustomOptionRow 
+                              key={`custom-${index}`}
+                              id={`custom-${index}`}
+                              custom={custom} 
+                              index={index} 
+                              handleEditCustomOption={handleEditCustomOption}
+                              handleRemoveCustomOption={handleRemoveCustomOption}
+                            />
+                          ))}
+                        </SortableContext>
+                      </DndContext>
+                    )}
+                    {formData.typeOption === 'sizes' && (
+                      <DndContext 
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleDragEndSizeOptions}
+                      >
+                        <SortableContext 
+                          items={formData.sizesOptions.map((_, index) => `size-${index}`)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          {formData.sizesOptions.map((size, index) => (
+                            <SortableSizeOptionRow 
+                              key={`size-${index}`}
+                              id={`size-${index}`}
+                              size={size} 
+                              index={index} 
+                              handleEditSizeOption={handleEditSizeOption}
+                              handleRemoveSizeOption={(index) => setFormData((prev) => ({
                                 ...prev,
                                 sizesOptions: prev.sizesOptions.filter((_, i) => i !== index),
-                              }))} 
-                              className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-                            >
-                              <Trash2 size={18} />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    {formData.typeOption === 'mousse' &&
-                      formData.mousseOptions.map((mousse, index) => (
-                        <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{mousse.mousse_name}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{mousse.mousse_prix}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            <button 
-                              type="button" 
-                              onClick={() => handleEditMousseOption(index)} 
-                              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                            >
-                              <Pencil size={18} />
-                            </button>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            <button 
-                              type="button" 
-                              onClick={() => setFormData((prev) => ({ 
+                              }))}
+                            />
+                          ))}
+                        </SortableContext>
+                      </DndContext>
+                    )}
+                    {formData.typeOption === 'mousse' && (
+                      <DndContext 
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleDragEndMousseOptions}
+                      >
+                        <SortableContext 
+                          items={formData.mousseOptions.map((_, index) => `mousse-${index}`)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          {formData.mousseOptions.map((mousse, index) => (
+                            <SortableMousseOptionRow 
+                              key={`mousse-${index}`}
+                              id={`mousse-${index}`}
+                              mousse={mousse} 
+                              index={index} 
+                              handleEditMousseOption={handleEditMousseOption}
+                              handleRemoveMousseOption={(index) => setFormData((prev) => ({ 
                                 ...prev, 
                                 mousseOptions: prev.mousseOptions.filter((_, i) => i !== index),
-                              }))} 
-                              className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-                            >
-                              <Trash2 size={18} />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
+                              }))}
+                            />
+                          ))}
+                        </SortableContext>
+                      </DndContext>
+                    )}
                   </tbody>
                 </table>
               </div>

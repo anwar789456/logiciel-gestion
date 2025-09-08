@@ -762,7 +762,7 @@ function Sidebar() {
                     <div className="mr-2 flex items-center justify-center flex-shrink-0">
                       <Package size={20} />
                     </div>
-                    Products
+                    {t('products')}
                   </NavLink>
                 </div>
                 )}
