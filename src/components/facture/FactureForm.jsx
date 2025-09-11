@@ -67,17 +67,31 @@ const FactureForm = ({ existingFacture = null, onSuccess, onCancel }) => {
   const calculateTotals = () => {
     let subtotal = 0;
     let totalDiscount = 0;
+    let totalTvaAmount = 0;
 
     formData.items.forEach(item => {
       const quantity = parseFloat(item.quantity) || 0;
       const basePrice = parseFloat(item.basePrice) || parseFloat(item.unitPrice) || 0;
       const discount = parseFloat(item.discount) || 0;
       const optionPrice = item.selectedOption ? parseFloat(item.selectedOption.prix_option) || 0 : 0;
+      const productTva = parseFloat(item.tva) || 19;
+      const optionTva = parseFloat(item.optionTva) || parseFloat(item.selectedOption?.tva) || productTva;
       
       // Calculer le sous-total avec prix de base + option
       const itemSubtotal = quantity * (basePrice + optionPrice);
       // Appliquer la remise uniquement sur le prix de base
       const itemDiscount = quantity * basePrice * (discount / 100);
+      
+      // Calculer la TVA pour chaque composant si c'est une entreprise
+      if (formData.clientType === 'entreprise') {
+        const basePriceAfterDiscount = quantity * basePrice * (1 - discount / 100);
+        const optionPriceTotal = quantity * optionPrice;
+        
+        const baseTva = basePriceAfterDiscount * (productTva / 100);
+        const optionTvaAmount = optionPriceTotal * (optionTva / 100);
+        
+        totalTvaAmount += baseTva + optionTvaAmount;
+      }
       
       subtotal += itemSubtotal;
       totalDiscount += itemDiscount;
@@ -85,9 +99,9 @@ const FactureForm = ({ existingFacture = null, onSuccess, onCancel }) => {
 
     const totalHT = subtotal - totalDiscount;
 
-    // Calculate TVA for enterprises
-    const tvaRate = formData.clientType === 'entreprise' ? formData.tvaRate : 0;
-    const tvaAmount = formData.clientType === 'entreprise' ? (totalHT * tvaRate / 100) : 0;
+    // Pour les entreprises, utiliser la TVA calculée par article
+    // Pour les particuliers, pas de TVA
+    const tvaAmount = formData.clientType === 'entreprise' ? totalTvaAmount : 0;
     const totalTTC = totalHT + tvaAmount;
 
     // For particulier: totalAmount = totalHT, for entreprise: totalAmount = totalTTC
@@ -160,7 +174,15 @@ const FactureForm = ({ existingFacture = null, onSuccess, onCancel }) => {
   const addItem = () => {
     setFormData(prev => ({
       ...prev,
-      items: [...prev.items, { quantity: 1, description: '', refColor: '', unitPrice: 0, discount: 0 }]
+      items: [...prev.items, { 
+        quantity: 1, 
+        description: '', 
+        refColor: '', 
+        unitPrice: 0, 
+        discount: 0,
+        tva: 19,
+        optionTva: 19
+      }]
     }));
   };
 
@@ -454,12 +476,18 @@ const FactureForm = ({ existingFacture = null, onSuccess, onCancel }) => {
                       value={item}
                       onChange={(newItem) => {
                         const updatedItems = [...formData.items];
-                        updatedItems[index] = newItem;
+                        // S'assurer que les champs TVA sont inclus
+                        updatedItems[index] = {
+                          ...newItem,
+                          tva: newItem.tva || 19,
+                          optionTva: newItem.optionTva || newItem.tva || 19
+                        };
                         setFormData({ ...formData, items: updatedItems });
                       }}
                       showPrice={true}
                       showQuantity={true}
                       showRefColor={true}
+                      itemIndex={index}
                       placeholder="Sélectionner un produit ou saisir manuellement"
                     />
                   </div>

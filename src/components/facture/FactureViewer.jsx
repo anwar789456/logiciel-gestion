@@ -118,88 +118,152 @@ const FactureViewer = ({ facture, onEdit, onBack }) => {
 
         {/* Items Table */}
         <div className="overflow-x-auto mb-6">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 border border-gray-200 dark:border-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider border-r border-gray-200 dark:border-gray-600">
-                  Quantité
-                </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider border-r border-gray-200 dark:border-gray-600">
+          <table className="min-w-full border-collapse">
+            <thead>
+              <tr className="bg-white border-b-2 border-black">
+                <th className="px-4 py-3 text-left text-sm font-medium text-black">
                   Description
                 </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider border-r border-gray-200 dark:border-gray-600">
-                  Ref Color
+                <th className="px-4 py-3 text-center text-sm font-medium text-black">
+                  Quantité
                 </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider border-r border-gray-200 dark:border-gray-600">
-                  P. unitaire HT
+                <th className="px-4 py-3 text-center text-sm font-medium text-black">
+                  Prix unitaire
                 </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Total HT
+                <th className="px-4 py-3 text-center text-sm font-medium text-black">
+                  Taxes
+                </th>
+                <th className="px-4 py-3 text-center text-sm font-medium text-black">
+                  Montant
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {facture.items.map((item, index) => (
-                <tr key={index}>
-                  <td className="px-4 py-4 text-center text-sm text-gray-900 dark:text-white border-r border-gray-200 dark:border-gray-600">
-                    {item.quantity}
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-900 dark:text-white border-r border-gray-200 dark:border-gray-600">
-                    {item.description}
-                  </td>
-                  <td className="px-4 py-4 text-center text-sm text-gray-900 dark:text-white border-r border-gray-200 dark:border-gray-600">
-                    {item.refColor || '-'}
-                  </td>
-                  <td className="px-4 py-4 text-center text-sm text-gray-900 dark:text-white border-r border-gray-200 dark:border-gray-600">
-                    {item.unitPrice.toFixed(3)}
-                  </td>
-                  <td className="px-4 py-4 text-center text-sm text-gray-900 dark:text-white">
-                    {item.total.toFixed(3)}
-                  </td>
-                </tr>
-              ))}
+            <tbody className="bg-white">
+              {facture.items.map((item, index) => {
+                const productTva = parseFloat(item.tva) || 19;
+                const optionTva = parseFloat(item.optionTva) || parseFloat(item.selectedOption?.tva) || productTva;
+                const basePrice = parseFloat(item.basePrice) || parseFloat(item.unitPrice) || 0;
+                const optionPrice = item.selectedOption ? parseFloat(item.selectedOption.prix_option) || 0 : 0;
+                const quantity = parseFloat(item.quantity) || 1;
+                const discount = parseFloat(item.discount) || 0;
+                
+                // Calcul du prix après remise pour le produit de base
+                const basePriceAfterDiscount = basePrice * (1 - discount / 100);
+                const baseTotalAfterDiscount = quantity * basePriceAfterDiscount;
+                
+                const rows = [];
+                
+                // Ligne principale du produit
+                rows.push(
+                  <tr key={`${index}-main`} className="border-b border-gray-200">
+                    <td className="px-4 py-3 text-sm text-black">
+                      {item.description}
+                    </td>
+                    <td className="px-4 py-3 text-center text-sm text-black">
+                      {item.quantity.toFixed(2)}
+                    </td>
+                    <td className="px-4 py-3 text-center text-sm text-black">
+                      {basePrice.toFixed(2)}
+                    </td>
+                    <td className="px-4 py-3 text-center text-sm text-black">
+                      {productTva}%
+                    </td>
+                    <td className="px-4 py-3 text-center text-sm text-black">
+                      {baseTotalAfterDiscount.toFixed(2)} DT
+                    </td>
+                  </tr>
+                );
+                
+                // Ligne séparée pour l'option si elle existe
+                if (item.selectedOption && optionPrice > 0) {
+                  const optionTotal = quantity * optionPrice;
+                  rows.push(
+                    <tr key={`${index}-option`} className="border-b border-gray-200">
+                      <td className="px-4 py-3 text-sm text-black">
+                        {item.selectedOption.option_name}
+                      </td>
+                      <td className="px-4 py-3 text-center text-sm text-black">
+                        {item.quantity.toFixed(2)}
+                      </td>
+                      <td className="px-4 py-3 text-center text-sm text-black">
+                        {optionPrice.toFixed(2)}
+                      </td>
+                      <td className="px-4 py-3 text-center text-sm text-black">
+                        {optionTva}%
+                      </td>
+                      <td className="px-4 py-3 text-center text-sm text-black">
+                        {optionTotal.toFixed(2)} DT
+                      </td>
+                    </tr>
+                  );
+                }
+                
+                return rows;
+              })}
             </tbody>
           </table>
         </div>
 
         {/* Summary */}
-        <div className="flex justify-end">
-          <div className="w-64 border border-gray-200 dark:border-gray-700">
-            <div className="bg-gray-50 dark:bg-gray-700 px-4 py-2 border-b border-gray-200 dark:border-gray-600">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-900 dark:text-white">TOTAL HT</span>
-                <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  {facture.totalHT.toFixed(3)}
-                </span>
-              </div>
+        <div className="flex justify-end mt-6">
+          <div className="w-80">
+            {/* Montant hors taxes */}
+            <div className="flex justify-between items-center py-2 border-b border-gray-300">
+              <span className="text-sm text-black">Montant hors taxes</span>
+              <span className="text-sm font-medium text-black">{facture.totalHT.toFixed(3)} DT</span>
             </div>
-            <div className="bg-gray-50 dark:bg-gray-700 px-4 py-2 border-b border-gray-200 dark:border-gray-600">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-900 dark:text-white">TVA</span>
-                <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  {facture.tvaAmount.toFixed(3)}
-                </span>
-              </div>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-700 px-4 py-2 border-b border-gray-200 dark:border-gray-600">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-900 dark:text-white">Timbre Fiscal</span>
-                <span className="text-sm font-medium text-gray-900 dark:text-white">1.000</span>
-              </div>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-700 px-4 py-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-bold text-gray-900 dark:text-white">TOTAL TTC</span>
-                <span className="text-sm font-bold text-gray-900 dark:text-white">
-                  {(facture.totalTTC + 1).toFixed(3)}
-                </span>
-              </div>
+            
+            {/* TVA Details */}
+            {facture.clientType === 'entreprise' && (() => {
+              // Regrouper les articles et options par taux de TVA
+              const tvaGroups = {};
+              
+              facture.items.forEach((item) => {
+                const quantity = parseFloat(item.quantity) || 0;
+                const basePrice = parseFloat(item.basePrice) || parseFloat(item.unitPrice) || 0;
+                const discount = parseFloat(item.discount) || 0;
+                const optionPrice = item.selectedOption ? parseFloat(item.selectedOption.prix_option) || 0 : 0;
+                
+                const productTva = parseFloat(item.tva) || 19;
+                const optionTva = parseFloat(item.optionTva) || parseFloat(item.selectedOption?.tva) || productTva;
+                
+                // Montant HT après remise pour le produit
+                const basePriceAfterDiscount = quantity * basePrice * (1 - discount / 100);
+                
+                // Ajouter au groupe TVA du produit
+                if (!tvaGroups[productTva]) {
+                  tvaGroups[productTva] = 0;
+                }
+                tvaGroups[productTva] += basePriceAfterDiscount;
+                
+                // Ajouter au groupe TVA de l'option si elle existe
+                if (item.selectedOption && optionPrice > 0) {
+                  const optionPriceTotal = quantity * optionPrice;
+                  
+                  if (!tvaGroups[optionTva]) {
+                    tvaGroups[optionTva] = 0;
+                  }
+                  tvaGroups[optionTva] += optionPriceTotal;
+                }
+              });
+              
+              return Object.entries(tvaGroups).map(([rate, baseAmount]) => (
+                <div key={rate} className="flex justify-between items-center py-2 border-b border-gray-300">
+                  <span className="text-sm text-black">TVA {rate}% sur {baseAmount.toFixed(2)} DT</span>
+                  <span className="text-sm text-black">{(baseAmount * parseFloat(rate) / 100).toFixed(3)} DT</span>
+                </div>
+              ));
+            })()}
+            
+            {/* Total */}
+            <div className="flex justify-between items-center py-2 pt-3">
+              <span className="text-sm font-bold text-black">Total</span>
+              <span className="text-sm font-bold text-black">{facture.totalAmount.toFixed(3)} DT</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Client Information */}
       {facture.clientType === 'entreprise' && (
         <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
           <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">

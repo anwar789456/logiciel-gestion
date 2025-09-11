@@ -9,7 +9,8 @@ const ProductSelector = ({
   showPrice = true,
   showQuantity = true,
   showRefColor = false,
-  className = ""
+  className = "",
+  itemIndex = 0
 }) => {
   const [products, setProducts] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -27,7 +28,9 @@ const ProductSelector = ({
     refColor: '',
     reference: '',
     selectedOption: null,
-    productOptions: []
+    productOptions: [],
+    tva: 19, // TVA du produit en %
+    optionTva: 19 // TVA de l'option en %
   };
 
   const currentValues = { ...defaultValues, ...value };
@@ -57,6 +60,7 @@ const ProductSelector = ({
 
   const handleProductSelect = (product) => {
     const basePrice = parseFloat(product.minPrice) || 0;
+    const productTva = parseFloat(product.tva) || 19;
     const selectedProduct = {
       description: product.nom || product.description || '',
       quantity: currentValues.quantity,
@@ -67,7 +71,9 @@ const ProductSelector = ({
       reference: product.idProd || '',
       productId: product._id,
       selectedOption: null,
-      productOptions: product.options || []
+      productOptions: product.options || [],
+      tva: productTva, // TVA du produit
+      optionTva: productTva // TVA par défaut pour les options
     };
     
     onChange(selectedProduct);
@@ -113,12 +119,14 @@ const ProductSelector = ({
   const handleOptionSelect = (option) => {
     const basePrice = parseFloat(currentValues.basePrice) || 0;
     const optionPrice = parseFloat(option.prix_option) || 0;
+    const optionTva = parseFloat(option.tva) || parseFloat(currentValues.tva) || 19;
     const newPrice = basePrice + optionPrice;
     
     const updatedValues = {
       ...currentValues,
       selectedOption: option,
-      unitPrice: newPrice
+      unitPrice: newPrice,
+      optionTva: optionTva
     };
     onChange(updatedValues);
   };
@@ -239,8 +247,8 @@ const ProductSelector = ({
             <div className="flex items-center">
               <input
                 type="radio"
-                id="no-option"
-                name={`option-${currentValues.productId}`}
+                id={`no-option-${itemIndex}`}
+                name={`option-${itemIndex}-${currentValues.productId || 'manual'}`}
                 checked={!currentValues.selectedOption}
                 onChange={() => {
                   const basePrice = parseFloat(currentValues.basePrice) || 0;
@@ -254,7 +262,7 @@ const ProductSelector = ({
                 }}
                 className="mr-2"
               />
-              <label htmlFor="no-option" className="text-sm text-gray-700 dark:text-gray-300">
+              <label htmlFor={`no-option-${itemIndex}`} className="text-sm text-gray-700 dark:text-gray-300">
                 Aucune option (prix de base)
               </label>
             </div>
@@ -262,14 +270,14 @@ const ProductSelector = ({
               <div key={index} className="flex items-center">
                 <input
                   type="radio"
-                  id={`option-${index}`}
-                  name={`option-${currentValues.productId}`}
+                  id={`option-${itemIndex}-${index}`}
+                  name={`option-${itemIndex}-${currentValues.productId || 'manual'}`}
                   checked={currentValues.selectedOption?.option_name === option.option_name}
                   onChange={() => handleOptionSelect(option)}
                   className="mr-2"
                 />
-                <label htmlFor={`option-${index}`} className="text-sm text-gray-700 dark:text-gray-300">
-                  {option.option_name} (+{parseFloat(option.prix_option || 0).toFixed(3)} DT)
+                <label htmlFor={`option-${itemIndex}-${index}`} className="text-sm text-gray-700 dark:text-gray-300">
+                  {option.option_name} (+{parseFloat(option.prix_option || 0).toFixed(3)} DT) - TVA: {parseFloat(option.tva || currentValues.tva || 19)}%
                 </label>
               </div>
             ))}
@@ -312,7 +320,7 @@ const ProductSelector = ({
       )}
 
       {/* Champs détails */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {/* Quantité */}
         {showQuantity && (
           <div>
@@ -359,6 +367,24 @@ const ProductSelector = ({
               step="0.1"
               value={currentValues.discount}
               onChange={(e) => handleManualInput('discount', parseFloat(e.target.value) || 0)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+          </div>
+        )}
+
+        {/* TVA */}
+        {showPrice && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              TVA (%)
+            </label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              step="0.1"
+              value={currentValues.tva}
+              onChange={(e) => handleManualInput('tva', parseFloat(e.target.value) || 0)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             />
           </div>
