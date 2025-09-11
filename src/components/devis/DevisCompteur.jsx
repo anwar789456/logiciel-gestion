@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Hash, Save, RefreshCw } from 'lucide-react';
-import { getDevisCounter, updateDevisCounter } from '../api/devisCompteur';
+import { getDevisCounter, updateDevisCounter } from '../../api/devisCompteur';
 
 const DevisCompteur = () => {
   const { t } = useTranslation();

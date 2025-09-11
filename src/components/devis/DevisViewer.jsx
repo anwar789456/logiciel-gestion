@@ -1,6 +1,6 @@
 import React from 'react';
 import { Download, Edit, ArrowLeft, FileText, User, Phone, MapPin, Calendar } from 'lucide-react';
-import { downloadDevisPDF } from '../api/devis/devis';
+import { downloadDevisPDF } from '../../api/devis/devis';
 
 const DevisViewer = ({ devis, onEdit, onBack }) => {
   const handleDownloadPDF = async () => {
@@ -160,26 +160,20 @@ const DevisViewer = ({ devis, onEdit, onBack }) => {
         </table>
       </div>
 
-      {/* Total Section */}
-      <div className="mb-8 flex justify-end">
-        <div className="w-80 bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Sous-total:</span>
-              <span className="font-medium">{devis.subtotal?.toFixed(2)} DT</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Remise totale:</span>
-              <span className="font-medium text-red-600">-{devis.totalDiscount?.toFixed(2)} DT</span>
-            </div>
-            <div className="border-t border-gray-300 dark:border-gray-600 pt-3">
-              <div className="flex justify-between items-center">
-                <span className="text-lg font-semibold text-gray-900 dark:text-white">Total au comptant:</span>
-                <span className="text-xl font-bold text-green-600">{devis.totalAmount?.toFixed(2)} DT</span>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Total Row */}
+      <div className="mb-8 overflow-x-auto">
+        <table className="w-full border-collapse border border-gray-300 dark:border-gray-600">
+          <tbody>
+            <tr className="bg-gray-100 dark:bg-gray-700">
+              <td className="border border-gray-300 dark:border-gray-600 px-4 py-3 text-right font-bold text-gray-900 dark:text-white" colSpan="5">
+                Total
+              </td>
+              <td className="border border-gray-300 dark:border-gray-600 px-4 py-3 text-right font-bold text-gray-900 dark:text-white">
+                {devis.totalAmount?.toFixed(3)} DT
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       {/* Terms and Conditions */}

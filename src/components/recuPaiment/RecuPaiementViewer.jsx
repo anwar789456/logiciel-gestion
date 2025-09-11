@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Download, Edit, ArrowLeft } from 'lucide-react';
-import { downloadRecuPaiementPDF } from '../api/recuPaiementApi';
+import { downloadRecuPaiementPDF } from '../../api/recuPaiementApi';
 
 const RecuPaiementViewer = ({ recuPaiement, onEdit, onBack }) => {
   const [error, setError] = useState('');

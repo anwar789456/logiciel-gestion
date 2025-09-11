@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://www.samethome.com';
+const API_BASE_URL = 'http://localhost:5007';
 
 // API pour récupérer les statistiques générales
 export const getGeneralStats = async () => {
@@ -52,7 +52,73 @@ export const getDevisData = async (page = 1, limit = 10, search = '') => {
   }
 };
 
-// API pour récupérer les données des messages avec pagination
+
+// API pour récupérer les données des factures
+export const getFacturesData = async (page = 1, limit = 10, search = '') => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/admin/api/logiciel/stats/factures`, {
+      params: { page, limit, search }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching factures data:', error);
+    throw error;
+  }
+};
+
+// API pour récupérer les données des bons de livraison
+export const getBonLivraisonData = async (page = 1, limit = 10, search = '') => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/admin/api/logiciel/stats/bonlivraison`, {
+      params: { page, limit, search }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching bon livraison data:', error);
+    throw error;
+  }
+};
+
+// API pour récupérer les données des fiches de commande
+export const getFicheCommandeData = async (page = 1, limit = 10, search = '') => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/admin/api/logiciel/stats/fichecommande`, {
+      params: { page, limit, search }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching fiche commande data:', error);
+    throw error;
+  }
+};
+
+// API pour récupérer les données des reçus de paiement
+export const getRecuPaiementData = async (page = 1, limit = 10, search = '') => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/admin/api/logiciel/stats/recupaiement`, {
+      params: { page, limit, search }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching recu paiement data:', error);
+    throw error;
+  }
+};
+
+// API pour récupérer les statistiques financières
+export const getFinancialStats = async (filters = {}) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/admin/api/logiciel/stats/financial`, {
+      params: filters
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching financial stats:', error);
+    throw error;
+  }
+};
+
+// API pour récupérer les données des messages
 export const getMessagesData = async (page = 1, limit = 10, search = '') => {
   try {
     const response = await axios.get(`${API_BASE_URL}/admin/api/logiciel/stats/messages`, {
@@ -76,26 +142,13 @@ export const getChartsData = async () => {
   }
 };
 
-// API pour récupérer la liste des clients
+// API pour récupérer la liste des clients disponibles
 export const getAvailableClients = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/admin/api/logiciel/stats/clients`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching clients:', error);
-    throw error;
-  }
-};
-
-// API pour récupérer les statistiques par période
-export const getStatsByPeriod = async (period = 'month') => {
-  try {
-    const response = await axios.get(`${API_BASE_URL}/admin/api/logiciel/stats/period`, {
-      params: { period }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching stats by period:', error);
+    console.error('Error fetching available clients:', error);
     throw error;
   }
 };

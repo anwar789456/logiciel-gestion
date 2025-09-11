@@ -48,8 +48,27 @@ const ModernStatsCard = ({
       icon: 'text-white',
       accent: 'bg-indigo-100 dark:bg-indigo-900/30',
       accentText: 'text-indigo-600 dark:text-indigo-400'
+    },
+    emerald: {
+      bg: 'from-emerald-500 to-emerald-600',
+      icon: 'text-white',
+      accent: 'bg-emerald-100 dark:bg-emerald-900/30',
+      accentText: 'text-emerald-600 dark:text-emerald-400'
+    },
+    orange: {
+      bg: 'from-orange-500 to-orange-600',
+      icon: 'text-white',
+      accent: 'bg-orange-100 dark:bg-orange-900/30',
+      accentText: 'text-orange-600 dark:text-orange-400'
     }
   };
+
+  // Get color configuration with fallback to blue if color is not found
+  const getColorConfig = () => {
+    return colorClasses[color] || colorClasses.blue;
+  };
+
+  const colorConfig = getColorConfig();
 
   const getTrendIcon = () => {
     if (!trend) return null;
@@ -114,8 +133,8 @@ const ModernStatsCard = ({
           </div>
           
           {Icon && (
-            <div className={`p-3 rounded-xl bg-gradient-to-r ${colorClasses[color].bg} shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
-              <Icon className={`h-6 w-6 ${colorClasses[color].icon}`} />
+            <div className={`p-3 rounded-xl bg-gradient-to-r ${colorConfig.bg} shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
+              <Icon className={`h-6 w-6 ${colorConfig.icon}`} />
             </div>
           )}
         </div>
@@ -127,7 +146,7 @@ const ModernStatsCard = ({
               {typeof value === 'number' ? value.toLocaleString('fr-FR') : value}
             </p>
             {percentage && (
-              <span className={`text-lg font-semibold ${colorClasses[color].accentText}`}>
+              <span className={`text-lg font-semibold ${colorConfig.accentText}`}>
                 {percentage}%
               </span>
             )}
@@ -142,7 +161,7 @@ const ModernStatsCard = ({
         
         {/* Trend Indicator */}
         {trend !== null && (
-          <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${colorClasses[color].accent}`}>
+          <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${colorConfig.accent}`}>
             {getTrendIcon()}
             {getTrendText()}
             <span className="text-xs text-gray-600 dark:text-gray-400">
@@ -153,7 +172,7 @@ const ModernStatsCard = ({
       </div>
       
       {/* Bottom Accent Line */}
-      <div className={`h-1 bg-gradient-to-r ${colorClasses[color].bg}`}></div>
+      <div className={`h-1 bg-gradient-to-r ${colorConfig.bg}`}></div>
     </div>
   );
 };

@@ -6,6 +6,7 @@ const DataTable = ({
   title, 
   columns, 
   fetchData, 
+  data: staticData = null,
   searchPlaceholder = "Rechercher...",
   onRowClick = null,
   exportData = null 
@@ -23,12 +24,64 @@ const DataTable = ({
   const loadData = async (page = 1, search = '') => {
     try {
       setLoading(true);
-      const response = await fetchData(page, itemsPerPage, search);
-      setData(response.data);
-      setTotalPages(response.pagination.total);
-      setTotalItems(response.pagination.totalItems);
-      setCurrentPage(response.pagination.current);
-      setError(null);
+      
+      // If static data is provided directly, use it instead of fetchData
+      if (staticData && Array.isArray(staticData)) {
+        // Filter data based on search term
+        let filteredData = staticData;
+        if (search) {
+          filteredData = staticData.filter(item =>
+            Object.values(item).some(value =>
+              value && value.toString().toLowerCase().includes(search.toLowerCase())
+            )
+          );
+        }
+        
+        // Paginate the filtered data
+        const startIndex = (page - 1) * itemsPerPage;
+        const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
+        
+        setData(paginatedData);
+        setTotalPages(Math.ceil(filteredData.length / itemsPerPage));
+        setTotalItems(filteredData.length);
+        setCurrentPage(page);
+        setError(null);
+        return;
+      }
+      
+      // If fetchData function is provided, use it
+      if (typeof fetchData === 'function') {
+        const response = await fetchData(page, itemsPerPage, search);
+        
+        // Handle different response formats
+        if (Array.isArray(response)) {
+          // Direct array response (new stats endpoints)
+          setData(response);
+          setTotalPages(Math.ceil(response.length / itemsPerPage));
+          setTotalItems(response.length);
+          setCurrentPage(page);
+        } else if (response.data && response.pagination) {
+          // Paginated response format (existing endpoints)
+          setData(response.data);
+          setTotalPages(response.pagination.total);
+          setTotalItems(response.pagination.totalItems);
+          setCurrentPage(response.pagination.current);
+        } else {
+          // Fallback for unexpected formats
+          setData(Array.isArray(response) ? response : []);
+          setTotalPages(1);
+          setTotalItems(Array.isArray(response) ? response.length : 0);
+          setCurrentPage(page);
+        }
+        setError(null);
+      } else {
+        // No data source provided
+        setData([]);
+        setTotalPages(0);
+        setTotalItems(0);
+        setCurrentPage(1);
+        setError(null);
+      }
     } catch (err) {
       setError(t('error_loading_data'));
       console.error('Error loading data:', err);
@@ -39,7 +92,7 @@ const DataTable = ({
 
   useEffect(() => {
     loadData(1, searchTerm);
-  }, [searchTerm]);
+  }, [searchTerm, staticData]);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -187,7 +240,7 @@ const DataTable = ({
                     key={index}
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
                   >
-                    {column.header}
+                    {column.header || column.label}
                   </th>
                 ))}
                 {onRowClick && (
@@ -204,29 +257,19 @@ const DataTable = ({
         <div className="overflow-x-auto overflow-y-auto" style={{ height: '32vh' }}>
           <table className="w-full">
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {data.map((row, rowIndex) => (
+              {data.map((item, rowIndex) => (
                 <tr
                   key={rowIndex}
                   className={`hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
                     onRowClick ? 'cursor-pointer' : ''
                   }`}
-                  onClick={() => onRowClick && onRowClick(row)}
+                  onClick={() => onRowClick && onRowClick(item)}
                 >
-                  {columns.map((column, colIndex) => (
-                    <td
-                      key={colIndex}
-                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"
-                    >
-                      {formatValue(row[column.key], column.type)}
+                  {columns.map((column) => (
+                    <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {column.render ? column.render(item[column.key]) : (item[column.key] || '-')}
                     </td>
                   ))}
-                  {onRowClick && (
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
-                        <Eye className="h-4 w-4" />
-                      </button>
-                    </td>
-                  )}
                 </tr>
               ))}
             </tbody>

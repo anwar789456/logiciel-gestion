@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import BackupButton from '../../components/BackupButton';
-import DevisCompteur from '../../components/DevisCompteur';
+import CounterManager from '../../components/shared/CounterManager';
 
 function Settings() {
   const { t } = useTranslation();
@@ -19,9 +19,9 @@ function Settings() {
             {t('parametres_generaux')}
           </h2>
 
-          {/* Devis Compteur */}
+          {/* Compteurs Documents */}
           <div className='mt-4'>
-            <DevisCompteur />
+            <CounterManager />
           </div>
         </div>
 

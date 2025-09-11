@@ -20,7 +20,7 @@ function Sidebar() {
   // Helper functions to check if any routes in a dropdown are accessible
   // If all routes are denied access, we should hide the dropdown
   const hasAccessToVentesRoutes = () => {
-    const routes = ['devis', 'factures', 'bon-de-livraison', 'recue-de-paiement-sur-commande', 'commandes-fiche', 'bon-de-sortie'];
+    const routes = ['devis', 'factures', 'bon-de-livraison', 'recue-de-paiement-sur-commande', 'commandes-fiche', 'bon-de-sortie', 'crm', 'fiche-commande'];
     return routes.some(route => canAccess(route));
   };
   
@@ -157,7 +157,7 @@ function Sidebar() {
             <div>
               <button
               onClick={toggleVentes}
-              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/devis') || location.pathname.startsWith('/factures') || location.pathname.startsWith('/bon-livraison') || location.pathname.startsWith('/commandes-fiche') || location.pathname.startsWith('/recue-de-paiement-sur-commande') || location.pathname.startsWith('/bon-de-sortie')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
+              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/devis') || location.pathname.startsWith('/factures') || location.pathname.startsWith('/bon-livraison') || location.pathname.startsWith('/commandes-fiche') || location.pathname.startsWith('/recue-de-paiement-sur-commande') || location.pathname.startsWith('/bon-de-sortie') || location.pathname.startsWith('/crm') || location.pathname.startsWith('/fiche-commande')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
               title={!isSidebarOpen ? t('ventes') : undefined}
             >
               <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
@@ -183,20 +183,6 @@ function Sidebar() {
             >
               <div className="space-y-1 transform transition-transform duration-300 ease-in-out">
                 {/* Devis */}
-<<<<<<< HEAD
-                <div
-                  className={`transform transition-all duration-300 ease-in-out ${
-                    isVentesOpen && isSidebarOpen
-                      ? 'opacity-100 translate-y-0 max-h-20'
-                      : 'opacity-0 -translate-y-2 max-h-0 overflow-hidden'
-                  }`}
-                >
-                  <NavLink
-                    to="/dashboard/devis"
-                    className={({ isActive }) =>
-                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
-                    }
-=======
                 {canAccess('devis') && (
                   <div
                     className={`transform transition-all duration-300 ease-in-out ${
@@ -207,7 +193,6 @@ function Sidebar() {
                     style={{
                       transitionDelay: isVentesOpen ? '0ms' : '0ms'
                     }}
->>>>>>> 8bac197461e36c3489f2d2132a645e31743a4a89
                   >
                     <NavLink
                       to="/devis"
@@ -313,7 +298,7 @@ function Sidebar() {
                   }}
                 >
                   <NavLink
-                      to="/commandes-fiche"
+                      to="/fiche-commande"
                       className={({ isActive }) =>
                         `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                       }
@@ -321,7 +306,7 @@ function Sidebar() {
                     <div className="mr-2 flex items-center justify-center flex-shrink-0">
                       <FileText size={20} />
                     </div>
-                    {t('fiche_commandes')}
+                    Fiche Commandes 
                   </NavLink>
                 </div>
                 )}
@@ -351,6 +336,33 @@ function Sidebar() {
                   </NavLink>
                 </div>
                 )}
+
+                {/* CRM */}
+                {canAccess('crm') && (
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isVentesOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isVentesOpen ? '300ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                      to="/crm"
+                      className={({ isActive }) =>
+                        `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                      }
+                    >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <Users size={20} />
+                    </div>
+                    Groupage
+                  </NavLink>
+                </div>
+                )}
+
 
               </div>
             </div>
@@ -462,7 +474,7 @@ function Sidebar() {
                   }}
                 >
                   <NavLink
-                      to="/commandes-fiche"
+                      to="/fiche-commande"
                       className={({ isActive }) =>
                         `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                       }

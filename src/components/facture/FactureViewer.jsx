@@ -1,6 +1,6 @@
 import React from 'react';
 import { Download, Edit, ArrowLeft, FileText, User, Phone, MapPin, Calendar } from 'lucide-react';
-import { downloadFacturePDF } from '../api/facture/facture';
+import { downloadFacturePDF } from '../../api/facture/facture';
 
 const FactureViewer = ({ facture, onEdit, onBack }) => {
   const handleDownloadPDF = async () => {

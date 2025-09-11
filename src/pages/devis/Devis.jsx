@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import DevisList from '../../components/DevisList';
-import DevisForm from '../../components/DevisForm';
-import DevisViewer from '../../components/DevisViewer';
+import DevisList from '../../components/devis/DevisList';
+import DevisForm from '../../components/devis/DevisForm';
+import DevisViewer from '../../components/devis/DevisViewer';
 
 function Devis() {
   const { t } = useTranslation();

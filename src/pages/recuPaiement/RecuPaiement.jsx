@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import RecuPaiementList from '../../components/RecuPaiementList';
-import RecuPaiementForm from '../../components/RecuPaiementForm';
-import RecuPaiementViewer from '../../components/RecuPaiementViewer';
+import RecuPaiementList from '../../components/recuPaiment/RecuPaiementList';
+import RecuPaiementForm from '../../components/recuPaiment/RecuPaiementForm';
+import RecuPaiementViewer from '../../components/recuPaiment/RecuPaiementViewer';
 
 const RecuPaiement = () => {
   const [currentView, setCurrentView] = useState('list');

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Save, FileText } from 'lucide-react';
-import { createBonLivraison, updateBonLivraison, getBonLivraisonById } from '../api/bonLivraisonApi';
+import { Plus, Trash2, Save, FileText, Upload, X } from 'lucide-react';
+import { createBonLivraison, updateBonLivraison, getBonLivraisonById, uploadBonLivraisonLogo, getLogoUrl } from '../../api/bonLivraisonApi';
+import ProductSelector from '../shared/ProductSelector';
 
 const BonLivraisonForm = ({ existingBonLivraison = null, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -20,11 +21,15 @@ const BonLivraisonForm = ({ existingBonLivraison = null, onSuccess, onCancel }) 
     }],
     status: 'pending',
     deliveryDate: '',
-    notes: ''
+    notes: '',
+    customLogo: ''
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [logoFile, setLogoFile] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   useEffect(() => {
     if (existingBonLivraison) {
@@ -45,7 +50,8 @@ const BonLivraisonForm = ({ existingBonLivraison = null, onSuccess, onCancel }) 
         }],
         status: existingBonLivraison.status || 'pending',
         deliveryDate: existingBonLivraison.deliveryDate ? new Date(existingBonLivraison.deliveryDate).toISOString().split('T')[0] : '',
-        notes: existingBonLivraison.notes || ''
+        notes: existingBonLivraison.notes || '',
+        customLogo: existingBonLivraison.customLogo || ''
       });
     }
   }, [existingBonLivraison]);
@@ -56,6 +62,40 @@ const BonLivraisonForm = ({ existingBonLivraison = null, onSuccess, onCancel }) 
       ...prev,
       [name]: value
     }));
+  };
+
+  // Logo upload functions
+  const handleLogoSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => setLogoPreview(e.target.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadLogo = async () => {
+    if (!logoFile) return null;
+    
+    setUploadingLogo(true);
+    try {
+      const result = await uploadBonLivraisonLogo(logoFile);
+      setFormData(prev => ({ ...prev, customLogo: result.logoPath }));
+      return result.logoPath;
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      alert('Erreur lors de l\'upload du logo');
+      return null;
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
+  const removeLogo = () => {
+    setLogoFile(null);
+    setLogoPreview(null);
+    setFormData(prev => ({ ...prev, customLogo: '' }));
   };
 
   const handleItemChange = (index, field, value) => {
@@ -85,10 +125,20 @@ const BonLivraisonForm = ({ existingBonLivraison = null, onSuccess, onCancel }) 
     setError('');
 
     try {
+      let finalFormData = { ...formData };
+
+      // Upload logo si un nouveau fichier est sélectionné
+      if (logoFile) {
+        const logoPath = await uploadLogo();
+        if (logoPath) {
+          finalFormData.customLogo = logoPath;
+        }
+      }
+
       if (existingBonLivraison) {
-        await updateBonLivraison(existingBonLivraison._id, formData);
+        await updateBonLivraison(existingBonLivraison._id, finalFormData);
       } else {
-        await createBonLivraison(formData);
+        await createBonLivraison(finalFormData);
       }
       onSuccess();
     } catch (error) {
@@ -139,6 +189,57 @@ const BonLivraisonForm = ({ existingBonLivraison = null, onSuccess, onCancel }) 
               <option value="particulier">Particulier</option>
               <option value="entreprise">Entreprise</option>
             </select>
+          </div>
+
+          {/* Logo Upload Section */}
+          <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Logo du Bon de Livraison</h3>
+            <div className="space-y-4">
+              {/* Logo Preview */}
+              <div className="flex items-center space-x-4">
+                <div className="w-32 h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-white dark:bg-gray-800">
+                  {logoPreview ? (
+                    <img src={logoPreview} alt="Logo preview" className="w-full h-full object-contain rounded-lg" />
+                  ) : formData.customLogo ? (
+                    <img src={getLogoUrl(formData.customLogo)} alt="Logo actuel" className="w-full h-full object-contain rounded-lg" />
+                  ) : (
+                    <Upload className="h-8 w-8 text-gray-400" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    Choisissez un logo personnalisé pour ce bon de livraison. Si aucun logo n'est sélectionné, le logo SAMET HOME sera utilisé par défaut.
+                  </p>
+                  <div className="flex space-x-2">
+                    <label className="cursor-pointer inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                      <Upload className="h-4 w-4 mr-2" />
+                      Choisir un logo
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoSelect}
+                        className="hidden"
+                        disabled={uploadingLogo}
+                      />
+                    </label>
+                    {(logoPreview || formData.customLogo) && (
+                      <button
+                        type="button"
+                        onClick={removeLogo}
+                        className="inline-flex items-center px-3 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-red-50"
+                        disabled={uploadingLogo}
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        Supprimer
+                      </button>
+                    )}
+                  </div>
+                  {uploadingLogo && (
+                    <p className="text-sm text-blue-600 mt-2">Upload en cours...</p>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Informations client */}
@@ -289,81 +390,50 @@ const BonLivraisonForm = ({ existingBonLivraison = null, onSuccess, onCancel }) 
           </div>
 
           {/* Articles */}
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Articles</h3>
+          <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Articles du Bon de Livraison</h3>
               <button
                 type="button"
                 onClick={addItem}
-                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
               >
-                <Plus className="h-4 w-4 mr-2" />
-                Ajouter un article
+                <Plus className="h-4 w-4" />
+                <span>Ajouter Article</span>
               </button>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300 dark:border-gray-600">
-                <thead>
-                  <tr className="bg-gray-100 dark:bg-gray-700">
-                    <th className="border border-gray-300 dark:border-gray-600 px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Quantité
-                    </th>
-                    <th className="border border-gray-300 dark:border-gray-600 px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Description
-                    </th>
-                    <th className="border border-gray-300 dark:border-gray-600 px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Ref Color
-                    </th>
-                    <th className="border border-gray-300 dark:border-gray-600 px-4 py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {formData.items.map((item, index) => (
-                    <tr key={index}>
-                      <td className="border border-gray-300 dark:border-gray-600 px-4 py-3">
-                        <input
-                          type="number"
-                          min="1"
-                          value={item.quantity}
-                          onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value) || 1)}
-                          className="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        />
-                      </td>
-                      <td className="border border-gray-300 dark:border-gray-600 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.description}
-                          onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                          className="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                          placeholder="Description de l'article"
-                        />
-                      </td>
-                      <td className="border border-gray-300 dark:border-gray-600 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.refColor}
-                          onChange={(e) => handleItemChange(index, 'refColor', e.target.value)}
-                          className="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                          placeholder="Référence couleur"
-                        />
-                      </td>
-                      <td className="border border-gray-300 dark:border-gray-600 px-4 py-3 text-center">
-                        <button
-                          type="button"
-                          onClick={() => removeItem(index)}
-                          disabled={formData.items.length === 1}
-                          className="text-red-600 hover:text-red-800 disabled:text-gray-400 disabled:cursor-not-allowed"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="space-y-4">
+              {formData.items.map((item, index) => (
+                <div key={index} className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Article {index + 1}
+                    </h4>
+                    <button
+                      type="button"
+                      onClick={() => removeItem(index)}
+                      className="p-1 text-red-600 hover:text-red-800 hover:bg-red-100 dark:hover:bg-red-900 rounded"
+                      disabled={formData.items.length === 1}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                  
+                  <ProductSelector
+                    value={item}
+                    onChange={(newItem) => {
+                      const updatedItems = [...formData.items];
+                      updatedItems[index] = newItem;
+                      setFormData({ ...formData, items: updatedItems });
+                    }}
+                    showPrice={false}
+                    showQuantity={true}
+                    showRefColor={true}
+                    placeholder="Sélectionner un produit ou saisir manuellement"
+                  />
+                </div>
+              ))}
             </div>
           </div>
 

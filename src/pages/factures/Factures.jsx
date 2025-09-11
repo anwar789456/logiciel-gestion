@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import FacturesList from '../../components/FacturesList';
-import FactureForm from '../../components/FactureForm';
-import FactureViewer from '../../components/FactureViewer';
+import FacturesList from '../../components/facture/FacturesList';
+import FactureForm from '../../components/facture/FactureForm';
+import FactureViewer from '../../components/facture/FactureViewer';
 
 function Factures() {
   const { t } = useTranslation();

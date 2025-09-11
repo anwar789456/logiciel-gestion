@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import BonLivraisonList from '../../components/BonLivraisonList';
-import BonLivraisonForm from '../../components/BonLivraisonForm';
-import BonLivraisonViewer from '../../components/BonLivraisonViewer';
+import BonLivraisonList from '../../components/bonLivraison/BonLivraisonList';
+import BonLivraisonForm from '../../components/bonLivraison/BonLivraisonForm';
+import BonLivraisonViewer from '../../components/bonLivraison/BonLivraisonViewer';
 
 export default function BonLivraison() {
   const [currentView, setCurrentView] = useState('list'); // 'list', 'create', 'edit', 'view'

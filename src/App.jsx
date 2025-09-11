@@ -22,6 +22,7 @@ import BonLivraison from './pages/bonLivraison/BonLivraison';
 import BonDeSortie from './pages/bonDeSortie/BonDeSortie';
 import Clients from './pages/clients/Clients';
 import UserList from './pages/users/UserList';
+import CRM from './pages/crm/CRM';
 import DemandeConge from './pages/employe/demandeConge/DemandeConge';
 import Fournisseur from './pages/fournisseur/Fournisseur';
 import Caisse from './pages/caisse/Caisse';
@@ -34,6 +35,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import ListeEmploye from './pages/employe/ListeEmploye/ListeEmploye';
 import Agenda from './pages/agenda/Agenda';
 import ListeConge from './pages/employe/ListeConge/ListeConge';
+import FicheCommande from './pages/ficheCommande/FicheCommande';
 
 
 function App() {
@@ -54,7 +56,6 @@ function App() {
                 </ProtectedRoute>
               }>
                 <Route index element={<Stats />} />
-<<<<<<< HEAD
                 <Route path="agenda" element={<Agenda />} />
                 <Route path="factures" element={<Factures />} />
                 <Route path="commandes" element={<Commandes />} />
@@ -188,14 +189,14 @@ function App() {
                   <Layout />
                 </ProtectedRoute>
               }>
-                <Route index element={<RecuDePaiement />} />
+                <Route index element={<RecuPaiement />} />
               </Route>
               <Route path="/recue-de-paiement-sur-commande" element={
                 <ProtectedRoute>
                   <Layout />
                 </ProtectedRoute>
               }>
-                <Route index element={<RecuDePaiement />} />
+                <Route index element={<RecuPaiement />} />
               </Route>
               <Route path="/bon-livraison" element={
                 <ProtectedRoute>
@@ -308,7 +309,20 @@ function App() {
                 </ProtectedRoute>
               }>
                 <Route index element={<ProfilePage />} />
->>>>>>> 8bac197461e36c3489f2d2132a645e31743a4a89
+              </Route>
+              <Route path="/crm" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<CRM />} />
+              </Route>
+              <Route path="/fiche-commande" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<FicheCommande />} />
               </Route>
             </Routes>
           </Router>

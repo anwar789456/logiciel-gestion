@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Plus, Trash2, X } from 'lucide-react';
-import { createRecuPaiement, updateRecuPaiement } from '../api/recuPaiementApi';
+import { Save, Plus, Trash2, X, Upload } from 'lucide-react';
+import { createRecuPaiement, updateRecuPaiement, uploadRecuPaiementLogo, getLogoUrl } from '../../api/recuPaiementApi';
+import ProductSelector from '../shared/ProductSelector';
 
 const RecuPaiementForm = ({ existingRecuPaiement, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -24,25 +25,72 @@ const RecuPaiementForm = ({ existingRecuPaiement, onSave, onCancel }) => {
     reglement: 0,
     resteAPayer: 0,
     notes: '',
-    status: 'pending'
+    status: 'pending',
+    customLogo: ''
   });
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [logoFile, setLogoFile] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   useEffect(() => {
     if (existingRecuPaiement) {
       setFormData({
         ...existingRecuPaiement,
         date: new Date(existingRecuPaiement.date).toISOString().split('T')[0],
-        deliveryDate: new Date(existingRecuPaiement.deliveryDate).toISOString().split('T')[0]
+        deliveryDate: new Date(existingRecuPaiement.deliveryDate).toISOString().split('T')[0],
+        customLogo: existingRecuPaiement.customLogo || ''
       });
     }
   }, [existingRecuPaiement]);
 
+  // Logo upload functions
+  const handleLogoSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => setLogoPreview(e.target.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadLogo = async () => {
+    if (!logoFile) return null;
+    
+    setUploadingLogo(true);
+    try {
+      const result = await uploadRecuPaiementLogo(logoFile);
+      setFormData(prev => ({ ...prev, customLogo: result.logoPath }));
+      return result.logoPath;
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      alert('Erreur lors de l\'upload du logo');
+      return null;
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
+  const removeLogo = () => {
+    setLogoFile(null);
+    setLogoPreview(null);
+    setFormData(prev => ({ ...prev, customLogo: '' }));
+  };
+
   const calculateItemTotal = (item) => {
-    const subtotal = item.quantity * item.unitPrice;
-    const discountAmount = (subtotal * item.discount) / 100;
+    const quantity = parseFloat(item.quantity) || 0;
+    const basePrice = parseFloat(item.basePrice) || parseFloat(item.unitPrice) || 0;
+    const discount = parseFloat(item.discount) || 0;
+    const optionPrice = item.selectedOption ? parseFloat(item.selectedOption.prix_option) || 0 : 0;
+    
+    // Calculer le sous-total avec prix de base + option
+    const subtotal = quantity * (basePrice + optionPrice);
+    // Appliquer la remise uniquement sur le prix de base
+    const discountAmount = quantity * basePrice * (discount / 100);
+    
     return subtotal - discountAmount;
   };
 
@@ -144,10 +192,28 @@ const RecuPaiementForm = ({ existingRecuPaiement, onSave, onCancel }) => {
     try {
       setLoading(true);
       
+      // Upload logo first if a new one was selected
+      if (logoFile) {
+        await uploadLogo();
+      }
+      
       const submitData = {
         ...formData,
         date: new Date(formData.date),
-        deliveryDate: new Date(formData.deliveryDate)
+        deliveryDate: new Date(formData.deliveryDate),
+        // Ensure all required fields are present
+        totalAmount: parseFloat(formData.totalAmount) || 0,
+        avance: parseFloat(formData.avance) || 0,
+        reglement: parseFloat(formData.reglement) || 0,
+        resteAPayer: parseFloat(formData.resteAPayer) || 0,
+        // Calculate total for each item
+        items: formData.items.map(item => ({
+          ...item,
+          quantity: parseFloat(item.quantity) || 1,
+          unitPrice: parseFloat(item.unitPrice) || 0,
+          discount: parseFloat(item.discount) || 0,
+          total: (parseFloat(item.quantity) || 1) * (parseFloat(item.unitPrice) || 0) * (1 - (parseFloat(item.discount) || 0) / 100)
+        }))
       };
       
       let result;
@@ -181,6 +247,57 @@ const RecuPaiementForm = ({ existingRecuPaiement, onSave, onCancel }) => {
               {errors.submit}
             </div>
           )}
+
+          {/* Logo Upload Section */}
+          <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Logo du Reçu de Paiement</h3>
+            <div className="space-y-4">
+              {/* Logo Preview */}
+              <div className="flex items-center space-x-4">
+                <div className="w-32 h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-white dark:bg-gray-800">
+                  {logoPreview ? (
+                    <img src={logoPreview} alt="Logo preview" className="w-full h-full object-contain rounded-lg" />
+                  ) : formData.customLogo ? (
+                    <img src={getLogoUrl(formData.customLogo)} alt="Logo actuel" className="w-full h-full object-contain rounded-lg" />
+                  ) : (
+                    <Upload className="h-8 w-8 text-gray-400" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    Choisissez un logo personnalisé pour ce reçu de paiement. Si aucun logo n'est sélectionné, le logo SAMET HOME sera utilisé par défaut.
+                  </p>
+                  <div className="flex space-x-2">
+                    <label className="cursor-pointer inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                      <Upload className="h-4 w-4 mr-2" />
+                      Choisir un logo
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoSelect}
+                        className="hidden"
+                        disabled={uploadingLogo}
+                      />
+                    </label>
+                    {(logoPreview || formData.customLogo) && (
+                      <button
+                        type="button"
+                        onClick={removeLogo}
+                        className="inline-flex items-center px-3 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-red-50"
+                        disabled={uploadingLogo}
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        Supprimer
+                      </button>
+                    )}
+                  </div>
+                  {uploadingLogo && (
+                    <p className="text-sm text-blue-600 mt-2">Upload en cours...</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* Informations client */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -306,122 +423,58 @@ const RecuPaiementForm = ({ existingRecuPaiement, onSave, onCancel }) => {
           </div>
 
           {/* Articles */}
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Articles</h3>
+          <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Articles du Reçu de Paiement</h3>
               <button
                 type="button"
                 onClick={addItem}
-                className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
               >
-                <Plus className="h-4 w-4 mr-1" />
-                Ajouter un article
+                <Plus className="h-4 w-4" />
+                <span>Ajouter Article</span>
               </button>
             </div>
 
             <div className="space-y-4">
-              {formData.items.map((item, index) => (
-                <div key={index} className="grid grid-cols-1 md:grid-cols-7 gap-4 p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Quantité
-                    </label>
-                    <input
-                      type="number"
-                      min="1"
-                      value={item.quantity}
-                      onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                      className={`w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white ${
-                        errors[`item_${index}_quantity`] ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                    />
-                    {errors[`item_${index}_quantity`] && (
-                      <p className="text-red-500 text-xs mt-1">{errors[`item_${index}_quantity`]}</p>
-                    )}
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Description
-                    </label>
-                    <input
-                      type="text"
-                      value={item.description}
-                      onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                      className={`w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white ${
-                        errors[`item_${index}_description`] ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                      placeholder="Description de l'article"
-                    />
-                    {errors[`item_${index}_description`] && (
-                      <p className="text-red-500 text-xs mt-1">{errors[`item_${index}_description`]}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Ref Couleur
-                    </label>
-                    <input
-                      type="text"
-                      value={item.refColor}
-                      onChange={(e) => handleItemChange(index, 'refColor', e.target.value)}
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      placeholder="Ref couleur"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Prix unitaire
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={item.unitPrice}
-                      onChange={(e) => handleItemChange(index, 'unitPrice', e.target.value)}
-                      className={`w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white ${
-                        errors[`item_${index}_unitPrice`] ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                    />
-                    {errors[`item_${index}_unitPrice`] && (
-                      <p className="text-red-500 text-xs mt-1">{errors[`item_${index}_unitPrice`]}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Remise (%)
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={item.discount}
-                      onChange={(e) => handleItemChange(index, 'discount', e.target.value)}
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    />
-                  </div>
-
-                  <div className="flex items-end">
-                    <div className="flex-1">
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Total: {item.total.toFixed(2)} DT
-                      </label>
+              {formData.items.map((item, index) => {
+                const itemTotal = (item.quantity * item.unitPrice) * (1 - item.discount / 100);
+                return (
+                  <div key={index} className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Article {index + 1}
+                      </h4>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          Total: {itemTotal.toFixed(3)} DT
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeItem(index)}
+                          className="p-1 text-red-600 hover:text-red-800 hover:bg-red-100 dark:hover:bg-red-900 rounded"
+                          disabled={formData.items.length === 1}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
-                    {formData.items.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeItem(index)}
-                        className="ml-2 p-2 text-red-600 hover:text-red-800 focus:outline-none"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
+                    
+                    <ProductSelector
+                      value={item}
+                      onChange={(newItem) => {
+                        const updatedItems = [...formData.items];
+                        updatedItems[index] = newItem;
+                        setFormData({ ...formData, items: updatedItems });
+                      }}
+                      showPrice={true}
+                      showQuantity={true}
+                      showRefColor={true}
+                      placeholder="Sélectionner un produit ou saisir manuellement"
+                    />
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 

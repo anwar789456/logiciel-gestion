@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Save, FileText, Calculator } from 'lucide-react';
-import { createDevis, updateDevis } from '../api/devis/devis';
+import { Plus, Trash2, Save, FileText, Calculator, Upload, Image } from 'lucide-react';
+import { createDevis, updateDevis, uploadDevisLogo, getLogoUrl } from '../../api/devis/devis';
+import ProductSelector from '../shared/ProductSelector';
 
 const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -26,10 +27,14 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
     deliveryDelay: '45 jours à partir de la date de confirmation',
     paymentTerms: 'Tous les paiements sont effectués avant la livraison au showroom',
     deliveryCondition: 'LA LIVRAISON EST GRATUITE UNIQUEMENT SUR LE GRAND TUNIS (TUNIS, ARIANA, MANOUBA, BEN AROUS)',
-    notes: ''
+    notes: '',
+    customLogo: ''
   });
 
   const [loading, setLoading] = useState(false);
+  const [logoFile, setLogoFile] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [totals, setTotals] = useState({
     subtotal: 0,
     totalDiscount: 0,
@@ -55,7 +60,8 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
         deliveryDelay: existingDevis.deliveryDelay || '45 jours à partir de la date de confirmation',
         paymentTerms: existingDevis.paymentTerms || 'Tous les paiements sont effectués avant la livraison au showroom',
         deliveryCondition: existingDevis.deliveryCondition || 'LA LIVRAISON EST GRATUITE UNIQUEMENT SUR LE GRAND TUNIS (TUNIS, ARIANA, MANOUBA, BEN AROUS)',
-        notes: existingDevis.notes || ''
+        notes: existingDevis.notes || '',
+        customLogo: existingDevis.customLogo || ''
       });
     }
   }, [existingDevis]);
@@ -69,8 +75,16 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
     let totalDiscount = 0;
 
     formData.items.forEach(item => {
-      const itemSubtotal = item.quantity * item.unitPrice;
-      const itemDiscount = itemSubtotal * (item.discount / 100);
+      const quantity = parseFloat(item.quantity) || 0;
+      const basePrice = parseFloat(item.basePrice) || parseFloat(item.unitPrice) || 0;
+      const discount = parseFloat(item.discount) || 0;
+      const optionPrice = item.selectedOption ? parseFloat(item.selectedOption.prix_option) || 0 : 0;
+      
+      // Calculer le sous-total avec prix de base + option
+      const itemSubtotal = quantity * (basePrice + optionPrice);
+      // Appliquer la remise uniquement sur le prix de base
+      const itemDiscount = quantity * basePrice * (discount / 100);
+      
       subtotal += itemSubtotal;
       totalDiscount += itemDiscount;
     });
@@ -137,15 +151,64 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
     }
   };
 
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setLogoFile(file);
+      
+      // Créer un aperçu du logo
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setLogoPreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadLogo = async () => {
+    if (!logoFile) return null;
+
+    setUploadingLogo(true);
+    try {
+      const result = await uploadDevisLogo(logoFile);
+      return result.logoPath;
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      alert('Erreur lors de l\'upload du logo');
+      return null;
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
+  const removeLogo = () => {
+    setLogoFile(null);
+    setLogoPreview(null);
+    setFormData(prev => ({
+      ...prev,
+      customLogo: ''
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      let finalFormData = { ...formData };
+
+      // Upload logo si un nouveau fichier est sélectionné
+      if (logoFile) {
+        const logoPath = await uploadLogo();
+        if (logoPath) {
+          finalFormData.customLogo = logoPath;
+        }
+      }
+
       if (existingDevis) {
-        await updateDevis(existingDevis._id, formData);
+        await updateDevis(existingDevis._id, finalFormData);
       } else {
-        await createDevis(formData);
+        await createDevis(finalFormData);
       }
       onSuccess && onSuccess();
     } catch (error) {
@@ -174,6 +237,84 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Logo Section */}
+        <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Logo du Devis
+          </h3>
+          
+          <div className="flex items-start space-x-6">
+            {/* Logo Preview */}
+            <div className="flex-shrink-0">
+              <div className="w-32 h-24 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-white dark:bg-gray-800">
+                {logoPreview ? (
+                  <img 
+                    src={logoPreview} 
+                    alt="Aperçu du logo" 
+                    className="max-w-full max-h-full object-contain"
+                  />
+                ) : formData.customLogo ? (
+                  <img 
+                    src={getLogoUrl(formData.customLogo)} 
+                    alt="Logo actuel" 
+                    className="max-w-full max-h-full object-contain"
+                  />
+                ) : (
+                  <div className="text-center">
+                    <Image className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-xs text-gray-500">Logo par défaut</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Upload Controls */}
+            <div className="flex-1">
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Logo Personnalisé
+                </label>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                  Si aucun logo n'est sélectionné, le logo SAMET HOME sera utilisé par défaut.
+                </p>
+                
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoChange}
+                    className="hidden"
+                    id="logo-upload"
+                  />
+                  <label
+                    htmlFor="logo-upload"
+                    className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer transition-colors"
+                  >
+                    <Upload className="h-4 w-4" />
+                    <span>Choisir un logo</span>
+                  </label>
+                  
+                  {(logoPreview || formData.customLogo) && (
+                    <button
+                      type="button"
+                      onClick={removeLogo}
+                      className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                    >
+                      Supprimer
+                    </button>
+                  )}
+                </div>
+                
+                {logoFile && (
+                  <p className="text-sm text-green-600 dark:text-green-400 mt-2">
+                    Fichier sélectionné: {logoFile.name}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Client Information */}
         <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
@@ -346,139 +487,61 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
             </button>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-100 dark:bg-gray-600">
-                  <th className="border border-gray-300 dark:border-gray-500 px-3 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Qté
-                  </th>
-                  <th className="border border-gray-300 dark:border-gray-500 px-3 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Description
-                  </th>
-                  <th className="border border-gray-300 dark:border-gray-500 px-3 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Ref Color
-                  </th>
-                  <th className="border border-gray-300 dark:border-gray-500 px-3 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Prix Unit.
-                  </th>
-                  <th className="border border-gray-300 dark:border-gray-500 px-3 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Remise %
-                  </th>
-                  <th className="border border-gray-300 dark:border-gray-500 px-3 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Total
-                  </th>
-                  <th className="border border-gray-300 dark:border-gray-500 px-3 py-2 text-center text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {formData.items.map((item, index) => {
-                  const itemTotal = (item.quantity * item.unitPrice) * (1 - item.discount / 100);
-                  return (
-                    <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-600">
-                      <td className="border border-gray-300 dark:border-gray-500 px-3 py-2">
-                        <input
-                          type="number"
-                          min="1"
-                          value={item.quantity}
-                          onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                          className="w-16 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-gray-800 dark:text-white"
-                        />
-                      </td>
-                      <td className="border border-gray-300 dark:border-gray-500 px-3 py-2">
-                        <input
-                          type="text"
-                          value={item.description}
-                          onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-gray-800 dark:text-white"
-                          placeholder="Description de l'article"
-                        />
-                      </td>
-                      <td className="border border-gray-300 dark:border-gray-500 px-3 py-2">
-                        <input
-                          type="text"
-                          value={item.refColor}
-                          onChange={(e) => handleItemChange(index, 'refColor', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-gray-800 dark:text-white"
-                          placeholder="Ref Color"
-                        />
-                      </td>
-                      <td className="border border-gray-300 dark:border-gray-500 px-3 py-2">
-                        <input
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          value={item.unitPrice}
-                          onChange={(e) => handleItemChange(index, 'unitPrice', e.target.value)}
-                          className="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-gray-800 dark:text-white"
-                        />
-                      </td>
-                      <td className="border border-gray-300 dark:border-gray-500 px-3 py-2">
-                        <input
-                          type="number"
-                          min="0"
-                          max="100"
-                          value={item.discount}
-                          onChange={(e) => handleItemChange(index, 'discount', e.target.value)}
-                          className="w-16 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-gray-800 dark:text-white"
-                        />
-                      </td>
-                      <td className="border border-gray-300 dark:border-gray-500 px-3 py-2 text-right font-semibold">
-                        {itemTotal.toFixed(2)} DT
-                      </td>
-                      <td className="border border-gray-300 dark:border-gray-500 px-3 py-2 text-center">
-                        <button
-                          type="button"
-                          onClick={() => removeItem(index)}
-                          disabled={formData.items.length === 1}
-                          className="text-red-600 hover:text-red-800 disabled:text-gray-400 disabled:cursor-not-allowed"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          <div className="space-y-4">
+            {formData.items.map((item, index) => {
+              const itemTotal = (item.quantity * item.unitPrice) * (1 - item.discount / 100);
+              return (
+                <div key={index} className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Article {index + 1}
+                    </h4>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        Total: {itemTotal.toFixed(3)} DT
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => removeItem(index)}
+                        className="p-1 text-red-600 hover:text-red-800 hover:bg-red-100 dark:hover:bg-red-900 rounded"
+                        disabled={formData.items.length === 1}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <ProductSelector
+                    value={item}
+                    onChange={(newItem) => {
+                      const updatedItems = [...formData.items];
+                      updatedItems[index] = newItem;
+                      setFormData({ ...formData, items: updatedItems });
+                    }}
+                    showPrice={true}
+                    showQuantity={true}
+                    showRefColor={true}
+                    placeholder="Sélectionner un produit ou saisir manuellement"
+                  />
+                </div>
+              );
+            })}
           </div>
 
-          {/* Totals Summary */}
-          <div className="mt-4 bg-white dark:bg-gray-800 p-4 rounded-lg border">
-            <div className="flex justify-end space-x-8">
-              <div className="text-right">
-                <div className="text-sm text-gray-600 dark:text-gray-400">Sous-total:</div>
-                <div className="font-semibold">{totals.subtotal.toFixed(2)} DT</div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm text-gray-600 dark:text-gray-400">Remise totale:</div>
-                <div className="font-semibold text-red-600">-{totals.totalDiscount.toFixed(2)} DT</div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm text-gray-600 dark:text-gray-400">Total HT:</div>
-                <div className="font-semibold">{totals.totalHT.toFixed(2)} DT</div>
-              </div>
-              {formData.clientType === 'entreprise' && (
-                <>
-                  <div className="text-right">
-                    <div className="text-sm text-gray-600 dark:text-gray-400">TVA ({formData.tvaRate}%):</div>
-                    <div className="font-semibold text-blue-600">{totals.tvaAmount.toFixed(2)} DT</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Total TTC:</div>
-                    <div className="text-xl font-bold text-green-600">{totals.totalTTC.toFixed(2)} DT</div>
-                  </div>
-                </>
-              )}
-              {formData.clientType === 'particulier' && (
-                <div className="text-right">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Total final:</div>
-                  <div className="text-xl font-bold text-green-600">{totals.totalAmount.toFixed(2)} DT</div>
-                </div>
-              )}
-            </div>
+          {/* Total Row */}
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full border-collapse border border-gray-300 dark:border-gray-600">
+              <tbody>
+                <tr className="bg-gray-100 dark:bg-gray-700">
+                  <td className="border border-gray-300 dark:border-gray-600 px-4 py-3 text-right font-bold text-gray-900 dark:text-white" colSpan="5">
+                    Total
+                  </td>
+                  <td className="border border-gray-300 dark:border-gray-600 px-4 py-3 text-right font-bold text-gray-900 dark:text-white">
+                    {totals.totalAmount?.toFixed(3)} DT
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -553,11 +616,13 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
           )}
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || uploadingLogo}
             className="flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="h-4 w-4" />
-            <span>{loading ? 'Sauvegarde...' : 'Sauvegarder'}</span>
+            <span>
+              {uploadingLogo ? 'Upload logo...' : loading ? 'Sauvegarde...' : 'Sauvegarder'}
+            </span>
           </button>
         </div>
       </form>

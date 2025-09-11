@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Save, FileText, Calculator } from 'lucide-react';
-import { createFacture, updateFacture } from '../api/facture/facture';
+import { Plus, Trash2, Save, FileText, Calculator, Upload, X } from 'lucide-react';
+import { createFacture, updateFacture, uploadFactureLogo, getLogoUrl } from '../../api/facture/facture';
+import ProductSelector from '../shared/ProductSelector';
 
 const FactureForm = ({ existingFacture = null, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -23,10 +24,14 @@ const FactureForm = ({ existingFacture = null, onSuccess, onCancel }) => {
       }
     ],
     tvaRate: 19,
-    notes: ''
+    notes: '',
+    customLogo: ''
   });
 
   const [loading, setLoading] = useState(false);
+  const [logoFile, setLogoFile] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [totals, setTotals] = useState({
     subtotal: 0,
     totalDiscount: 0,
@@ -49,7 +54,8 @@ const FactureForm = ({ existingFacture = null, onSuccess, onCancel }) => {
         taxId: existingFacture.taxId || '',
         items: existingFacture.items || [{ quantity: 1, description: '', refColor: '', unitPrice: 0, discount: 0 }],
         tvaRate: existingFacture.tvaRate || 19,
-        notes: existingFacture.notes || ''
+        notes: existingFacture.notes || '',
+        customLogo: existingFacture.customLogo || ''
       });
     }
   }, [existingFacture]);
@@ -63,8 +69,16 @@ const FactureForm = ({ existingFacture = null, onSuccess, onCancel }) => {
     let totalDiscount = 0;
 
     formData.items.forEach(item => {
-      const itemSubtotal = item.quantity * item.unitPrice;
-      const itemDiscount = itemSubtotal * (item.discount / 100);
+      const quantity = parseFloat(item.quantity) || 0;
+      const basePrice = parseFloat(item.basePrice) || parseFloat(item.unitPrice) || 0;
+      const discount = parseFloat(item.discount) || 0;
+      const optionPrice = item.selectedOption ? parseFloat(item.selectedOption.prix_option) || 0 : 0;
+      
+      // Calculer le sous-total avec prix de base + option
+      const itemSubtotal = quantity * (basePrice + optionPrice);
+      // Appliquer la remise uniquement sur le prix de base
+      const itemDiscount = quantity * basePrice * (discount / 100);
+      
       subtotal += itemSubtotal;
       totalDiscount += itemDiscount;
     });
@@ -95,6 +109,40 @@ const FactureForm = ({ existingFacture = null, onSuccess, onCancel }) => {
       ...prev,
       [name]: value
     }));
+  };
+
+  // Logo upload functions
+  const handleLogoSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => setLogoPreview(e.target.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadLogo = async () => {
+    if (!logoFile) return null;
+    
+    setUploadingLogo(true);
+    try {
+      const result = await uploadFactureLogo(logoFile);
+      setFormData(prev => ({ ...prev, customLogo: result.logoPath }));
+      return result.logoPath;
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      alert('Erreur lors de l\'upload du logo');
+      return null;
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
+  const removeLogo = () => {
+    setLogoFile(null);
+    setLogoPreview(null);
+    setFormData(prev => ({ ...prev, customLogo: '' }));
   };
 
   const handleItemChange = (index, field, value) => {
@@ -131,10 +179,20 @@ const FactureForm = ({ existingFacture = null, onSuccess, onCancel }) => {
     setLoading(true);
 
     try {
+      let finalFormData = { ...formData };
+
+      // Upload logo si un nouveau fichier est sélectionné
+      if (logoFile) {
+        const logoPath = await uploadLogo();
+        if (logoPath) {
+          finalFormData.customLogo = logoPath;
+        }
+      }
+
       if (existingFacture) {
-        await updateFacture(existingFacture._id, formData);
+        await updateFacture(existingFacture._id, finalFormData);
       } else {
-        await createFacture(formData);
+        await createFacture(finalFormData);
       }
       onSuccess();
     } catch (error) {
@@ -257,6 +315,57 @@ const FactureForm = ({ existingFacture = null, onSuccess, onCancel }) => {
             </div>
           </div>
 
+          {/* Logo Upload Section */}
+          <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Logo de la Facture</h3>
+            <div className="space-y-4">
+              {/* Logo Preview */}
+              <div className="flex items-center space-x-4">
+                <div className="w-32 h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-white dark:bg-gray-800">
+                  {logoPreview ? (
+                    <img src={logoPreview} alt="Logo preview" className="w-full h-full object-contain rounded-lg" />
+                  ) : formData.customLogo ? (
+                    <img src={getLogoUrl(formData.customLogo)} alt="Logo actuel" className="w-full h-full object-contain rounded-lg" />
+                  ) : (
+                    <Upload className="h-8 w-8 text-gray-400" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    Choisissez un logo personnalisé pour cette facture. Si aucun logo n'est sélectionné, le logo SAMET HOME sera utilisé par défaut.
+                  </p>
+                  <div className="flex space-x-2">
+                    <label className="cursor-pointer inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                      <Upload className="h-4 w-4 mr-2" />
+                      Choisir un logo
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoSelect}
+                        className="hidden"
+                        disabled={uploadingLogo}
+                      />
+                    </label>
+                    {(logoPreview || formData.customLogo) && (
+                      <button
+                        type="button"
+                        onClick={removeLogo}
+                        className="inline-flex items-center px-3 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-red-50"
+                        disabled={uploadingLogo}
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        Supprimer
+                      </button>
+                    )}
+                  </div>
+                  {uploadingLogo && (
+                    <p className="text-sm text-blue-600 mt-2">Upload en cours...</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Enterprise-specific fields */}
           {formData.clientType === 'entreprise' && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -304,118 +413,58 @@ const FactureForm = ({ existingFacture = null, onSuccess, onCancel }) => {
           )}
 
           {/* Items Section */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Articles</h3>
+          <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Articles de la Facture</h3>
               <button
                 type="button"
                 onClick={addItem}
-                className="flex items-center space-x-2 px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
               >
                 <Plus className="h-4 w-4" />
-                <span>Ajouter un article</span>
+                <span>Ajouter Article</span>
               </button>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-700">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Qté
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Description
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Ref Color
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Prix unitaire
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Remise %
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Total
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {formData.items.map((item, index) => {
-                    const itemTotal = (item.quantity * item.unitPrice) * (1 - item.discount / 100);
-                    return (
-                      <tr key={index}>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <input
-                            type="number"
-                            min="1"
-                            value={item.quantity}
-                            onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                            className="w-16 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                          />
-                        </td>
-                        <td className="px-4 py-4">
-                          <input
-                            type="text"
-                            value={item.description}
-                            onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                            placeholder="Description de l'article"
-                            className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                          />
-                        </td>
-                        <td className="px-4 py-4">
-                          <input
-                            type="text"
-                            value={item.refColor}
-                            onChange={(e) => handleItemChange(index, 'refColor', e.target.value)}
-                            placeholder="Ref Color"
-                            className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                          />
-                        </td>
-                        <td className="px-4 py-4">
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.001"
-                            value={item.unitPrice}
-                            onChange={(e) => handleItemChange(index, 'unitPrice', e.target.value)}
-                            className="w-24 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                          />
-                        </td>
-                        <td className="px-4 py-4">
-                          <input
-                            type="number"
-                            min="0"
-                            max="100"
-                            value={item.discount}
-                            onChange={(e) => handleItemChange(index, 'discount', e.target.value)}
-                            className="w-16 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                          />
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <span className="text-sm font-medium text-gray-900 dark:text-white">
-                            {itemTotal.toFixed(3)} DT
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <button
-                            type="button"
-                            onClick={() => removeItem(index)}
-                            disabled={formData.items.length === 1}
-                            className="text-red-600 hover:text-red-900 disabled:text-gray-400 disabled:cursor-not-allowed"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+            <div className="space-y-4">
+              {formData.items.map((item, index) => {
+                const itemTotal = (item.quantity * item.unitPrice) * (1 - item.discount / 100);
+                return (
+                  <div key={index} className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Article {index + 1}
+                      </h4>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          Total: {itemTotal.toFixed(3)} DT
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeItem(index)}
+                          className="p-1 text-red-600 hover:text-red-800 hover:bg-red-100 dark:hover:bg-red-900 rounded"
+                          disabled={formData.items.length === 1}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <ProductSelector
+                      value={item}
+                      onChange={(newItem) => {
+                        const updatedItems = [...formData.items];
+                        updatedItems[index] = newItem;
+                        setFormData({ ...formData, items: updatedItems });
+                      }}
+                      showPrice={true}
+                      showQuantity={true}
+                      showRefColor={true}
+                      placeholder="Sélectionner un produit ou saisir manuellement"
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
 

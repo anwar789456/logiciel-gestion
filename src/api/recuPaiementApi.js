@@ -89,3 +89,27 @@ export const downloadRecuPaiementPDF = async (id) => {
     throw error;
   }
 };
+
+// Upload logo for recu paiement
+export const uploadRecuPaiementLogo = async (logoFile) => {
+  try {
+    const formData = new FormData();
+    formData.append('logo', logoFile);
+
+    const response = await axios.post(`${API_BASE_URL}/recupaiement/upload-logo`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading logo:', error);
+    throw error;
+  }
+};
+
+// Get logo URL
+export const getLogoUrl = (logoName) => {
+  return `${API_BASE_URL}/recupaiement/logo/${logoName}`;
+};

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Download, FileText, X } from 'lucide-react';
-import { getBonLivraisonById, downloadBonLivraisonPDF } from '../api/bonLivraisonApi';
+import { getBonLivraisonById, downloadBonLivraisonPDF } from '../../api/bonLivraisonApi';
 
 const BonLivraisonViewer = ({ bonLivraison, onEdit, onBack }) => {
   const [error, setError] = useState('');

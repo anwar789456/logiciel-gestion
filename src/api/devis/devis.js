@@ -91,3 +91,28 @@ export const downloadDevisPDF = async (id) => {
     throw error;
   }
 };
+
+// Upload logo for devis
+export const uploadDevisLogo = async (logoFile) => {
+  try {
+    const formData = new FormData();
+    formData.append('logo', logoFile);
+
+    const response = await axios.post(`${API_BASE_URL}/admin/api/logiciel/upload-logo`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading logo:', error);
+    throw error;
+  }
+};
+
+// Get logo URL
+export const getLogoUrl = (logoName) => {
+  if (!logoName) return null;
+  return `${API_BASE_URL}/admin/api/logiciel/logo/${logoName}`;
+};
