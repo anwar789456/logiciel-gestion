@@ -138,7 +138,7 @@ const ProductDetailsModal = ({ product, isOpen, onClose }) => {
                 <DollarSign size={20} className="text-green-600 mr-2" />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('price_information')}</h3>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">{t('min_price')}</p>
                   <p className="text-xl font-bold text-gray-900 dark:text-white">{product.minPrice} DT</p>
@@ -147,6 +147,12 @@ const ProductDetailsModal = ({ product, isOpen, onClose }) => {
                   <div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{t('max_price')}</p>
                     <p className="text-xl font-bold text-gray-900 dark:text-white">{product.maxPrice} DT</p>
+                  </div>
+                )}
+                {product.tva && (
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">TVA</p>
+                    <p className="text-xl font-bold text-gray-900 dark:text-white">{product.tva}</p>
                   </div>
                 )}
               </div>

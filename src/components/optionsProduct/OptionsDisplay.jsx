@@ -138,7 +138,10 @@ export const OptionsDisplay = ({ options, handleEdit, handleDelete }) => {
                     {option.customOptions.map((custom, index) => (
                       <div key={index} className="flex justify-between items-center py-1 border-b border-gray-100 dark:border-gray-700 last:border-0">
                         <span className="text-gray-800 dark:text-gray-200">{custom.option_name}</span>
-                        <span className="font-medium text-gray-900 dark:text-white">{custom.prix_option} TND</span>
+                        <div className="flex space-x-3">
+                          <span className="font-medium text-gray-900 dark:text-white">{custom.prix_option} TND</span>
+                          {custom.tva && <span className="text-sm text-gray-500 dark:text-gray-400">TVA: {custom.tva}</span>}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -155,7 +158,7 @@ export const OptionsDisplay = ({ options, handleEdit, handleDelete }) => {
                           <span className="text-xs text-gray-500 dark:text-gray-400">Dimension:</span>
                           <span className="ml-1 text-gray-800 dark:text-gray-200"> {size.longueur}cm × {size.largeur}cm</span>
                         </div>
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-3 gap-2">
                           <div>
                             <span className="text-xs text-gray-500 dark:text-gray-400">Prix:</span>
                             <span className="ml-1 font-medium text-gray-900 dark:text-white">{size.prix_option} TND</span>
@@ -164,6 +167,12 @@ export const OptionsDisplay = ({ options, handleEdit, handleDelete }) => {
                             <span className="text-xs text-gray-500 dark:text-gray-400">Prix Coffre:</span>
                             <span className="ml-1 font-medium text-gray-900 dark:text-white">{size.prix_coffre} TND</span>
                           </div>
+                          {size.tva && (
+                            <div>
+                              <span className="text-xs text-gray-500 dark:text-gray-400">TVA:</span>
+                              <span className="ml-1 text-gray-700 dark:text-gray-300">{size.tva}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -178,7 +187,10 @@ export const OptionsDisplay = ({ options, handleEdit, handleDelete }) => {
                     {option.mousseOptions.map((mousse, index) => (
                       <div key={index} className="flex justify-between items-center py-1 border-b border-gray-100 dark:border-gray-700 last:border-0">
                         <span className="text-gray-800 dark:text-gray-200">{mousse.mousse_name}</span>
-                        <span className="font-medium text-gray-900 dark:text-white">{mousse.mousse_prix} TND</span>
+                        <div className="flex space-x-3">
+                          <span className="font-medium text-gray-900 dark:text-white">{mousse.mousse_prix} TND</span>
+                          {mousse.tva && <span className="text-sm text-gray-500 dark:text-gray-400">TVA: {mousse.tva}</span>}
+                        </div>
                       </div>
                     ))}
                   </div>

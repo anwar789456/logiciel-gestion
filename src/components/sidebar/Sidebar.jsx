@@ -683,14 +683,13 @@ function Sidebar() {
           </div>
           )}
 
-          {canAccess('commandes-en-cours') && (
+          {/* {canAccess('commandes-en-cours') && (
             <div className={`pt-2 pb-2 transition-normal duration-300 ${isSidebarOpen ? 'pl-2 text-sm' : 'pl-0 text-[11px]' }`}>
               <p className='font-semibold uppercase whitespace-nowrap transition-all duration-300 ease-in-out text-gray-400 dark:text-gray-500'>
                 {t('en_cours')}
               </p>
             </div>
           )}
-          {/* Commandes en cours */}      
           {canAccess('commandes-en-cours') && (
           <NavLink
             to="/commandes-en-cours"
@@ -706,7 +705,7 @@ function Sidebar() {
               {t('commandes_en_cours')}
             </span>
           </NavLink>
-          )}
+          )} */}
 
           {hasAccessToWebsiteRoutes() && (
             <div className={`pt-2 pb-2 transition-normal duration-300 ${isSidebarOpen ? 'pl-2 text-sm' : 'pl-0 text-[11px]' }`}>
@@ -817,7 +816,7 @@ function Sidebar() {
                     <div className="mr-2 flex items-center justify-center flex-shrink-0">
                       <Package size={20} />
                     </div>
-                    Products
+                    {t('products')}
                   </NavLink>
                 </div>
                 )}
@@ -896,7 +895,7 @@ function Sidebar() {
                     <div className="mr-2 flex items-center justify-center flex-shrink-0">
                       <Clipboard size={20} />
                     </div>
-                    {t('commandes_client')}
+                    {t('commandes_en_cours')}
                   </NavLink>
                 </div>
                 )}

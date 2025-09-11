@@ -37,7 +37,7 @@ function Navbar() {
             alt="US Flag" 
             className="w-5 h-4 rounded-sm"
           />
-          <span>🇺🇸</span>
+          <span>English</span>
         </div>
       );
     } else {
@@ -48,7 +48,7 @@ function Navbar() {
             alt="French Flag" 
             className="w-5 h-4 rounded-sm"
           />
-          <span>🇫🇷</span>
+          <span>Français</span>
         </div>
       );
     }

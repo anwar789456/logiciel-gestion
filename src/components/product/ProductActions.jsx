@@ -1,13 +1,13 @@
 import React from 'react';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, Copy } from 'lucide-react';
 import { useAccessControl } from '../../hooks/useAccessControl';
 import { useTranslation } from 'react-i18next';
 
 /**
- * ProductActions component that displays edit and delete buttons
+ * ProductActions component that displays edit, clone, and delete buttons
  * based on user's access rights to the current route
  */
-const ProductActions = ({ onEdit, onDelete, product }) => {
+const ProductActions = ({ onEdit, onDelete, onClone, product }) => {
   const { t } = useTranslation();
   const { canWrite } = useAccessControl();
 
@@ -28,6 +28,18 @@ const ProductActions = ({ onEdit, onDelete, product }) => {
           title={t('edit')}
         >
           <Edit size={16} />
+        </button>
+      )}
+      {onClone && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onClone(product);
+          }}
+          className="p-2 bg-green-100 hover:bg-green-200 text-green-700 hover:text-green-900 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-110"
+          title={t('clone')}
+        >
+          <Copy size={16} />
         </button>
       )}
       {onDelete && (

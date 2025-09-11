@@ -11,6 +11,7 @@ const TableDisplayProduct = React.forwardRef(({
   searchPlaceholder,
   onRowClick = null,
   onEdit = null,
+  onClone = null,
   onDelete = null,
   exportData = null 
 }, ref) => {
@@ -61,7 +62,8 @@ const TableDisplayProduct = React.forwardRef(({
   React.useImperativeHandle(ref, () => ({
     refreshData: (page = currentPage) => {
       loadData(page, searchTerm, itemsPerPage);
-    }
+    },
+    getCurrentPage: () => currentPage
   }));
 
   useEffect(() => {
@@ -137,6 +139,10 @@ const TableDisplayProduct = React.forwardRef(({
     if (exportData) {
       exportData(searchTerm);
     }
+  };
+
+  const getRowNumber = (index) => {
+    return ((currentPage - 1) * itemsPerPage) + index + 1;
   };
 
   const formatValue = (value, type = 'text') => {
@@ -284,6 +290,9 @@ const TableDisplayProduct = React.forwardRef(({
           <table className="w-full table-fixed border-collapse">
             <thead>
               <tr className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 sticky top-0 z-10">
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider border-b-2 border-gray-200 dark:border-gray-600" style={{ width: '60px' }}>
+                  #
+                </th>
                 {columns.map((column, index) => (
                   <th
                     key={index}
@@ -314,6 +323,9 @@ const TableDisplayProduct = React.forwardRef(({
                   onMouseEnter={() => setHoveredRow(rowIndex)}
                   onMouseLeave={() => setHoveredRow(null)}
                 >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400" style={{ width: '60px' }}>
+                    {getRowNumber(rowIndex)}
+                  </td>
                   {columns.map((column, colIndex) => {
                     // Actions Column (special case for actions key)
                     if (column.key === 'actions' && column.type === 'custom') {
@@ -335,6 +347,7 @@ const TableDisplayProduct = React.forwardRef(({
                             <ProductActions 
                               product={row}
                               onEdit={onEdit}
+                              onClone={onClone}
                               onDelete={onDelete}
                             />
                           </div>

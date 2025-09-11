@@ -11,6 +11,7 @@ const UserList = () => {
   const navigate = useNavigate();
   
   const [employees, setEmployees] = useState([]);
+  const [allEmployees, setAllEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,6 +19,7 @@ const UserList = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAccessModal, setShowAccessModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [isEmployeeUser, setIsEmployeeUser] = useState(false);
   
   // Available routes in the application - updated to flat structure
   // Only include actual routes that should have permissions, not dropdown containers
@@ -75,23 +77,29 @@ const UserList = () => {
     }
   }, [isAdmin, navigate]);
   
-  // Fetch employees
+  // Fetch employees and all employees data
   useEffect(() => {
-    const fetchEmployees = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const data = await getAllUsers();
-        setEmployees(data);
+        // Import the getAllEmployes function at the top of the file
+        const { getAllEmployes } = await import('../../api/Employe/Employe');
+        const [usersData, employeesData] = await Promise.all([
+          getAllUsers(),
+          getAllEmployes()
+        ]);
+        setEmployees(usersData);
+        setAllEmployees(employeesData);
         setError('');
       } catch (err) {
-        console.error('Error fetching employees:', err);
+        console.error('Error fetching data:', err);
         setError(t('failed_to_fetch_employees'));
       } finally {
         setLoading(false);
       }
     };
     
-    fetchEmployees();
+    fetchData();
   }, [t]);
   
   const handleSearch = (e) => {
@@ -244,11 +252,21 @@ const UserList = () => {
   };
   
   const handleAddModalChange = (e) => {
-    const { name, value } = e.target;
-    setNewEmployee(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    const { name, value, type, checked } = e.target;
+    
+    if (name === 'isEmployeeUser') {
+      setIsEmployeeUser(checked);
+      // Reset userID when toggling the checkbox
+      setNewEmployee(prev => ({
+        ...prev,
+        userID: ''
+      }));
+    } else {
+      setNewEmployee(prev => ({
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value
+      }));
+    }
   };
   
   const handleAddEmployee = async (e) => {
@@ -285,6 +303,7 @@ const UserList = () => {
       setAddSuccess(true);
       // Reset form
       setNewEmployee({
+        userID: '',
         username: '',
         password: '',
         confirmPassword: '',
@@ -292,6 +311,7 @@ const UserList = () => {
         img_url: '',
         access_routes: []
       });
+      setIsEmployeeUser(false); // Reset the employee user checkbox state
       
       // Close modal after a short delay to show success message
       setTimeout(() => {
@@ -486,6 +506,26 @@ const UserList = () => {
               
               <form onSubmit={handleAddEmployee} className="space-y-4">
                 <div>
+                  <div className="flex items-center mb-2">
+                    <div className="flex flex-col">
+                      <div className="flex items-center">
+                        <input
+                          id="isEmployeeUser"
+                          name="isEmployeeUser"
+                          type="checkbox"
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          checked={isEmployeeUser}
+                          onChange={handleAddModalChange}
+                        />
+                        <label htmlFor="isEmployeeUser" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                          {t('is_user_employee')}
+                        </label>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6">
+                        {t('is_user_employee_explanation')}
+                      </p>
+                    </div>
+                  </div>
                   <label htmlFor="userID" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     User ID
                   </label>
@@ -493,17 +533,33 @@ const UserList = () => {
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <IdCard className="h-5 w-5 text-gray-400" aria-hidden="true" />
                     </div>
-                    <input
-                      autoComplete='off'
-                      type="text"
-                      name="userID"
-                      id="userID"
-                      className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 py-2 px-3 sm:text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white rounded-md"
-                      placeholder="User ID"
-                      value={newEmployee.userID}
-                      onChange={handleAddModalChange}
-                      required
-                    />
+                    {isEmployeeUser ? (
+                      <select
+                        name="userID"
+                        id="userID"
+                        className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 py-2 px-3 sm:text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white rounded-md"
+                        value={newEmployee.userID}
+                        onChange={handleAddModalChange}
+                        required
+                      >
+                        <option value="">{t('select_employee')}</option>
+                        {allEmployees.map(employee => (
+                          <option key={employee._id} value={employee._id}>{employee.nom_prenom}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        autoComplete='off'
+                        type="text"
+                        name="userID"
+                        id="userID"
+                        className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 py-2 px-3 sm:text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white rounded-md"
+                        placeholder="User ID"
+                        value={newEmployee.userID}
+                        onChange={handleAddModalChange}
+                        required
+                      />
+                    )}
                   </div>
                 </div>
 
