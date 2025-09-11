@@ -305,7 +305,7 @@ export default function Products() {
 
   const columns = [
     // { header: 'ID', key: 'idProd', type: 'text', width: '10%' },
-    { header: t('name'), key: 'nom', type: 'text', width: '25%' },
+    { header: t('name'), key: 'nom', type: 'text', width: '20%' },
     // { header: t('category'), key: 'categorie', type: 'text', width: '15%' },
     { 
       header: t('type'), 
@@ -322,7 +322,8 @@ export default function Products() {
       }
     },
     { header: t('quantity'), key: 'quantite', type: 'text', width: '10%' },
-    { header: t('price'), key: 'minPrice', type: 'price', width: '15%' },
+    { header: t('price'), key: 'minPrice', type: 'price', width: '10%' },
+    { header: 'TVA', key: 'tva', type: 'text', width: '10%' },
     { header: t('availability'), key: 'disponibilite', type: 'status', width: '15%' },
     {
       header: t('actions'),

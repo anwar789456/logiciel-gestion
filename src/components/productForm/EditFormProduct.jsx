@@ -107,6 +107,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
     images: [{ img: '', hyperPoints: [] }],
     minPrice: '',
     maxPrice: '',
+    tva: '',
     longueur: '',
     largeur: '',
     hauteur: '',
@@ -884,7 +885,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
             />
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('min_price')}</label>
               <input
@@ -907,6 +908,24 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
               autoComplete="off"
               className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">TVA</label>
+              <input
+                type="text"
+                name="tva"
+                value={formData.tva}
+                onChange={handleChange}
+                autoComplete="off"
+                list="tva-options"
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+              />
+              <datalist id="tva-options">
+                <option value="7%">7%</option>
+                <option value="13%">13%</option>
+                <option value="19%">19%</option>
+              </datalist>
             </div>
           </div>
         </div>

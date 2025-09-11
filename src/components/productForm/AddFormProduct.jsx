@@ -109,6 +109,7 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
     images: [{ img: '', hyperPoints: [], id: `image-${Date.now()}` }],
     minPrice: '',
     maxPrice: '',
+    tva: '',
     longueur: '',
     largeur: '',
     hauteur: '',
@@ -1022,7 +1023,7 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
             />
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('min_price')}</label>
               <input
@@ -1045,6 +1046,24 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
               autoComplete="off"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 px-3 py-2"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">TVA</label>
+              <input
+                type="text"
+                name="tva"
+                value={formData.tva}
+                onChange={handleChange}
+                autoComplete="off"
+                list="tva-options"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 px-3 py-2"
+              />
+              <datalist id="tva-options">
+                <option value="7%">7%</option>
+                <option value="13%">13%</option>
+                <option value="19%">19%</option>
+              </datalist>
             </div>
           </div>
         </div>
