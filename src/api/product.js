@@ -18,7 +18,7 @@ export const FetchAllProductItems = async () => {
     const response = await axios.get(API_BASE_URL_GET);
     return response.data;
   } catch (error) {
-    console.error('Error finding products:', error);
+    console.error('Error finding products:', error); 
     throw error;
   }
 };

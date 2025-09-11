@@ -544,10 +544,12 @@ i18n
           'reason_marriage': 'Marriage',
           'reason_family_events': 'For Family Events',
           'reason_other': 'Other',
+          'bon_de_sortie': 'exit slip',
         }
       },
       fr: {
         translation: {
+          'bon_de_sortie': 'Bon de sortie',
           'tarification_des_mousses': 'Prix des mousses',
           'liste_demande_de_conge': 'Liste des demandes',
           'conge': 'Congé',

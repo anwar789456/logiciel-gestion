@@ -523,7 +523,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
   const addOption = () => {
     setFormData(prev => ({
       ...prev,
-      options: [...prev.options, { option_name: '', prix_option: '' }]
+      options: [...prev.options, { option_name: '', prix_option: '', tva: '' }]
     }));
   };
 
@@ -548,7 +548,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
   const addMousse = () => {
     setFormData(prev => ({
       ...prev,
-      mousse: [...prev.mousse, { mousse_name: '', mousse_prix: '' }]
+      mousse: [...prev.mousse, { mousse_name: '', mousse_prix: '', tva: '' }]
     }));
   };
 
@@ -651,7 +651,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
   const addSize = () => {
     setFormData(prev => ({
       ...prev,
-      sizes: [...prev.sizes, { longueur: '', largeur: '', prix_option: '', prix_coffre: '', img_path: '' }]
+      sizes: [...prev.sizes, { longueur: '', largeur: '', prix_option: '', prix_coffre: '', img_path: '', tva: '' }]
     }));
   };
 
@@ -1309,13 +1309,18 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('image_url')}</label>
-                    <input
-                      type="text"
+                    <select
                       value={size.img_path || ''}
                       onChange={(e) => handleSizeChange(index, 'img_path', e.target.value)}
-                      placeholder="https://example.com/image.jpg"
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
-                    />
+                    >
+                      <option value="">{t('select_image')}</option>
+                      {formData.images.map((image, imgIndex) => (
+                        <option key={`img-option-${imgIndex}`} value={image.img}>
+                          {image.img ? image.img.split('/').pop() : `Image ${imgIndex + 1}`}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   
                   {size.img_path && (
@@ -1386,7 +1391,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
                   </button>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('mousse_name')}</label>
                     <input
@@ -1404,6 +1409,21 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
                       onChange={(e) => handleMousseChange(index, 'mousse_prix', e.target.value)}
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">TVA</label>
+                    <input
+                      type="text"
+                      list={`tva-options-mousse-${index}`}
+                      value={mousseItem.tva || ''}
+                      onChange={(e) => handleMousseChange(index, 'tva', e.target.value)}
+                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                    />
+                    <datalist id={`tva-options-mousse-${index}`}>
+                      <option value="7" />
+                      <option value="19" />
+                      <option value="21" />
+                    </datalist>
                   </div>
                 </div>
               </div>

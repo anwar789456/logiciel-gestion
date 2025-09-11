@@ -35,6 +35,7 @@ const SortableMousseOptionRow = ({ id, mousse, index, handleEditMousseOption, ha
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{mousse.mousse_name}</td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{mousse.mousse_prix}</td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{mousse.tva}</td>
       <td className="px-6 py-4 whitespace-nowrap text-sm">
         <button 
           type="button" 
@@ -88,6 +89,7 @@ const SortableSizeOptionRow = ({ id, size, index, handleEditSizeOption, handleRe
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{size.largeur}</td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{size.prix_option}</td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{size.prix_coffre}</td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{size.tva}</td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
         {size.img_path ? (
           <div className="flex items-center">
@@ -149,6 +151,7 @@ const SortableCustomOptionRow = ({ id, custom, index, handleEditCustomOption, ha
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{custom.option_name}</td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{custom.prix_option}</td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{custom.tva}</td>
       <td className="px-6 py-4 whitespace-nowrap text-sm">
         <button 
           type="button" 
@@ -175,11 +178,11 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
   const [options, setOptions] = useState([]);
   const [formData, setFormData] = useState({ nomOption: '', typeOption: '', customOptions: [], sizesOptions: [], mousseOptions: []});
   const [editId, setEditId] = useState(null);
-  const [customOption, setCustomOption] = useState({ option_name: '', prix_option: '' });
+  const [customOption, setCustomOption] = useState({ option_name: '', prix_option: '', tva: '' });
   const [customEditIndex, setCustomEditIndex] = useState(null);
-  const [sizeOption, setSizeOption] = useState({ longueur: '', largeur: '', prix_option: '', prix_coffre: '', img_path: '' });
+  const [sizeOption, setSizeOption] = useState({ longueur: '', largeur: '', prix_option: '', prix_coffre: '', img_path: '', tva: '' });
   const [sizeEditIndex, setSizeEditIndex] = useState(null);
-  const [mousseOption, setMousseOption] = useState({ mousse_name: '', mousse_prix: '' });
+  const [mousseOption, setMousseOption] = useState({ mousse_name: '', mousse_prix: '', tva: '' });
   const [mousseEditIndex, setMousseEditIndex] = useState(null);
   const [showForm, setShowForm] = useState(initialShowForm);
   
@@ -265,7 +268,7 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
         customOptions: [...prev.customOptions, customOption],
       }));
     }
-    setCustomOption({ option_name: '', prix_option: '' });
+    setCustomOption({ option_name: '', prix_option: '', tva: '' });
   };
   
   const handleAddSizeOption = () => {
@@ -282,7 +285,7 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
         sizesOptions: [...prev.sizesOptions, sizeOption],
       }));
     }
-    setSizeOption({ longueur: '', largeur: '', prix_option: '', prix_coffre: '' });
+    setSizeOption({ longueur: '', largeur: '', prix_option: '', prix_coffre: '', img_path: '', tva: '' });
   };
   
   const handleAddMousseOption = () => {
@@ -299,7 +302,7 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
         mousseOptions: [...prev.mousseOptions, mousseOption],
       }));
     }
-    setMousseOption({ mousse_name: '', mousse_prix: '' });
+    setMousseOption({ mousse_name: '', mousse_prix: '', tva: '' });
   };
   
   const handleEditCustomOption = (index) => {
@@ -501,7 +504,7 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
               {formData.typeOption === 'options' && (
                 <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3">Tarification Tissus</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
                     <input 
                       type="text" 
                       name="option_name" 
@@ -520,6 +523,16 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
                       onChange={handleCustomOptionChange}
                       className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                     />
+                    <input 
+                      type="text" 
+                      name="tva" 
+                      autoComplete="off" 
+                      value={customOption.tva} 
+                      placeholder="TVA" 
+                      onChange={handleCustomOptionChange}
+                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                      list="tva-options"
+                    />
                     <button 
                       type="button" 
                       onClick={handleAddCustomOption} 
@@ -535,7 +548,7 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
               {formData.typeOption === 'sizes' && (
                 <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3">Size Options</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-3">
+                  <div className="grid grid-cols-1 md:grid-cols-7 gap-3 mb-3">
                     <input 
                       type="text" 
                       name="longueur" 
@@ -581,6 +594,16 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
                       onChange={handleSizeOptionChange}
                       className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                     />
+                    <input 
+                      type="text" 
+                      name="tva" 
+                      autoComplete="off" 
+                      value={sizeOption.tva} 
+                      placeholder="TVA" 
+                      onChange={handleSizeOptionChange}
+                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                      list="tva-options"
+                    />
                     <button 
                       type="button" 
                       onClick={handleAddSizeOption} 
@@ -596,7 +619,7 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
               {formData.typeOption === 'mousse' && (
                 <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3">Options de Mousse</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
                     <input 
                       type="text" 
                       name="mousse_name" 
@@ -614,6 +637,16 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
                       placeholder="Prix de la mousse" 
                       onChange={handleMousseOptionChange}
                       className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                    />
+                    <input 
+                      type="text" 
+                      name="tva" 
+                      autoComplete="off" 
+                      value={mousseOption.tva} 
+                      placeholder="TVA" 
+                      onChange={handleMousseOptionChange}
+                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                      list="tva-options"
                     />
                     <button 
                       type="button" 
@@ -638,6 +671,7 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
                           <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ordre</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom de l'option</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Prix de l'option</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TVA</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Modifier</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Supprimer</th>
                         </>
@@ -649,6 +683,7 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Largeur</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Prix Dimension</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Prix Coffre</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TVA</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Image</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Edit</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Delete</th>
@@ -659,6 +694,7 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
                           <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ordre</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom de la mousse</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Prix de la mousse</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TVA</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Modifier</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Supprimer</th>
                         </>
@@ -746,6 +782,12 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
               </div>
             )}
           </div>
+          
+          <datalist id="tva-options">
+            <option value="7%">7%</option>
+            <option value="19%">19%</option>
+            <option value="21%">21%</option>
+          </datalist>
           
           <button 
             type="submit" 
