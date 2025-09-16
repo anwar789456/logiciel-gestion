@@ -8,7 +8,7 @@ import { useAuth } from '../../hooks/useAuth';
 function Navbar() {
   const { t } = useTranslation();
   const { isDarkMode, toggleDarkMode, language, changeLanguage } = useApp();
-  const { currentUser, isAdmin, logout } = useAuth();
+  const { currentUser, isAdmin, logout, canAccess } = useAuth();
   const navigate = useNavigate();
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef(null);
@@ -100,18 +100,20 @@ function Navbar() {
                         {isAdmin() ? t('adminRole') : t('employeeRole')}
                       </p>
                     </div>
-                    <a 
-                      href="#" 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setProfileMenuOpen(false);
-                        navigate('/profile');
-                      }}
-                      className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
-                    >
-                      <Settings size={16} className="mr-2" />
-                      {t('profile')}
-                    </a>
+                    {canAccess('profile') && (
+                      <a 
+                        href="#" 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setProfileMenuOpen(false);
+                          navigate('/profile');
+                        }}
+                        className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
+                      >
+                        <Settings size={16} className="mr-2" />
+                        {t('profile')}
+                      </a>
+                    )}
                     <a 
                       href="#" 
                       onClick={(e) => {
@@ -130,13 +132,15 @@ function Navbar() {
               </div>
             )}
             
-            <button 
-              onClick={handleSettingsClick}
-              className='p-2 rounded-md cursor-pointer text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none'
-              title={t('settings')}
-            >
-              <Bolt size={20} />
-            </button>
+            {canAccess('settings') && (
+              <button 
+                onClick={handleSettingsClick}
+                className='p-2 rounded-md cursor-pointer text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none'
+                title={t('settings')}
+              >
+                <Bolt size={20} />
+              </button>
+            )}
 
             <button
               onClick={toggleDarkMode}

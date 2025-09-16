@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5007';
+const API_BASE_URL = 'https://www.samethome.com';
 
 // 🤖 Obtenir tous les insights IA
 export const getAIInsights = async () => {

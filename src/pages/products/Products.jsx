@@ -312,7 +312,7 @@ export default function Products() {
       key: 'typeProd', 
       type: 'custom',
       width: '15%',
-      render: (value, row) => {
+      render: (value) => {
         // Display the titleSous if available, otherwise show 'N/A'
         if (value && typeProdMapping[value]) {
           return typeProdMapping[value];

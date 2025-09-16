@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5007';
+const API_BASE_URL = 'https://www.samethome.com';
 
 // Get the current counter value
 export const getBonLivraisonCounter = async () => {

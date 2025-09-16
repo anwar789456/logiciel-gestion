@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5007/admin/api/logiciel';
+const API_BASE_URL = 'https://www.samethome.com/admin/api/logiciel';
 
 // Create a new recu paiement
 export const createRecuPaiement = async (recuPaiementData) => {

@@ -11,7 +11,6 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  defaultDropAnimationSideEffects,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -164,6 +163,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
         
         setTypeProdOptions(options);
       } catch (error) {
+        console.log("error:", error)
 
       }
     };
@@ -178,7 +178,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
         const data = await FetchAllCategoryItems();
         setCategories(data);
       } catch (error) {
-
+        console.log("error:", error)
       }
     };
     
@@ -192,6 +192,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
         const data = await FetchAllOptionItems();
         setOptions(data);
       } catch (error) {
+        console.log("error:", error)
 
       }
     };
@@ -449,8 +450,6 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
             ...prev,
             subcategorie: ''
           }));
-        } else {
-
         }
       }
     } else {
@@ -618,8 +617,8 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
     if (field === 'img_path' && value.trim() !== '') {
       try {
         new URL(value); // This will throw an error if the URL is invalid
-      } catch (e) {
-        console.error('Invalid URL format:', value);
+      } catch (error) {
+        console.error('Invalid URL format:', error);
         setError(t('invalid_image_url')); // Show error message to user
         setTimeout(() => setError(''), 3000); // Clear error after 3 seconds
         return; // Don't update if URL is invalid

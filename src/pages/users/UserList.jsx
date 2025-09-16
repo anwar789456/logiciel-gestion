@@ -21,12 +21,11 @@ const UserList = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [isEmployeeUser, setIsEmployeeUser] = useState(false);
   
-  // Available routes in the application - updated to flat structure
-  // Only include actual routes that should have permissions, not dropdown containers
+  // Available routes in the application - updated to include hierarchical structure
+  // Website routes are grouped under a parent 'website' route
   const availableRoutes = [
     { path: 'dashboard', label: 'Dashboard' },
     { path: 'agenda', label: 'Agenda' },
-    { path: 'factures', label: 'Factures' },
     { path: 'commandes-en-cours', label: 'Commandes en cours' },
     { path: 'commandes-fiche', label: 'Historique commandes' },
     { path: 'users', label: 'Liste des utilisateurs' },
@@ -34,20 +33,53 @@ const UserList = () => {
     { path: 'demande-conge', label: 'Demande de congé' },
     { path: 'liste-conge', label: 'Liste des congés' },
     { path: 'clients', label: 'Clients' },
-    { path: 'recu-paiement', label: 'Reçu de paiement' },
-    { path: 'bon-livraison', label: 'Bon de livraison' },
-    { path: 'messages', label: 'Messages' },
-    { path: 'fournisseur', label: 'Fournisseur' },
-    { path: 'devis', label: 'Devis' },
     { path: 'assistant', label: 'Assistant IA' },
     { path: 'caisse', label: 'Caisse' },
-    { path: 'products', label: 'Produits' },
-    { path: 'categories', label: 'Catégories' },
-    { path: 'qr-code', label: 'QR Code' },
-    { path: 'carousel', label: 'Carousel' },
+    // Parent ventes route with child routes
+    {
+      path: 'ventes',
+      label: 'Ventes',
+      isParent: true,
+      children: [
+        { path: 'devis', label: 'Devis', parent: 'ventes' },
+        { path: 'factures', label: 'Factures', parent: 'ventes' },
+        { path: 'bon-livraison', label: 'Bon de livraison', parent: 'ventes' },
+        { path: 'recu-paiement-sur-commande', label: 'Reçu de paiement', parent: 'ventes' },
+        { path: 'fiche-commande', label: 'Fiche commande', parent: 'ventes' },
+        { path: 'bon-de-sortie', label: 'Bon de sortie', parent: 'ventes' },
+        { path: 'crm', label: 'CRM', parent: 'ventes' }
+      ]
+    },
+    // Parent website route with child routes
+    { 
+      path: 'website', 
+      label: 'Website', 
+      isParent: true,
+      children: [
+        { path: 'products', label: 'Produits', parent: 'website' },
+        { path: 'categories', label: 'Catégories', parent: 'website' },
+        { path: 'qr-code', label: 'QR Code', parent: 'website' },
+        { path: 'carousel', label: 'Carousel', parent: 'website' },
+        { path: 'messages', label: 'Messages', parent: 'website' },
+      ] 
+    },
     { path: 'settings', label: 'Paramètres' },
     { path: 'profile', label: 'Profil' }
   ];
+  
+  // Flatten routes for easier access when needed
+  const flattenedRoutes = availableRoutes.reduce((acc, route) => {
+    if (route.isParent && route.children) {
+      // Add parent route
+      acc.push({ path: route.path, label: route.label, isParent: true });
+      // Add all children
+      route.children.forEach(child => acc.push(child));
+    } else if (!route.parent) {
+      // Add regular routes that aren't children
+      acc.push(route);
+    }
+    return acc;
+  }, []);
   const [editForm, setEditForm] = useState({
     username: '',
     role: '',
@@ -409,7 +441,7 @@ const UserList = () => {
                             <div className="text-xs text-gray-500 dark:text-gray-400">
                               ID: {employee.userID || employee._id}
                             </div>
-                          </div>
+                </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -796,198 +828,340 @@ const UserList = () => {
       
       {/* Access Permissions Modal */}
       {showAccessModal && (
-        <div 
-          className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" 
-          onClick={handleCancelAccess}
-        >
           <div 
-            className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-lg w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-xl flex flex-col animate-fadeIn" 
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" 
+            onClick={handleCancelAccess}
           >
-            {/* Modal Header */}
-            <div className="flex-shrink-0 bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 px-6 py-4 flex justify-between items-center">
-              <h3 className="text-xl font-semibold text-white flex items-center">
-                <Shield className="mr-2" />
-                {t('access_permissions')}
-              </h3>
-              <button 
-                onClick={handleCancelAccess}
-                className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/30 rounded-full p-1"
-              >
-                <X size={20} />
-              </button>
-            </div>
-            
-            {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-6">
-              {error && (
-                <div className="mb-4 bg-red-100/80 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg shadow-sm" role="alert">
-                  <div className="flex items-center">
-                    <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0" />
-                    <span className="block sm:inline">{error}</span>
-                  </div>
-                </div>
-              )}
-              
-              {editSuccess && (
-                <div className="mb-4 bg-green-100/80 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 px-4 py-3 rounded-lg shadow-sm" role="alert">
-                  <div className="flex items-center">
-                    <Check className="w-5 h-5 mr-2 flex-shrink-0" />
-                    <span className="block sm:inline">{t('permissions_updated_successfully')}</span>
-                  </div>
-                </div>
-              )}
-              
-              <div className="mb-5">
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
-                  <User className="w-5 h-5 mr-2 text-blue-500" />
-                  {selectedEmployee?.username}
-                </h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400 ml-7">
-                  {t('configure_route_access')}
-                </p>
+            <div 
+              className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-lg w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-xl flex flex-col animate-fadeIn" 
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="flex-shrink-0 bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 px-6 py-4 flex justify-between items-center">
+                <h3 className="text-xl font-semibold text-white flex items-center">
+                  <Shield className="mr-2" />
+                  {t('access_permissions')}
+                </h3>
+                <button 
+                  onClick={handleCancelAccess}
+                  className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/30 rounded-full p-1"
+                >
+                  <X size={20} />
+                </button>
               </div>
               
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden">
-                <div className="max-h-[350px] overflow-y-auto p-4 space-y-3">
-                  {availableRoutes.map((route) => {
-                    // Find if this route exists in access_routes array
-                    const accessRoute = selectedEmployee?.access_routes?.find(r => 
-                      r.access_route === route.path
-                    );
-                    
-                    return (
-                      <div key={route.path} className="p-3 border border-gray-100 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors duration-150">
-                        <div className="flex items-center mb-2">
-                          <div className="relative inline-flex items-center">
-                            <input
-                              type="checkbox"
-                              id={`route-${route.path}`}
-                              className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-md shadow-sm cursor-pointer"
-                              checked={!!accessRoute}
-                              onChange={() => {
-                                if (!selectedEmployee) return;
-                                
-                                const updatedEmployee = { ...selectedEmployee };
-                                if (!updatedEmployee.access_routes) {
-                                  updatedEmployee.access_routes = [];
-                                }
-                                
-                                if (accessRoute) {
-                                  // Remove this route
-                                  updatedEmployee.access_routes = updatedEmployee.access_routes.filter(r => 
-                                    r.access_route !== route.path
-                                  );
-                                } else {
-                                  // Add this route with read only access by default
-                                  updatedEmployee.access_routes.push({
-                                    access_route: route.path,
-                                    access_right: 'read only'
-                                  });
-                                }
-                                
-                                setSelectedEmployee(updatedEmployee);
-                              }}
-                            />
-                            <label htmlFor={`route-${route.path}`} className="ml-2 block text-sm font-medium text-gray-900 dark:text-gray-200 cursor-pointer">
-                              {route.label}
-                            </label>
-                          </div>
-                        </div>
-                        
-                        {accessRoute && (
-                          <div className="ml-7 mt-2 p-2 bg-gray-50 dark:bg-gray-700/50 rounded-md border border-gray-100 dark:border-gray-700">
-                            <div className="flex flex-wrap gap-4">
-                              <div className="flex items-center">
-                                <input
-                                  type="radio"
-                                  id={`read-only-${route.path}`}
-                                  name={`access-right-${route.path}`}
-                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                  checked={accessRoute.access_right === 'read only'}
-                                  onChange={() => {
-                                    if (!selectedEmployee) return;
-                                    
-                                    const updatedEmployee = { ...selectedEmployee };
-                                    const routeIndex = updatedEmployee.access_routes.findIndex(r => 
-                                      r.access_route === route.path
-                                    );
-                                    
-                                    if (routeIndex !== -1) {
-                                      updatedEmployee.access_routes[routeIndex].access_right = 'read only';
+              {/* Scrollable Content */}
+              <div className="flex-1 overflow-y-auto p-6">
+                {error && (
+                  <div className="mb-4 bg-red-100/80 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg shadow-sm" role="alert">
+                    <div className="flex items-center">
+                      <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0" />
+                      <span className="block sm:inline">{error}</span>
+                    </div>
+                  </div>
+                )}
+                
+                {editSuccess && (
+                  <div className="mb-4 bg-green-100/80 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 px-4 py-3 rounded-lg shadow-sm" role="alert">
+                    <div className="flex items-center">
+                      <Check className="w-5 h-5 mr-2 flex-shrink-0" />
+                      <span className="block sm:inline">{t('permissions_updated_successfully')}</span>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="mb-5">
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
+                    <User className="w-5 h-5 mr-2 text-blue-500" />
+                    {selectedEmployee?.username}
+                  </h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 ml-7">
+                    {t('configure_route_access')}
+                  </p>
+                </div>
+                
+                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden">
+                  <div className="max-h-[350px] overflow-y-auto p-4 space-y-3">
+                    {availableRoutes.map((route) => {
+                      // Find if this route exists in access_routes array
+                      const accessRoute = selectedEmployee?.access_routes?.find(r => r.access_route === route.path);
+                      
+                      // Skip child routes as they'll be rendered under their parent
+                      if (route.parent) return null;
+                      
+                      return (
+                        <div key={route.path} className="p-3 border border-gray-100 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors duration-150">
+                          <div className="flex items-center mb-2">
+                            <div className="relative inline-flex items-center">
+                              {route.isParent ? (
+                                <h3 className="font-medium text-gray-900 dark:text-gray-100">{route.label}</h3>
+                              ) : (
+                                <>
+                                  <input
+                                    type="checkbox"
+                                    id={`route-${route.path}`}
+                                    className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-md shadow-sm cursor-pointer"
+                                    checked={!!accessRoute}
+                                    onChange={() => {
+                                      if (!selectedEmployee) return;
+                                      
+                                      const updatedEmployee = { ...selectedEmployee };
+                                      if (!updatedEmployee.access_routes) {
+                                        updatedEmployee.access_routes = [];
+                                      }
+                                      
+                                      // Handle regular route selection/deselection
+                                      if (accessRoute) {
+                                        // Remove this route
+                                        updatedEmployee.access_routes = updatedEmployee.access_routes.filter(r => r.access_route !== route.path);
+                                      } else {
+                                        // Add this route
+                                        updatedEmployee.access_routes.push({
+                                          access_route: route.path,
+                                          access_right: (route.path === 'profile' || route.path === 'settings') ? 'read and write' : 'read only'
+                                        });
+                                      }
+                                      
                                       setSelectedEmployee(updatedEmployee);
-                                    }
-                                  }}
-                                />
-                                <label htmlFor={`read-only-${route.path}`} className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-                                  {t('read_only')}
-                                </label>
-                              </div>
-                              
-                              <div className="flex items-center">
-                                <input
-                                  type="radio"
-                                  id={`read-write-${route.path}`}
-                                  name={`access-right-${route.path}`}
-                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                  checked={accessRoute.access_right === 'read and write'}
-                                  onChange={() => {
-                                    if (!selectedEmployee) return;
-                                    
-                                    const updatedEmployee = { ...selectedEmployee };
-                                    const routeIndex = updatedEmployee.access_routes.findIndex(r => 
-                                      r.access_route === route.path
-                                    );
-                                    
-                                    if (routeIndex !== -1) {
-                                      updatedEmployee.access_routes[routeIndex].access_right = 'read and write';
-                                      setSelectedEmployee(updatedEmployee);
-                                    }
-                                  }}
-                                />
-                                <label htmlFor={`read-write-${route.path}`} className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-                                  {t('read_and_write')}
-                                </label>
-                              </div>
+                                    }}
+                                  />
+                                  <label htmlFor={`route-${route.path}`} className="ml-2 block text-sm font-medium text-gray-900 dark:text-gray-200 cursor-pointer">
+                                    {route.label}
+                                  </label>
+                                </>
+                              )}
                             </div>
                           </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                          
+                          {/* For non-parent routes, show access rights */}
+                          {!route.isParent && accessRoute && (
+                            <div className="ml-7 mt-2 p-2 bg-gray-50 dark:bg-gray-700/50 rounded-md border border-gray-100 dark:border-gray-700">
+                              <div className="flex flex-wrap gap-4">
+                                {/* For profile and settings routes, only show read and write option */}
+                                {route.path === 'profile' || route.path === 'settings' ? (
+                                  <div className="flex items-center">
+                                    <input
+                                      type="radio"
+                                      id={`read-write-${route.path}`}
+                                      name={`access-right-${route.path}`}
+                                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                      checked={true}
+                                      readOnly
+                                    />
+                                    <label htmlFor={`read-write-${route.path}`} className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                                      {t('read_and_write')}
+                                    </label>
+                                  </div>
+                                ) : (
+                                  <>
+                                    <div className="flex items-center">
+                                      <input
+                                        type="radio"
+                                        id={`read-only-${route.path}`}
+                                        name={`access-right-${route.path}`}
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                        checked={accessRoute.access_right === 'read only'}
+                                        onChange={() => {
+                                          if (!selectedEmployee) return;
+                                          
+                                          const updatedEmployee = { ...selectedEmployee };
+                                          const routeIndex = updatedEmployee.access_routes.findIndex(r => r.access_route === route.path);
+                                          
+                                          if (routeIndex !== -1) {
+                                            updatedEmployee.access_routes[routeIndex].access_right = 'read only';
+                                            setSelectedEmployee(updatedEmployee);
+                                          }
+                                        }}
+                                      />
+                                      <label htmlFor={`read-only-${route.path}`} className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                                        {t('read_only')}
+                                      </label>
+                                    </div>
+                                    <div className="flex items-center">
+                                      <input
+                                        type="radio"
+                                        id={`read-write-${route.path}`}
+                                        name={`access-right-${route.path}`}
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                        checked={accessRoute.access_right === 'read and write'}
+                                        onChange={() => {
+                                          if (!selectedEmployee) return;
+                                          
+                                          const updatedEmployee = { ...selectedEmployee };
+                                          const routeIndex = updatedEmployee.access_routes.findIndex(r => r.access_route === route.path);
+                                          
+                                          if (routeIndex !== -1) {
+                                            updatedEmployee.access_routes[routeIndex].access_right = 'read and write';
+                                            setSelectedEmployee(updatedEmployee);
+                                          }
+                                        }}
+                                      />
+                                      <label htmlFor={`read-write-${route.path}`} className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                                        {t('read_and_write')}
+                                      </label>
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Render child routes if this is a parent route */}
+                          {route.isParent && route.children && (
+                            <div className="ml-7 mt-2 space-y-2">
+                              {route.children.map(childRoute => {
+                                const childAccessRoute = selectedEmployee?.access_routes?.find(r => r.access_route === childRoute.path);
+                                
+                                return (
+                                  <div key={childRoute.path} className="flex flex-col p-2 bg-gray-50 dark:bg-gray-700/30 rounded-md border border-gray-100 dark:border-gray-700 mb-2">
+                                    <div className="relative inline-flex items-center">
+                                      <input
+                                        type="checkbox"
+                                        id={`route-${childRoute.path}`}
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-md shadow-sm cursor-pointer"
+                                        checked={!!childAccessRoute}
+                                        onChange={() => {
+                                          if (!selectedEmployee) return;
+                                          
+                                          const updatedEmployee = { ...selectedEmployee };
+                                          if (!updatedEmployee.access_routes) {
+                                            updatedEmployee.access_routes = [];
+                                          }
+                                          
+                                          if (childAccessRoute) {
+                                            // Remove this child route
+                                            updatedEmployee.access_routes = updatedEmployee.access_routes.filter(r => r.access_route !== childRoute.path);
+                                          } else {
+                                            // Add child route with read only access by default
+                                            updatedEmployee.access_routes.push({
+                                              access_route: childRoute.path,
+                                              access_right: (childRoute.path === 'profile' || childRoute.path === 'settings') ? 'read and write' : 'read only'
+                                            });
+                                          }
+                                          
+                                          setSelectedEmployee(updatedEmployee);
+                                        }}
+                                      />
+                                      <label htmlFor={`route-${childRoute.path}`} className="ml-2 block text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                                        {childRoute.label}
+                                      </label>
+                                    </div>
+                                    
+                                    {/* Show access rights for child routes */}
+                                    {childAccessRoute && (
+                                      <div className="ml-6 mt-2 p-2 bg-gray-100 dark:bg-gray-700/50 rounded-md border border-gray-200 dark:border-gray-600">
+                                        <div className="flex flex-wrap gap-4">
+                                          {/* For profile and settings routes, only show read and write option */}
+                                          {childRoute.path === 'profile' || childRoute.path === 'settings' ? (
+                                            <div className="flex items-center">
+                                              <input
+                                                type="radio"
+                                                id={`read-write-${childRoute.path}`}
+                                                name={`access-right-${childRoute.path}`}
+                                                className="h-3 w-3 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                                checked={true}
+                                                readOnly
+                                              />
+                                              <label htmlFor={`read-write-${childRoute.path}`} className="ml-1 block text-xs text-gray-700 dark:text-gray-300">
+                                                {t('read_and_write')}
+                                              </label>
+                                            </div>
+                                          ) : (
+                                            <>
+                                              <div className="flex items-center">
+                                                <input
+                                                  type="radio"
+                                                  id={`read-only-${childRoute.path}`}
+                                                  name={`access-right-${childRoute.path}`}
+                                                  className="h-3 w-3 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                                  checked={childAccessRoute.access_right === 'read only'}
+                                                  onChange={() => {
+                                                    if (!selectedEmployee) return;
+                                                    
+                                                    const updatedEmployee = { ...selectedEmployee };
+                                                    const routeIndex = updatedEmployee.access_routes.findIndex(r => r.access_route === childRoute.path);
+                                                    
+                                                    if (routeIndex !== -1) {
+                                                      updatedEmployee.access_routes[routeIndex].access_right = 'read only';
+                                                      setSelectedEmployee(updatedEmployee);
+                                                    }
+                                                  }}
+                                                />
+                                                <label htmlFor={`read-only-${childRoute.path}`} className="ml-1 block text-xs text-gray-700 dark:text-gray-300">
+                                                  {t('read_only')}
+                                                </label>
+                                              </div>
+                                              <div className="flex items-center">
+                                                <input
+                                                  type="radio"
+                                                  id={`read-write-${childRoute.path}`}
+                                                  name={`access-right-${childRoute.path}`}
+                                                  className="h-3 w-3 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                                  checked={childAccessRoute.access_right === 'read and write'}
+                                                  onChange={() => {
+                                                    if (!selectedEmployee) return;
+                                                    
+                                                    const updatedEmployee = { ...selectedEmployee };
+                                                    const routeIndex = updatedEmployee.access_routes.findIndex(r => 
+                                                      r.access_route === childRoute.path
+                                                    );
+                                                    
+                                                    if (routeIndex !== -1) {
+                                                      updatedEmployee.access_routes[routeIndex].access_right = 'read and write';
+                                                      setSelectedEmployee(updatedEmployee);
+                                                    }
+                                                  }}
+                                                />
+                                                <label htmlFor={`read-write-${childRoute.path}`} className="ml-1 block text-xs text-gray-700 dark:text-gray-300">
+                                                  {t('read_and_write')}
+                                                </label>
+                                              </div>
+                                            </>
+                                          )}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            {/* Modal Footer */}
-            <div className="flex-shrink-0 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-200 dark:border-gray-700 px-6 py-4">
-              <div className="flex justify-end space-x-3">
-                <button
-                  onClick={handleCancelAccess}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
-                >
-                  {t('cancel')}
-                </button>
-                <button
-                  onClick={handleUpdateAccess}
-                  disabled={editLoading}
-                  className="px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                >
-                  {editLoading ? (
-                    <div className="flex items-center">
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      {t('saving')}
-                    </div>
-                  ) : t('save_changes')}
-                </button>
+              
+              {/* Modal Footer */}
+              <div className="flex-shrink-0 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-200 dark:border-gray-700 px-6 py-4">
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={handleCancelAccess}
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                  >
+                    {t('cancel')}
+                  </button>
+                  <button
+                    onClick={handleUpdateAccess}
+                    disabled={editLoading}
+                    className="px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  >
+                    {editLoading ? (
+                      <div className="flex items-center">
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        {t('saving')}
+                      </div>
+                    ) : t('save_changes')}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 };
