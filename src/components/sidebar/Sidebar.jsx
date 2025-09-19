@@ -35,7 +35,7 @@ function Sidebar() {
   // }; // Removed - commandes moved to ventes dropdown
   
   const hasAccessToEmployeeRoutes = () => {
-    const routes = ['users-list', 'employee-list', 'demande-conge'];
+    const routes = ['users', 'employes'];
     return routes.some(route => canAccess(route));
   };
   
@@ -534,13 +534,13 @@ function Sidebar() {
             <div 
               className={`ml-4 overflow-hidden transition-all duration-300 ease-in-out ${
                 isEmployeeOpen && isSidebarOpen 
-                  ? 'max-h-96 opacity-100 mt-1' 
+                  ? 'max-h-[500px] opacity-100 mt-1' 
                   : 'max-h-0 opacity-0 mt-0'
               }`}
             >
               <div className="space-y-1 transform transition-transform duration-300 ease-in-out">
-                {/* User List - Admin Only */}
-                {canAccess('users-list') && (
+                {/* User List */}
+                {canAccess('users') && (
                   <div
                     className={`transform transition-all duration-300 ease-in-out ${
                       isEmployeeOpen && isSidebarOpen
@@ -552,7 +552,7 @@ function Sidebar() {
                     }}
                   >
                     <NavLink
-                      to="/users-list"
+                      to="/users"
                       className={({ isActive }) =>
                         `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-300 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                       }
@@ -561,13 +561,12 @@ function Sidebar() {
                         <Users size={20} />
                       </div>
                       {t('users_list')}
-                      {/* {t('employee_list')} */}
                     </NavLink>
                   </div>
                 )}
 
                 {/* Employee List */}
-                {canAccess('employee-list') && (
+                {canAccess('employes') && (
                   <div
                     className={`transform transition-all duration-300 ease-in-out ${
                       isEmployeeOpen && isSidebarOpen
@@ -575,11 +574,11 @@ function Sidebar() {
                         : '-translate-y-2 opacity-0'
                     }`}
                     style={{
-                      transitionDelay: isEmployeeOpen ? '0ms' : '0ms'
+                      transitionDelay: isEmployeeOpen ? '50ms' : '0ms'
                     }}
                   >
                     <NavLink
-                      to="/employee-list"
+                      to="/employes"
                       className={({ isActive }) =>
                         `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-300 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                       }

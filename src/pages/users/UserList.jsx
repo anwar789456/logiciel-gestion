@@ -28,8 +28,16 @@ const UserList = () => {
     { path: 'agenda', label: 'Agenda' },
     { path: 'commandes-en-cours', label: 'Commandes en cours' },
     { path: 'commandes-fiche', label: 'Historique commandes' },
-    { path: 'users', label: 'Liste des utilisateurs' },
-    { path: 'employes', label: 'Liste des employés' },
+    // Parent employe route with child routes
+    {
+      path: 'employe',
+      label: 'Employé',
+      isParent: true,
+      children: [
+        { path: 'users', label: 'Liste des utilisateurs', parent: 'employe' },
+        { path: 'employes', label: 'Liste des employés', parent: 'employe' },
+      ]
+    },
     { path: 'demande-conge', label: 'Demande de congé' },
     { path: 'liste-conge', label: 'Liste des congés' },
     { path: 'clients', label: 'Clients' },
@@ -1037,6 +1045,14 @@ const UserList = () => {
                                               access_route: childRoute.path,
                                               access_right: (childRoute.path === 'profile' || childRoute.path === 'settings') ? 'read and write' : 'read only'
                                             });
+                                            
+                                            // Force messages route to always have read only access
+                                            if (childRoute.path === 'messages') {
+                                              const messagesRouteIndex = updatedEmployee.access_routes.findIndex(r => r.access_route === 'messages');
+                                              if (messagesRouteIndex !== -1) {
+                                                updatedEmployee.access_routes[messagesRouteIndex].access_right = 'read only';
+                                              }
+                                            }
                                           }
                                           
                                           setSelectedEmployee(updatedEmployee);
@@ -1064,6 +1080,20 @@ const UserList = () => {
                                               />
                                               <label htmlFor={`read-write-${childRoute.path}`} className="ml-1 block text-xs text-gray-700 dark:text-gray-300">
                                                 {t('read_and_write')}
+                                              </label>
+                                            </div>
+                                          ) : childRoute.path === 'messages' ? (
+                                            <div className="flex items-center">
+                                              <input
+                                                type="radio"
+                                                id={`read-only-${childRoute.path}`}
+                                                name={`access-right-${childRoute.path}`}
+                                                className="h-3 w-3 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                                checked={true}
+                                                readOnly
+                                              />
+                                              <label htmlFor={`read-only-${childRoute.path}`} className="ml-1 block text-xs text-gray-700 dark:text-gray-300">
+                                                {t('read_only')}
                                               </label>
                                             </div>
                                           ) : (

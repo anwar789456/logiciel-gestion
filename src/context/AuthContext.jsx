@@ -141,6 +141,14 @@ export const AuthProvider = ({ children }) => {
         const normalizedPage = page.startsWith('/') ? page.substring(1) : page;
         const normalizedAccessRoute = route.access_route.startsWith('/') ? route.access_route.substring(1) : route.access_route;
         
+        // Handle route mapping for compatibility with old and new route structure
+        if (normalizedPage === 'users' && normalizedAccessRoute === 'users-list') {
+          return true;
+        }
+        if (normalizedPage === 'employes' && normalizedAccessRoute === 'employee-list') {
+          return true;
+        }
+        
         return normalizedAccessRoute === normalizedPage;
       });
       
