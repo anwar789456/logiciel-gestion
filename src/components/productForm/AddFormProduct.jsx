@@ -1331,59 +1331,61 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
         {formData.options.length > 0 && (
           <div className="space-y-4 mt-4">
             <h4 className="text-md font-medium text-gray-800 dark:text-gray-200 mb-2">{t('tarification_des_options')}</h4>
-            {formData.options.map((option, index) => (
-              <div key={`option-${index}`} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800/50 shadow-sm">
-                <div className="flex justify-between items-center mb-3">
-                  <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">{option.option_name}</h4>
-                  <button
-                    type="button"
-                    onClick={() => removeOption(index)}
-                    className="text-red-500 hover:text-red-700 focus:outline-none"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('option_name')}</label>
-                    <input
-                      type="text"
-                      value={option.option_name}
-                      onChange={(e) => handleOptionChange(index, 'option_name', e.target.value)}
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
-                    />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {formData.options.map((option, index) => (
+                <div key={`option-${index}`} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800/50 shadow-sm">
+                  <div className="flex justify-between items-center mb-3">
+                    <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">{option.option_name}</h4>
+                    <button
+                      type="button"
+                      onClick={() => removeOption(index)}
+                      className="text-red-500 hover:text-red-700 focus:outline-none"
+                    >
+                      <Trash2 size={18} />
+                    </button>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('option_price')}</label>
-                    <input
-                      type="text"
-                      value={option.prix_option}
-                      onChange={(e) => handleOptionChange(index, 'prix_option', e.target.value)}
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">TVA</label>
-                    <div className="relative">
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('option_name')}</label>
                       <input
                         type="text"
-                        value={option.tva}
-                        onChange={(e) => handleOptionChange(index, 'tva', e.target.value)}
+                        value={option.option_name}
+                        onChange={(e) => handleOptionChange(index, 'option_name', e.target.value)}
                         className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
-                        list={`tva-options-${index}`}
-                        placeholder="7, 19, 21"
                       />
-                      <datalist id={`tva-options-${index}`}>
-                        <option value="7">7%</option>
-                        <option value="19">19%</option>
-                        <option value="21">21%</option>
-                      </datalist>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('option_price')}</label>
+                      <input
+                        type="text"
+                        value={option.prix_option}
+                        onChange={(e) => handleOptionChange(index, 'prix_option', e.target.value)}
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">TVA</label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={option.tva}
+                          onChange={(e) => handleOptionChange(index, 'tva', e.target.value)}
+                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                          list={`tva-options-${index}`}
+                          placeholder="7, 19, 21"
+                        />
+                        <datalist id={`tva-options-${index}`}>
+                          <option value="7">7%</option>
+                          <option value="19">19%</option>
+                          <option value="21">21%</option>
+                        </datalist>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -1430,92 +1432,97 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
         
         {formData.sizes.length > 0 && (
           <div className="space-y-4">
-            {formData.sizes.map((size, index) => (
-              <div key={`size-${index}`} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800/50 shadow-sm">
-                <div className="flex justify-between items-center mb-3">
-                  <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">{size.longueur} x {size.largeur}</h4>
-                  <button
-                    type="button"
-                    onClick={() => removeSize(index)}
-                    className="text-red-500 hover:text-red-700 focus:outline-none"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('image_url')}</label>
-                    <select
-                      value={size.img_path || ''}
-                      onChange={(e) => handleSizeChange(index, 'img_path', e.target.value)}
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+            <h4 className="text-md font-medium text-gray-800 dark:text-gray-200 mb-2">{t('options_de_taille')}</h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {formData.sizes.map((size, index) => (
+                <div key={`size-${index}`} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800/50 shadow-sm">
+                  <div className="flex justify-between items-center mb-3">
+                    <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">{size.longueur} x {size.largeur}</h4>
+                    <button
+                      type="button"
+                      onClick={() => removeSize(index)}
+                      className="text-red-500 hover:text-red-700 focus:outline-none"
                     >
-                      <option value="">{t('select_image')}</option>
-                      {formData.images.map((image, imgIndex) => (
-                        <option key={`img-option-${imgIndex}`} value={image.img}>
-                          {image.img ? image.img.split('/').pop() : `Image ${imgIndex + 1}`}
-                        </option>
-                      ))}
-                    </select>
+                      <Trash2 size={18} />
+                    </button>
                   </div>
                   
-                  {size.img_path && (
-                    <div className="flex items-center">
-                      <img 
-                        src={size.img_path} 
-                        alt={`${size.longueur}x${size.largeur}`} 
-                        className="h-20 w-20 object-cover rounded-md border border-gray-200 dark:border-gray-700" 
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = 'https://via.placeholder.com/100?text=Error';
-                        }}
-                      />
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('length')}</label>
+                        <input
+                          type="text"
+                          value={size.longueur}
+                          onChange={(e) => handleSizeChange(index, 'longueur', e.target.value)}
+                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('width')}</label>
+                        <input
+                          type="text"
+                          value={size.largeur}
+                          onChange={(e) => handleSizeChange(index, 'largeur', e.target.value)}
+                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                        />
+                      </div>
                     </div>
-                  )}
+                    
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('option_price')}</label>
+                        <input
+                          type="text"
+                          value={size.prix_option}
+                          onChange={(e) => handleSizeChange(index, 'prix_option', e.target.value)}
+                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('coffre_price')}</label>
+                        <input
+                          type="text"
+                          value={size.prix_coffre}
+                          onChange={(e) => handleSizeChange(index, 'prix_coffre', e.target.value)}
+                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('image_url')}</label>
+                      <select
+                        value={size.img_path || ''}
+                        onChange={(e) => handleSizeChange(index, 'img_path', e.target.value)}
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
+                      >
+                        <option value="">{t('select_image')}</option>
+                        {formData.images.map((image, imgIndex) => (
+                          <option key={`img-option-${imgIndex}`} value={image.img}>
+                            {image.img ? image.img.split('/').pop() : `Image ${imgIndex + 1}`}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    
+                    {size.img_path && (
+                      <div className="flex justify-center mt-2">
+                        <img 
+                          src={size.img_path} 
+                          alt={`${size.longueur}x${size.largeur}`} 
+                          className="h-20 w-auto object-cover rounded-md border border-gray-200 dark:border-gray-700" 
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = 'https://via.placeholder.com/100?text=Error';
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
-                
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('length')}</label>
-                    <input
-                      type="text"
-                      value={size.longueur}
-                      onChange={(e) => handleSizeChange(index, 'longueur', e.target.value)}
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('width')}</label>
-                    <input
-                      type="text"
-                      value={size.largeur}
-                      onChange={(e) => handleSizeChange(index, 'largeur', e.target.value)}
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('option_price')}</label>
-                    <input
-                      type="text"
-                      value={size.prix_option}
-                      onChange={(e) => handleSizeChange(index, 'prix_option', e.target.value)}
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('coffre_price')}</label>
-                    <input
-                      type="text"
-                      value={size.prix_coffre}
-                      onChange={(e) => handleSizeChange(index, 'prix_coffre', e.target.value)}
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
-                    />
-                  </div>
-
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
       </div>

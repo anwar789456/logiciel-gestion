@@ -378,12 +378,26 @@ export default function Products() {
       );
       
       // Map to simpler structure for UI
-      const mappedProducts = filteredProducts.map(product => ({
-        id: product._id,
-        name: product.nom,
-        image: product.images && product.images.length > 0 ? product.images[0].url : null,
-        order: product.order || 0
-      }));
+      const mappedProducts = filteredProducts.map(product => {
+        // Find the first valid image URL from the product's images array
+        let imageUrl = null;
+        if (product.images && Array.isArray(product.images)) {
+          // Check each image until we find one with a valid URL
+          for (const img of product.images) {
+            if (img && (img.url || img.img)) {
+              imageUrl = img.url || img.img;
+              break;
+            }
+          }
+        }
+        
+        return {
+          id: product._id,
+          name: product.nom,
+          image: imageUrl,
+          order: product.order || 0
+        };
+      });
       
       // Sort by existing order if available
       mappedProducts.sort((a, b) => a.order - b.order);
@@ -579,7 +593,7 @@ export default function Products() {
             }
           }}
         >
-          <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-xl flex flex-col">
+          <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-4xl max-h-[98vh] overflow-hidden shadow-xl flex flex-col">
             {/* Modal Header */}
             <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('add_product')}</h2>
@@ -648,7 +662,7 @@ export default function Products() {
             }
           }}
         >
-          <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-xl">
+          <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-4xl h-[98vh] overflow-hidden shadow-xl">
             <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('edit_product')}</h2>
               <button 
@@ -661,7 +675,7 @@ export default function Products() {
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 140px)' }}>
+            <div className="p-6 overflow-y-auto" style={{ maxHeight: '90vh' }}>
               <EditFormProduct 
                 product={selectedProduct} 
                 onClose={() => {
@@ -895,16 +909,25 @@ export default function Products() {
                                     src={product.image} 
                                     alt={product.name} 
                                     className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      e.target.onerror = null;
+                                      e.target.src = `${product.images[0].url}`;
+                                    }}
                                   />
                                 ) : (
-                                  <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                                    <Tags size={20} className="text-gray-400" />
+                                  <div 
+                                    className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg"
+                                    style={{
+                                      backgroundImage: `${product.images[0].url}`
+                                    }}
+                                  >
+                                    {product.name ? product.name.charAt(0).toUpperCase() : "P"}
                                   </div>
                                 )}
                               </div>
                               <div className="flex-1">
                                 <p className="font-medium text-gray-800 dark:text-white">{product.name}</p>
-                                <p className="text-sm text-gray-500 dark:text-gray-300">ID: {product.id}</p>
+                                {/* <p className="text-sm text-gray-500 dark:text-gray-300">ID: {product.id}</p> */}
                               </div>
                             </div>
                           ))}

@@ -256,7 +256,7 @@ function ProductOrdering() {
                     
                     <div className="product-info">
                       <div className="product-title">{product.title || product.nom}</div>
-                      <div className="product-id">ID: {product._id || product.idProd}</div>
+                      {/* <div className="product-id">ID: {product._id || product.idProd}</div> */}
                     </div>
                   </div>
                 ))

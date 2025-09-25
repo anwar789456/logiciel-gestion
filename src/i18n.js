@@ -545,10 +545,14 @@ i18n
           'reason_family_events': 'For Family Events',
           'reason_other': 'Other',
           'bon_de_sortie': 'exit slip',
+          'select_image': 'Select an Image',
+          'options_de_taille': 'Size options',
+          'dimension_image_url': 'Image Url',
         }
       },
       fr: {
         translation: {
+          'dimension_image_url': 'Image Url',
           'bon_de_sortie': 'Bon de sortie',
           'tarification_des_mousses': 'Prix des mousses',
           'liste_demande_de_conge': 'Liste des demandes',
@@ -1082,6 +1086,8 @@ i18n
           'total_credit': 'Total Credits',
           'total_debit': 'Total Debits',
           'starting_balance': 'Solde de départ',
+          'select_image': 'Selectionner une image',
+          'options_de_taille': 'Options de Taille',
         }
       }
     },
