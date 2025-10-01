@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { X, Plus, Trash2, Upload, GripVertical } from 'lucide-react'
-import { addProduct, FetchAllProductTypeItems } from '../../api/product'
+import { addProduct, FetchAllProductTypeItems, checkProductIdExists } from '../../api/product'
 import { FetchAllCategoryItems, updateCategorySubLink } from '../../api/Category/category';
 import { FetchAllOptionItems, addOption } from '../../api/options/Options';
 import {
@@ -91,6 +91,8 @@ const AddFormProduct = ({ onClose, onSuccess, initialData }) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [idProdExists, setIdProdExists] = useState(null); // null = not checked, true = exists, false = doesn't exist
+  const [idProdChecking, setIdProdChecking] = useState(false); // true when checking is in progress
   const [categories, setCategories] = useState([]);
   const [productTypes, setProductTypes] = useState([]);
   const [typeProdOptions, setTypeProdOptions] = useState([]);
@@ -125,9 +127,13 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
     delai: ''
   });
   
-  // Initialize form data from initialData prop if provided (for cloning)
+  // Initialize form data from initialData prop if provided (for editing or cloning)
   useEffect(() => {
     if (initialData) {
+      console.log('Initializing form with data:', initialData);
+      console.log('Initial sizes data type:', typeof initialData.sizes);
+      console.log('Initial sizes data:', initialData.sizes);
+      
       // Ensure images have unique IDs for drag and drop functionality
       const imagesWithIds = initialData.images && initialData.images.length > 0 
         ? initialData.images.map(img => ({
@@ -136,12 +142,53 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
           }))
         : [{ img: '', hyperPoints: [], id: `image-${Date.now()}` }];
       
+      // Make sure sizes are properly initialized
+      let processedSizes = [];
+      if (initialData.sizes) {
+        // Handle case where sizes might be a string (from JSON parsing)
+        if (typeof initialData.sizes === 'string') {
+          try {
+            console.log('Sizes is a string, attempting to parse:', initialData.sizes);
+            const parsedSizes = JSON.parse(initialData.sizes);
+            if (Array.isArray(parsedSizes)) {
+              console.log('Successfully parsed sizes string to array:', parsedSizes);
+              initialData.sizes = parsedSizes;
+            } else {
+              console.log('Parsed sizes is not an array:', parsedSizes);
+            }
+          } catch (error) {
+            console.error('Error parsing sizes string:', error);
+          }
+        }
+        
+        if (Array.isArray(initialData.sizes)) {
+          console.log('Processing sizes from initialData:', initialData.sizes);
+          processedSizes = initialData.sizes.map(size => {
+            // Ensure all required fields are present
+            const processedSize = {
+              longueur: size.longueur || '',
+              largeur: size.largeur || '',
+              prix_option: size.prix_option || '',
+              prix_coffre: size.prix_coffre || '',
+              img_path: size.img_path || '',
+              tva: size.tva || ''
+            };
+            console.log('Processed size:', processedSize);
+            return processedSize;
+          });
+        } else {
+          console.log('initialData.sizes is not an array:', initialData.sizes);
+        }
+      } else {
+        console.log('No sizes data in initialData');
+      }
+      
       setFormData({
         ...initialData,
         images: imagesWithIds,
-        // Ensure these fields are cleared for the clone
-        idProd: '',
-        nom: ''
+        sizes: processedSizes,
+        // If this is a clone, clear these fields
+        ...(initialData._id ? {} : { idProd: '', nom: '' })
       });
     }
   }, [initialData]);
@@ -283,8 +330,62 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
     fetchOptions();
   }, []);
 
+  // Function to check if product ID exists
+  const checkIdProdExistence = async (idProd) => {
+    console.log('checkIdProdExistence called with:', idProd);
+    
+    if (!idProd || idProd.trim() === '') {
+      console.log('Empty product ID, setting idProdExists to null');
+      setIdProdExists(null); // Reset to null if empty
+      return;
+    }
+    
+    try {
+      console.log('Setting idProdChecking to true');
+      setIdProdChecking(true);
+      
+      console.log('Calling checkProductIdExists API...');
+      const result = await checkProductIdExists(idProd);
+      
+      console.log('API result:', result);
+      console.log('Setting idProdExists to:', result.exists);
+      setIdProdExists(result.exists);
+    } catch (error) {
+      console.error('Error checking product ID:', error);
+      setIdProdExists(null); // Reset on error
+    } finally {
+      console.log('Setting idProdChecking to false');
+      setIdProdChecking(false);
+    }
+  };
+  
+  // Debounce function to prevent too many API calls
+  const debounce = (func, delay) => {
+    let timer;
+    return function(...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => func.apply(this, args), delay);
+    };
+  };
+  
+  // Debounced version of the check function
+  const debouncedCheckIdProd = debounce(checkIdProdExistence, 500);
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Special handling for idProd field
+    if (name === 'idProd') {
+      // Update form data
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+      
+      // Check if ID exists (with debounce)
+      debouncedCheckIdProd(value);
+      return;
+    }
     
     // Special handling for category changes
     if (name === 'categorie') {
@@ -454,13 +555,24 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
   const addSize = () => {
     setFormData(prev => ({
       ...prev,
-      sizes: [...prev.sizes, { longueur: '', largeur: '', prix_option: '', prix_coffre: '', img_path: '', tva: '' }]
+      sizes: [...prev.sizes, { longueur: '', largeur: '', prix_option: '', prix_coffre: '', img_path: '', tva: '', preferred: false }]
     }));
   };
 
   const handleSizeChange = (index, field, value) => {
     const updatedSizes = [...formData.sizes];
-    updatedSizes[index][field] = value;
+    
+    // Special handling for preferred field
+    if (field === 'preferred' && value === true) {
+      // If setting this size as preferred, set all others to not preferred
+      updatedSizes.forEach((size, i) => {
+        size.preferred = (i === index);
+      });
+    } else {
+      // For other fields, just update the value
+      updatedSizes[index][field] = value;
+    }
+    
     setFormData(prev => ({
       ...prev,
       sizes: updatedSizes
@@ -510,37 +622,101 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
 
     try {
       // Validate required fields
-      if (!formData.nom || !formData.categorie) {
-        throw new Error(t('required_fields_missing'));
+      if (!formData.nom) {
+        throw new Error(t('required_fields_missing') + ': ' + t('product_name'));
       }
 
-      // Clean up empty arrays
+      if (!formData.categorie) {
+        throw new Error(t('required_fields_missing') + ': ' + t('main_category'));
+      }
+
+      // Create a copy of the form data
       const cleanedData = { ...formData };
-      if (cleanedData.options.length === 0 || 
-          (cleanedData.options.length === 1 && !cleanedData.options[0].option_name)) {
+      
+      // Clean options
+      if (cleanedData.options && cleanedData.options.length > 0) {
+        if (cleanedData.options.length === 1 && !cleanedData.options[0].option_name) {
+          cleanedData.options = [];
+        } else {
+          // Ensure all options have valid data
+          cleanedData.options = cleanedData.options.filter(opt => opt.option_name && opt.option_name.trim() !== '');
+        }
+      } else {
         cleanedData.options = [];
       }
       
-      if (cleanedData.sizes.length === 0 || 
-          (cleanedData.sizes.length === 1 && !cleanedData.sizes[0].longueur)) {
+      // Clean sizes
+      if (cleanedData.sizes && Array.isArray(cleanedData.sizes) && cleanedData.sizes.length > 0) {
+        console.log('Cleaning sizes before submit:', cleanedData.sizes);
+        
+        // Filter out empty sizes
+        cleanedData.sizes = cleanedData.sizes.filter(size => {
+          // Check if size is an object and has longueur property
+          if (!size || typeof size !== 'object') {
+            console.log('Invalid size object:', size);
+            return false;
+          }
+          
+          // Check if longueur exists and is not empty
+          const hasLongueur = size.longueur && size.longueur.toString().trim() !== '';
+          if (!hasLongueur) {
+            console.log('Filtering out size with empty longueur:', size);
+          }
+          return hasLongueur;
+        });
+        
+        // Ensure all sizes have the required fields
+        cleanedData.sizes = cleanedData.sizes.map(size => ({
+          longueur: size.longueur || '',
+          largeur: size.largeur || '',
+          prix_option: size.prix_option || '',
+          prix_coffre: size.prix_coffre || '',
+          img_path: size.img_path || '',
+          tva: size.tva || '',
+          preferred: size.preferred || false
+        }));
+        
+        console.log('Cleaned sizes for submission:', cleanedData.sizes);
+      } else {
+        console.log('No sizes to clean, setting empty array');
         cleanedData.sizes = [];
       }
       
-      if (cleanedData.mousse.length === 0 || 
-          (cleanedData.mousse.length === 1 && !cleanedData.mousse[0].mousse_name)) {
+      // Clean mousse
+      if (cleanedData.mousse && cleanedData.mousse.length > 0) {
+        if (cleanedData.mousse.length === 1 && !cleanedData.mousse[0].mousse_name) {
+          cleanedData.mousse = [];
+        } else {
+          // Ensure all mousse items have valid data
+          cleanedData.mousse = cleanedData.mousse.filter(m => m.mousse_name && m.mousse_name.trim() !== '');
+        }
+      } else {
         cleanedData.mousse = [];
       }
       
-      // Dimensions are handled in EditFormProduct only
-      cleanedData.dimensions = [];
+      // Handle dimensions
+      if (!cleanedData.dimensions || cleanedData.dimensions.length === 0) {
+        cleanedData.dimensions = [];
+      }
 
-      // Filter out empty images
-      cleanedData.images = cleanedData.images.filter(img => img.img.trim() !== '');
-      if (cleanedData.images.length === 0) {
+      // Filter out empty images and ensure proper structure
+      if (cleanedData.images && cleanedData.images.length > 0) {
+        cleanedData.images = cleanedData.images.filter(img => img && img.img && img.img.trim() !== '');
+        if (cleanedData.images.length === 0) {
+          cleanedData.images = [{ img: '', hyperPoints: [] }];
+        }
+        
+        // Make sure all images have the hyperPoints array
+        cleanedData.images = cleanedData.images.map(img => ({
+          ...img,
+          hyperPoints: img.hyperPoints || [],
+          id: img.id || `image-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        }));
+      } else {
         cleanedData.images = [{ img: '', hyperPoints: [] }];
       }
       
-      // Ensure subcategory is properly set (this will be the product.categorie in the database)
+      // Ensure subcategory is properly set
       if (cleanedData.subcategorie === undefined || cleanedData.subcategorie === null) {
         cleanedData.subcategorie = ''; // Ensure it's an empty string rather than undefined or null
       }
@@ -554,9 +730,61 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
       console.log('Final product.categorie (subcategory):', cleanedData.categorie);
       console.log('Final product.subcategorie (main category):', cleanedData.subcategorie);
 
+      // Ensure numeric fields are properly formatted
+      if (cleanedData.minPrice) cleanedData.minPrice = cleanedData.minPrice.toString().trim();
+      if (cleanedData.maxPrice) cleanedData.maxPrice = cleanedData.maxPrice.toString().trim();
+      if (cleanedData.tva) cleanedData.tva = cleanedData.tva.toString().trim();
+      if (cleanedData.quantite) cleanedData.quantite = cleanedData.quantite.toString().trim();
+
+      // Clean up fields that might cause issues with the server
+      // Remove MongoDB specific fields
+      delete cleanedData._id;
+      delete cleanedData.__v;
+      
+      // Clean up array items - remove _id fields from nested objects
+      if (cleanedData.options && cleanedData.options.length > 0) {
+        cleanedData.options = cleanedData.options.map(option => {
+          const { _id, ...rest } = option;
+          return rest;
+        });
+      }
+      
+      if (cleanedData.sizes && cleanedData.sizes.length > 0) {
+        cleanedData.sizes = cleanedData.sizes.map(size => {
+          const { _id, ...rest } = size;
+          return rest;
+        });
+      }
+      
+      if (cleanedData.mousse && cleanedData.mousse.length > 0) {
+        cleanedData.mousse = cleanedData.mousse.map(item => {
+          const { _id, ...rest } = item;
+          return rest;
+        });
+      }
+      
+      if (cleanedData.dimensions && cleanedData.dimensions.length > 0) {
+        cleanedData.dimensions = cleanedData.dimensions.map(dim => {
+          const { _id, ...rest } = dim;
+          return rest;
+        });
+      }
+      
+      if (cleanedData.images && cleanedData.images.length > 0) {
+        cleanedData.images = cleanedData.images.map(img => {
+          const { _id, ...rest } = img;
+          return rest;
+        });
+      }
+      
+      // Log the final cleaned data being sent
+      console.log('Sending product data:', JSON.stringify(cleanedData));
+      
+      // Send the complete product data to the API
       await addProduct(cleanedData);
       onSuccess();
     } catch (error) {
+      console.error('Error in handleSubmit:', error);
       setError(error.message || t('error_adding_product'));
     } finally {
       setLoading(false);
@@ -955,14 +1183,47 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
           
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('product_id')}</label>
-            <input
-              type="text"
-              name="idProd"
-              value={formData.idProd}
-              onChange={handleChange}
-              autoComplete="off"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-400 px-3 py-2"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                name="idProd"
+                value={formData.idProd}
+                onChange={handleChange}
+                autoComplete="off"
+                className={`mt-1 block w-full rounded-md shadow-sm focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400 px-3 py-2 ${idProdChecking ? 'border-yellow-400 focus:border-yellow-500' : 
+                  idProdExists === true ? 'border-red-500 focus:border-red-600' : 
+                  idProdExists === false ? 'border-green-500 focus:border-green-600' : 
+                  'border-gray-300 focus:border-blue-500 dark:border-gray-600'}`}
+              />
+              {idProdChecking && (
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg className="animate-spin h-5 w-5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </div>
+              )}
+              {!idProdChecking && idProdExists === true && (
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              )}
+              {!idProdChecking && idProdExists === false && formData.idProd.trim() !== '' && (
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg className="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              )}
+            </div>
+            {console.log('Rendering validation message, idProdExists:', idProdExists)}
+            {idProdExists === true && formData.idProd && formData.idProd.trim() !== '' && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {t('product_id')} "{formData.idProd}" {t('already_exists')}
+              </p>
+            )}
           </div>
           
           <div>
@@ -1430,20 +1691,29 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
           </div>
         </div>
         
-        {formData.sizes.length > 0 && (
+        {console.log('Rendering sizes section, formData.sizes:', formData.sizes)}
+        {Array.isArray(formData.sizes) && formData.sizes.length > 0 && (
           <div className="space-y-4">
             <h4 className="text-md font-medium text-gray-800 dark:text-gray-200 mb-2">{t('options_de_taille')}</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {formData.sizes.map((size, index) => (
+              {formData.sizes.map((size, index) => {
+                console.log(`Rendering size at index ${index}:`, size);
+                if (!size) {
+                  console.log(`Size at index ${index} is null or undefined`);
+                  return null;
+                }
+                return (
                 <div key={`size-${index}`} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800/50 shadow-sm">
                   <div className="flex justify-between items-center mb-3">
-                    <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">{size.longueur} x {size.largeur}</h4>
+                    <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">
+                      {size && size.longueur ? `${size.longueur} x ${size.largeur || ''}` : 'Dimension sans titre'}
+                    </h4>
                     <button
                       type="button"
                       onClick={() => removeSize(index)}
                       className="text-red-500 hover:text-red-700 focus:outline-none"
                     >
-                      <Trash2 size={18} />
+                      <Trash2 size={16} />
                     </button>
                   </div>
                   
@@ -1505,6 +1775,19 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
                         ))}
                       </select>
                     </div>
+
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        onClick={() => handleSizeChange(index, 'preferred', true)}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${size.preferred ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'}`}
+                      >
+                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${size.preferred ? 'translate-x-6' : 'translate-x-1'}`} />
+                      </button>
+                      <label className="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Taille préférée
+                      </label>
+                    </div>
                     
                     {size.img_path && (
                       <div className="flex justify-center mt-2">
@@ -1521,7 +1804,8 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
                     )}
                   </div>
                 </div>
-              ))}
+              );
+            })}
             </div>
           </div>
         )}

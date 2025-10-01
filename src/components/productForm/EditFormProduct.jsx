@@ -630,7 +630,17 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
       setError('');
     }
     
-    updatedSizes[index][field] = value;
+    // Special handling for preferred field
+    if (field === 'preferred' && value === true) {
+      // If setting this size as preferred, set all others to not preferred
+      updatedSizes.forEach((size, i) => {
+        size.preferred = (i === index);
+      });
+    } else {
+      // For other fields, just update the value
+      updatedSizes[index][field] = value;
+    }
+    
     console.log(`Updating size[${index}].${field} to:`, value);
     console.log('Updated sizes array:', updatedSizes);
     setFormData(prev => ({
@@ -651,7 +661,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
   const addSize = () => {
     setFormData(prev => ({
       ...prev,
-      sizes: [...prev.sizes, { longueur: '', largeur: '', prix_option: '', prix_coffre: '', img_path: '', tva: '' }]
+      sizes: [...prev.sizes, { longueur: '', largeur: '', prix_option: '', prix_coffre: '', img_path: '', tva: '', preferred: false }]
     }));
   };
 
@@ -1345,6 +1355,19 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
                           </option>
                         ))}
                       </select>
+                    </div>
+
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        onClick={() => handleSizeChange(index, 'preferred', true)}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${size.preferred ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'}`}
+                      >
+                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${size.preferred ? 'translate-x-6' : 'translate-x-1'}`} />
+                      </button>
+                      <label className="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Taille préférée
+                      </label>
                     </div>
                     
                     {size.img_path && (

@@ -73,6 +73,15 @@ const SortableSizeOptionRow = ({ id, size, index, handleEditSizeOption, handleRe
     transition,
   };
   
+  // Function to toggle preferred status
+  const togglePreferred = () => {
+    // Dispatch a custom event to handle the preferred status change
+    const event = new CustomEvent('togglePreferredSize', { 
+      detail: { index } 
+    });
+    document.dispatchEvent(event);
+  };
+  
   return (
     <tr ref={setNodeRef} style={style} className="hover:bg-gray-50 dark:hover:bg-gray-700">
       <td className="px-2 py-4 whitespace-nowrap text-sm">
@@ -91,14 +100,18 @@ const SortableSizeOptionRow = ({ id, size, index, handleEditSizeOption, handleRe
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{size.prix_coffre}</td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{size.tva}</td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-        {size.img_path ? (
-          <div className="flex items-center">
-            <img src={size.img_path} alt="Size preview" className="h-10 w-10 object-cover rounded-md mr-2" />
-            <span className="text-xs truncate max-w-[100px]">{size.img_path}</span>
-          </div>
-        ) : (
-          <span className="text-gray-400">Aucune image</span>
-        )}
+        <div className="flex items-center">
+          <button
+            type="button"
+            onClick={togglePreferred}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${size.preferred ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'}`}
+          >
+            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${size.preferred ? 'translate-x-6' : 'translate-x-1'}`} />
+          </button>
+          <span className="ml-2 text-sm">
+            {size.preferred ? 'Préférée' : 'Non préférée'}
+          </span>
+        </div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm">
         <button 
@@ -180,7 +193,7 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
   const [editId, setEditId] = useState(null);
   const [customOption, setCustomOption] = useState({ option_name: '', prix_option: '', tva: '' });
   const [customEditIndex, setCustomEditIndex] = useState(null);
-  const [sizeOption, setSizeOption] = useState({ longueur: '', largeur: '', prix_option: '', prix_coffre: '', img_path: '', tva: '' });
+  const [sizeOption, setSizeOption] = useState({ longueur: '', largeur: '', prix_option: '', prix_coffre: '', tva: '', preferred: false });
   const [sizeEditIndex, setSizeEditIndex] = useState(null);
   const [mousseOption, setMousseOption] = useState({ mousse_name: '', mousse_prix: '', tva: '' });
   const [mousseEditIndex, setMousseEditIndex] = useState(null);
@@ -219,6 +232,38 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
     
     return () => {
       document.removeEventListener('toggleForm', handleToggleForm);
+    };
+  }, []);
+  
+  // Listen for preferred size toggle events
+  useEffect(() => {
+    const handleTogglePreferredSize = (event) => {
+      const { index } = event.detail;
+      
+      setFormData(prev => {
+        const updatedSizesOptions = [...prev.sizesOptions];
+        
+        // If the size is already preferred, do nothing (can't unset the preferred size)
+        if (updatedSizesOptions[index].preferred) {
+          return prev;
+        }
+        
+        // Set all sizes to not preferred
+        updatedSizesOptions.forEach(size => {
+          size.preferred = false;
+        });
+        
+        // Set the selected size as preferred
+        updatedSizesOptions[index].preferred = true;
+        
+        return { ...prev, sizesOptions: updatedSizesOptions };
+      });
+    };
+    
+    document.addEventListener('togglePreferredSize', handleTogglePreferredSize);
+    
+    return () => {
+      document.removeEventListener('togglePreferredSize', handleTogglePreferredSize);
     };
   }, []);
   
@@ -275,17 +320,31 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
     if (sizeEditIndex !== null) {
       setFormData((prev) => {
         const updatedSizesOptions = [...prev.sizesOptions];
+        // If the new size is preferred, set all others to false
+        if (sizeOption.preferred) {
+          updatedSizesOptions.forEach((size, idx) => {
+            if (idx !== sizeEditIndex) {
+              size.preferred = false;
+            }
+          });
+        }
         updatedSizesOptions[sizeEditIndex] = sizeOption;
         return { ...prev, sizesOptions: updatedSizesOptions };
       });
       setSizeEditIndex(null);
     } else {
-      setFormData((prev) => ({
-        ...prev,
-        sizesOptions: [...prev.sizesOptions, sizeOption],
-      }));
+      setFormData((prev) => {
+        // If the new size is preferred, set all existing ones to false
+        const updatedSizesOptions = sizeOption.preferred 
+          ? prev.sizesOptions.map(size => ({ ...size, preferred: false }))
+          : [...prev.sizesOptions];
+        return {
+          ...prev,
+          sizesOptions: [...updatedSizesOptions, sizeOption],
+        };
+      });
     }
-    setSizeOption({ longueur: '', largeur: '', prix_option: '', prix_coffre: '', img_path: '', tva: '' });
+    setSizeOption({ longueur: '', largeur: '', prix_option: '', prix_coffre: '', tva: '', preferred: false });
   };
   
   const handleAddMousseOption = () => {
@@ -533,7 +592,18 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
                       className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                       list="tva-options"
                     />
-                    <button 
+                    <div className="flex items-center justify-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm dark:bg-gray-700">
+                      <button
+                        type="button"
+                        onClick={() => setSizeOption(prev => ({ ...prev, preferred: !prev.preferred }))}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${sizeOption.preferred ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'}`}
+                      >
+                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${sizeOption.preferred ? 'translate-x-6' : 'translate-x-1'}`} />
+                      </button>
+                      <label className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
+                        Préférée
+                      </label>
+                    </div>                    <button 
                       type="button" 
                       onClick={handleAddCustomOption} 
                       className="flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-300"
@@ -548,7 +618,7 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
               {formData.typeOption === 'sizes' && (
                 <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3">Size Options</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-7 gap-3 mb-3">
+                  <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-3">
                     <input 
                       type="text" 
                       name="longueur" 
@@ -585,7 +655,7 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
                       onChange={handleSizeOptionChange}
                       className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                     />
-                    <input 
+                    {/* <input 
                       type="text" 
                       name="img_path" 
                       autoComplete="off" 
@@ -593,7 +663,7 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
                       placeholder="URL de l'image (HTTPS)" 
                       onChange={handleSizeOptionChange}
                       className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                    />
+                    /> */}
                     <input 
                       type="text" 
                       name="tva" 
@@ -604,7 +674,18 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
                       className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                       list="tva-options"
                     />
-                    <button 
+                    <div className="flex items-center justify-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm dark:bg-gray-700">
+                      <button
+                        type="button"
+                        onClick={() => setSizeOption(prev => ({ ...prev, preferred: !prev.preferred }))}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${sizeOption.preferred ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'}`}
+                      >
+                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${sizeOption.preferred ? 'translate-x-6' : 'translate-x-1'}`} />
+                      </button>
+                      <label className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
+                        Préférée
+                      </label>
+                    </div>                    <button 
                       type="button" 
                       onClick={handleAddSizeOption} 
                       className="flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-300"
@@ -648,7 +729,18 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
                       className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                       list="tva-options"
                     />
-                    <button 
+                    <div className="flex items-center justify-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm dark:bg-gray-700">
+                      <button
+                        type="button"
+                        onClick={() => setSizeOption(prev => ({ ...prev, preferred: !prev.preferred }))}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${sizeOption.preferred ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'}`}
+                      >
+                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${sizeOption.preferred ? 'translate-x-6' : 'translate-x-1'}`} />
+                      </button>
+                      <label className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
+                        Préférée
+                      </label>
+                    </div>                    <button 
                       type="button" 
                       onClick={handleAddMousseOption} 
                       className="flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-300"
@@ -684,7 +776,8 @@ const Options = ({ initialShowForm = false, onFormClose }) => {
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Prix Dimension</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Prix Coffre</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">TVA</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Image</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Préférée</th>
+                          {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Image</th> */}
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Edit</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Delete</th>
                         </>

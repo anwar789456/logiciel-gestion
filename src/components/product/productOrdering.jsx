@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { FetchAllProductItems } from '../../Api/Products/Products'
+import { FetchAllProductItems } from '../../api/product'
 import { FetchAllCategoryItems, ReorderProducts } from '../../api/Category/category'
 import { GripVertical, CheckCircle, X } from 'lucide-react'
 import './productOrdering.scss'

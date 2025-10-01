@@ -3,6 +3,8 @@ import './App.css'
 import { AppProvider } from './context/AppContext';
 import { WebSocketProvider } from './context/WebSocketContext';
 import { AuthProvider } from './context/AuthContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import Messages from './pages/messages/Messages';
@@ -20,14 +22,16 @@ import AssistantIA from './pages/assistant/AssistantIA'
 import RecuPaiement from './pages/recuPaiement/RecuPaiement';
 import BonLivraison from './pages/bonLivraison/BonLivraison';
 import BonDeSortie from './pages/bonDeSortie/BonDeSortie';
-import Clients from './pages/clients/Clients';
 import UserList from './pages/users/UserList';
 import CRM from './pages/crm/CRM';
 import DemandeConge from './pages/employe/demandeConge/DemandeConge';
+import Clients from './pages/clients/Clients';
 import Fournisseur from './pages/fournisseur/Fournisseur';
 import Caisse from './pages/caisse/Caisse';
 import Products from './pages/products/Products';
+import ProductOrdering from './pages/productOrdering/productOrdering';
 import Categories from './pages/categories/Categories';
+import TagsPage from './pages/tags/TagsPage';
 import Carousel from './pages/carousel/Carousel';
 import QrCode from './pages/qrCode/QrCode';
 import Login from './pages/auth/Login';
@@ -77,12 +81,13 @@ function App() {
                 <Route path="assistant-ia" element={<AssistantIA />} />
                 <Route path="caisse" element={<Caisse />} />
                 <Route path="products" element={<Products />} />
+                <Route path="productsordering" element={<ProductOrdering />} />
                 <Route path="categories" element={<Categories />} />
+                <Route path="tags" element={<TagsPage />} />
                 <Route path="qr-code" element={<QrCode />} />
                 <Route path="carousel" element={<Carousel />} />
                 <Route path="settings" element={<Settings />} />
                 <Route path="profile" element={<ProfilePage />} />
-=======
               </Route>
               
               {/* Flat route structure */}
@@ -268,12 +273,26 @@ function App() {
               }>
                 <Route index element={<Products />} />
               </Route>
+              <Route path="/productsordering" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<ProductOrdering />} />
+              </Route>
               <Route path="/categories" element={
                 <ProtectedRoute>
                   <Layout />
                 </ProtectedRoute>
               }>
                 <Route index element={<Categories />} />
+              </Route>
+              <Route path="/tags" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<TagsPage />} />
               </Route>
               <Route path="/qr-code" element={
                 <ProtectedRoute>
@@ -331,6 +350,19 @@ function App() {
           <div className="fixed top-0 right-0 z-50 w-full md:w-auto">
             <NewMessageNotification />
           </div>
+          
+          {/* Toast notifications */}
+          <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
         </WebSocketProvider>
       </AuthProvider>
     </AppProvider>

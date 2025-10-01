@@ -1,5 +1,14 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+/* Utility class to prevent text selection during drag operations */
+.no-select {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  cursor: grabbing !important;
+}
+
 .App {
   text-align: center;
 }

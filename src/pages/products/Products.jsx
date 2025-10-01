@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CopyPlus, Plus, LayoutTemplate, Tags, X, AlertCircle, Settings, GripVertical, CheckCircle } from 'lucide-react';
 import { useAccessControl } from '../../hooks/useAccessControl';
-import { FetchAllProductItems, DeleteProductById, FetchAllProductTypeItems } from '../../api/product';
-import { ReorderProducts } from '../../api/Category/category';
+import { FetchAllProductItems, DeleteProductById, fetchProductById, FetchAllProductTypeItems } from '../../api/product';
 import TableDisplayProduct from '../../components/product/TableDisplayProduct';
 import AddFormProduct from '../../components/productForm/AddFormProduct';
 import EditFormProduct from '../../components/productForm/EditFormProduct';
@@ -24,16 +23,6 @@ export default function Products() {
   const [showProductTypesModal, setShowProductTypesModal] = useState(false);
   const [showOptionsModal, setShowOptionsModal] = useState(false);
   const [showOptionsForm, setShowOptionsForm] = useState(false);
-  const [showProductOrderingModal, setShowProductOrderingModal] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedSubcategory, setSelectedSubcategory] = useState('');
-  const [subcategories, setSubcategories] = useState([]);
-  const [productsToOrder, setProductsToOrder] = useState([]);
-  const [isReordering, setIsReordering] = useState(false);
-  const [draggedItem, setDraggedItem] = useState(null);
-  const [draggedOverItem, setDraggedOverItem] = useState(null);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const dragNode = useRef();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState({ show: false, productId: null, password: '' });
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false); // Advanced filters closed by default
@@ -53,7 +42,7 @@ export default function Products() {
   const tableRef = useRef(null);
   
   // Get unique categories and types from products
-  const [categories, setCategories] = useState([]);
+  const [categoryNames, setCategoryNames] = useState([]);
   const [categoriesWithSubcategories, setCategoriesWithSubcategories] = useState([]);
   const [productTypes, setProductTypes] = useState([]);
   
@@ -64,19 +53,19 @@ export default function Products() {
   useEffect(() => {
     const fetchCategoriesAndTypes = async () => {
       try {
-        const data = await FetchAllProductItems();
+        const productsData = await FetchAllProductItems();
         
-        // Extract unique categories
-        const uniqueCategories = [...new Set(data.map(product => product.categorie).filter(Boolean))];
-        setCategories(uniqueCategories);
+        // Extract unique categories from products for filters
+        const uniqueCategories = [...new Set(productsData.map(product => product.categorie).filter(Boolean))];
+        setCategoryNames(uniqueCategories);
         
         // Extract unique product types
-        const uniqueTypes = [...new Set(data.map(product => product.typeProd).filter(Boolean))];
+        const uniqueTypes = [...new Set(productsData.map(product => product.typeProd).filter(Boolean))];
         setProductTypes(uniqueTypes);
         
         // Create a map of categories with their subcategories
         const categoryMap = {};
-        data.forEach(product => {
+        productsData.forEach(product => {
           if (product.categorie && product.subcategorie) {
             if (!categoryMap[product.categorie]) {
               categoryMap[product.categorie] = new Set();
@@ -127,6 +116,7 @@ export default function Products() {
     
     fetchProductTypes();
   }, []);
+
 
   const fetchProducts = async (page = 1, itemsPerPage = 10, searchTerm = '') => {
     setLoading(true);
@@ -293,14 +283,80 @@ export default function Products() {
     }
   };
 
-  const handleEditProduct = (product) => {
-    setSelectedProduct(product);
-    setShowEditForm(true);
+  const handleEditProduct = async (product) => {
+    console.log('Editing product:', product);
+    
+    // Show loading state
+    setLoading(true);
+    
+    try {
+      // Make a deep copy of the product as a fallback
+      const productCopy = JSON.parse(JSON.stringify(product));
+      
+      // Process sizes if it's a string (as a fallback)
+      if (productCopy.sizes && typeof productCopy.sizes === 'string') {
+        try {
+          console.log('Fallback: Attempting to parse sizes string:', productCopy.sizes);
+          const parsedSizes = JSON.parse(productCopy.sizes);
+          productCopy.sizes = parsedSizes;
+        } catch (parseError) {
+          console.error('Error parsing sizes string in fallback:', parseError);
+          productCopy.sizes = [];
+        }
+      }
+      
+      // Set the selected product with the original data first as a fallback
+      setSelectedProduct(productCopy);
+      
+      // Open the edit form
+      setShowEditForm(true);
+      
+      // Then try to fetch fresh data
+      try {
+        const freshProductData = await fetchProductById(product._id);
+        console.log('Fresh product data fetched:', freshProductData);
+        
+        if (freshProductData && freshProductData._id) {
+          // Update with fresh data if available
+          setSelectedProduct(freshProductData);
+        }
+      } catch (apiError) {
+        console.error('Error fetching fresh product data:', apiError);
+        // We already set the product with the original data, so no need to do anything here
+      }
+    } catch (error) {
+      console.error('Error in handleEditProduct:', error);
+      toast.error(t('error_loading_product'), {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        className: 'bg-red-500 text-white'
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCloneProduct = (product) => {
-    setSelectedProduct(product); // Store the product data to be cloned
-    setShowAddForm(true); // Open the add form
+    console.log('Cloning product:', product);
+    
+    // Make a deep copy of the product to avoid reference issues
+    const productCopy = JSON.parse(JSON.stringify(product));
+    
+    // Clear fields that should be unique for the clone
+    productCopy.idProd = '';
+    productCopy.nom = `${productCopy.nom} (${t('copy')})`;
+    productCopy._id = undefined; // Clear the ID so a new one will be generated
+    
+    // Set the selected product with the modified data
+    setSelectedProduct(productCopy);
+    
+    // Open the add form (not the edit form)
+    setShowAddForm(true);
   };
 
   const columns = [
@@ -333,142 +389,6 @@ export default function Products() {
     },
   ];
 
-  // Handle subcategory change (now first selection)
-  const handleSublinkChange = (e) => {
-    const subcategory = e.target.value;
-    setSelectedSubcategory(subcategory);
-    
-    // Find categories that have this subcategory
-    const categoriesWithThisSubcategory = categoriesWithSubcategories.filter(c => 
-      c.subcategories.includes(subcategory)
-    );
-    
-    // If there's only one category with this subcategory, select it automatically
-    if (categoriesWithThisSubcategory.length === 1) {
-      const category = categoriesWithThisSubcategory[0].name;
-      setSelectedCategory(category);
-      
-      // Fetch products for the selected category and subcategory
-      fetchProductsForOrdering(category, subcategory);
-    } else {
-      // Reset category if multiple categories have this subcategory
-      setSelectedCategory('');
-    }
-  };
-
-  // Handle category change (now second selection)
-  const handleCategoryChange = (e) => {
-    const category = e.target.value;
-    setSelectedCategory(category);
-    
-    // Fetch products for the selected category and subcategory
-    if (selectedSubcategory) {
-      fetchProductsForOrdering(category, selectedSubcategory);
-    }
-  };
-
-  // Fetch products for ordering
-  const fetchProductsForOrdering = async (category, subcategory) => {
-    if (!category || !subcategory) return;
-    
-    try {
-      const data = await FetchAllProductItems();
-      const filteredProducts = data.filter(product => 
-        product.categorie === category && product.subcategorie === subcategory
-      );
-      
-      // Map to simpler structure for UI
-      const mappedProducts = filteredProducts.map(product => {
-        // Find the first valid image URL from the product's images array
-        let imageUrl = null;
-        if (product.images && Array.isArray(product.images)) {
-          // Check each image until we find one with a valid URL
-          for (const img of product.images) {
-            if (img && (img.url || img.img)) {
-              imageUrl = img.url || img.img;
-              break;
-            }
-          }
-        }
-        
-        return {
-          id: product._id,
-          name: product.nom,
-          image: imageUrl,
-          order: product.order || 0
-        };
-      });
-      
-      // Sort by existing order if available
-      mappedProducts.sort((a, b) => a.order - b.order);
-      
-      setProductsToOrder(mappedProducts);
-    } catch (error) {
-      console.error('Error fetching products for ordering:', error);
-    }
-  };
-
-  // Drag and drop handlers
-  const handleDragStart = (e, index) => {
-    setDraggedItem(index);
-    dragNode.current = e.target;
-    setTimeout(() => {
-      e.target.classList.add('opacity-50');
-    }, 0);
-  };
-
-  const handleDragEnd = () => {
-    setDraggedItem(null);
-    setDraggedOverItem(null);
-    dragNode.current.classList.remove('opacity-50');
-    dragNode.current = null;
-  };
-
-  const handleDrop = (e, dropIndex) => {
-    if (draggedItem === null) return;
-    
-    // Reorder the products array
-    const newProductsOrder = [...productsToOrder];
-    const draggedItemContent = newProductsOrder[draggedItem];
-    newProductsOrder.splice(draggedItem, 1);
-    newProductsOrder.splice(dropIndex, 0, draggedItemContent);
-    
-    setProductsToOrder(newProductsOrder);
-  };
-
-  // Save the new product order
-   const saveProductOrder = async () => {
-     if (!selectedCategory || !selectedSubcategory || productsToOrder.length === 0) return;
-     
-     setIsReordering(true);
-     
-     try {
-       // Extract product IDs in the correct order
-       const productIds = productsToOrder.map(product => product.id);
-       
-       // Call API to save order
-       await ReorderProducts(
-         selectedCategory,
-         selectedSubcategory,
-         productIds
-       );
-       
-       // Show success message
-       setShowSuccessMessage(true);
-       setTimeout(() => setShowSuccessMessage(false), 3000);
-       
-       // Close modal
-       setShowProductOrderingModal(false);
-       setSelectedCategory('');
-       setSelectedSubcategory('');
-       setProductsToOrder([]);
-     } catch (error) {
-       console.error('Error saving product order:', error);
-       toast.error(t('common.error') + ': ' + (error.message || t('common.unknown_error')));
-     } finally {
-       setIsReordering(false);
-     }
-   };
 
   return (
     <div className='pt-4'>
@@ -507,20 +427,6 @@ export default function Products() {
             <Settings className='mr-2 mt-0.5' size={20} />
             {t('options')}
           </button>
-          <button
-            onClick={() => setShowProductOrderingModal(true)}
-            className='flex items-center bg-transparent border border-blue-600
-              hover:bg-blue-600 text-blue-600 font-bold 
-              hover:text-white
-              py-2 px-4 rounded-xl cursor-pointer
-              mr-2
-              shadow-lg hover:shadow-lg active:shadow-inner
-              active:scale-85
-              transition-all duration-400 ease-in-out'
-          >
-            <LayoutTemplate className='mr-2 mt-0.5' size={20} />
-            {t('product_management')}
-          </button>
 
           {showIfCanWrite(
             <button 
@@ -543,7 +449,7 @@ export default function Products() {
         <div className="px-0 py-0 border-b border-gray-200 dark:border-gray-700">
           <AdvancedProductFilters 
             filters={advancedFilters} 
-            categories={categories}
+            categories={categoryNames}
             types={productTypes}
             setFilters={(newFilters) => {
               setAdvancedFilters(newFilters);
@@ -784,188 +690,7 @@ export default function Products() {
         </div>
       )}
 
-      {/* Product Ordering Modal */}
-      {showProductOrderingModal && (
-        <div 
-          className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
-          onClick={(e) => {
-            // Close modal when clicking outside
-            if (e.target === e.currentTarget) {
-              setShowProductOrderingModal(false);
-            }
-          }}
-        >
-          <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl max-h-[90vh] overflow-hidden shadow-xl flex flex-col">
-            {/* Modal Header */}
-            <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('product_management')}</h2>
-              <button 
-                onClick={() => setShowProductOrderingModal(false)}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-              >
-                <X size={20} />
-              </button>
-            </div>
-            
-            {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-6">
-              <div className="space-y-6">
-                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                  <h3 className="text-lg font-medium text-blue-800 dark:text-blue-300 mb-2">{t('product_order_instructions')}</h3>
-                  <p className="text-blue-700 dark:text-blue-400">
-                    {t('drag_drop_products_instruction')}
-                  </p>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Category Selection - Reversed order */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
-                      {t('categories')}
-                    </h3>
-                    <div className="space-y-2">
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {t('select_subcategory')}
-                      </label>
-                      <select 
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                        value={selectedSubcategory || ''}
-                        onChange={handleSublinkChange}
-                      >
-                        <option value="">{t('select_subcategory')}</option>
-                        {/* Get all unique subcategories across all categories */}
-                        {[...new Set(categoriesWithSubcategories.flatMap(c => c.subcategories))].map((subcategory) => (
-                          <option key={subcategory} value={subcategory}>
-                            {subcategory}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {t('select_category')}
-                      </label>
-                      <select 
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                        disabled={!selectedSubcategory}
-                        value={selectedCategory || ''}
-                        onChange={handleCategoryChange}
-                      >
-                        <option value="">{t('select_category')}</option>
-                        {/* Only show categories that have the selected subcategory */}
-                        {selectedSubcategory ? 
-                          categoriesWithSubcategories
-                            .filter(c => c.subcategories.includes(selectedSubcategory))
-                            .map((category) => (
-                              <option key={category.name} value={category.name}>
-                                {category.name}
-                              </option>
-                            ))
-                          : categoriesWithSubcategories.map((category) => (
-                              <option key={category.name} value={category.name}>
-                                {category.name}
-                              </option>
-                            ))
-                        }
-                      </select>
-                    </div>
-                  </div>
-                  
-                  {/* Products Order */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
-                      {t('products_order')}
-                    </h3>
-                    <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 min-h-[300px]">
-                      {productsToOrder.length > 0 ? (
-                        <div className="space-y-2">
-                          {productsToOrder.map((product, index) => (
-                            <div 
-                              key={product.id}
-                              className={`flex items-center p-2 bg-white dark:bg-gray-600 rounded-md shadow-sm cursor-move ${draggedItem === index ? 'opacity-50' : ''} ${draggedOverItem === index ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
-                              draggable="true"
-                              onDragStart={(e) => handleDragStart(e, index)}
-                              onDragEnd={handleDragEnd}
-                              onDragOver={(e) => {
-                                e.preventDefault();
-                                e.currentTarget.classList.add('bg-blue-50', 'dark:bg-blue-900/20');
-                              }}
-                              onDragLeave={(e) => {
-                                e.currentTarget.classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
-                              }}
-                              onDrop={(e) => {
-                                e.preventDefault();
-                                e.currentTarget.classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
-                                handleDrop(e, index);
-                              }}
-                            >
-                              <div className="flex-shrink-0 text-gray-400 dark:text-gray-300 mr-2">
-                                <GripVertical size={18} />
-                              </div>
-                              <div className="flex-shrink-0 w-12 h-12 mr-3 overflow-hidden rounded-md">
-                                {product.image ? (
-                                  <img 
-                                    src={product.image} 
-                                    alt={product.name} 
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => {
-                                      e.target.onerror = null;
-                                      e.target.src = `${product.images[0].url}`;
-                                    }}
-                                  />
-                                ) : (
-                                  <div 
-                                    className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg"
-                                    style={{
-                                      backgroundImage: `${product.images[0].url}`
-                                    }}
-                                  >
-                                    {product.name ? product.name.charAt(0).toUpperCase() : "P"}
-                                  </div>
-                                )}
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-medium text-gray-800 dark:text-white">{product.name}</p>
-                                {/* <p className="text-sm text-gray-500 dark:text-gray-300">ID: {product.id}</p> */}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-gray-500 dark:text-gray-400 text-center">
-                          {t('select_category_and_subcategory')}
-                        </p>
-                      )}
-                    </div>
-                    
-                    <div className="flex justify-end">
-                      <button
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 flex items-center"
-                        disabled={!productsToOrder.length || isReordering}
-                        onClick={saveProductOrder}
-                      >
-                        {isReordering ? t('saving') : t('save')}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
       
-      {/* Success Message */}
-      {showSuccessMessage && (
-        <div className="fixed bottom-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md z-50 flex items-center">
-          <CheckCircle size={20} className="mr-2" />
-          <span>{t('product_order_saved')}</span>
-          <button className="ml-4 text-green-500 hover:text-green-700" onClick={() => setShowSuccessMessage(false)}>
-            <X size={16} />
-          </button>
-        </div>
-      )}
     </div>
   )
 }

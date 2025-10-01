@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Receipt, LayoutGrid, MessageCircleMore, List, CalendarDays, QrCode, GalleryHorizontal, TicketCheck, ScrollText, ChevronDown, Clipboard, BellDot, FileText, ChevronsRight, ChevronsLeft, TrendingUp, Brain, Truck, Users, TrendingDown, UserCheck, Calendar, Wallet, Globe, Tag, Package, LogOut } from 'lucide-react';
+import { Receipt, ListOrdered, LayoutGrid, MessageCircleMore, Tags, List, CalendarDays, QrCode, GalleryHorizontal, TicketCheck, ScrollText, ChevronDown, Clipboard, BellDot, FileText, ChevronsRight, ChevronsLeft, TrendingUp, Brain, Truck, Users, TrendingDown, UserCheck, Calendar, Wallet, Globe, Tag, Package, LogOut } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -38,14 +38,13 @@ function Sidebar() {
     const routes = ['users', 'employes'];
     return routes.some(route => canAccess(route));
   };
-  
   const hasAccessToCongeRoutes = () => {
     const routes = ['employee-demande-conge', 'employee-liste-conge'];
     return routes.some(route => canAccess(route));
   };
   
   const hasAccessToWebsiteRoutes = () => {
-    const routes = ['stock', 'categories', 'products', 'carousel', 'qr-code', 'commandes-client', 'messages'];
+    const routes = ['stock', 'categories', 'products', 'tags', 'carousel', 'qr-code', 'commandes-client', 'messages'];
     return routes.some(route => canAccess(route));
   };
 
@@ -744,8 +743,8 @@ function Sidebar() {
               }`}
             >
               <div className="space-y-1 transform transition-transform duration-300 ease-in-out">
-                {/* Stock */}
-                {/* <div
+                {/* Tags */}
+                <div
                   className={`transform transition-all duration-300 ease-in-out ${
                     isWebsiteOpen && isSidebarOpen
                       ? 'translate-y-0 opacity-100'
@@ -756,17 +755,41 @@ function Sidebar() {
                   }}
                 >
                   <NavLink
-                    to="/stock"
+                    to="/tags"
                     className={({ isActive }) =>
                       `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-300 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
                     }
                   >
                     <div className="mr-2 flex items-center justify-center flex-shrink-0">
-                      <Boxes size={20} />
+                      <Tags size={20} />
                     </div>
-                    Stock
+                    Tags
                   </NavLink>
-                </div> */}
+                </div>
+
+                {/* Order */}
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isWebsiteOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isWebsiteOpen ? '0ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/productsordering"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-300 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <ListOrdered size={20} />
+                    </div>
+                    {t('product_ordering')}
+                  </NavLink>
+                </div>
 
                 {/* Categories */}
                 {canAccess('categories') && (
