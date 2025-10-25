@@ -40,6 +40,7 @@ import ListeEmploye from './pages/employe/ListeEmploye/ListeEmploye';
 import Agenda from './pages/agenda/Agenda';
 import ListeConge from './pages/employe/ListeConge/ListeConge';
 import FicheCommande from './pages/ficheCommande/FicheCommande';
+import Advertisement from './pages/advertisement/Advertisement';
 
 
 function App() {
@@ -307,6 +308,13 @@ function App() {
                 </ProtectedRoute>
               }>
                 <Route index element={<Carousel />} />
+              </Route>
+              <Route path="/advertisement" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<Advertisement />} />
               </Route>
               <Route path="/commandes-client" element={
                 <ProtectedRoute>
