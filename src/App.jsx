@@ -39,9 +39,18 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import ListeEmploye from './pages/employe/ListeEmploye/ListeEmploye';
 import Agenda from './pages/agenda/Agenda';
 import ListeConge from './pages/employe/ListeConge/ListeConge';
+import Conge from './pages/employe/conge/Conge';
 import FicheCommande from './pages/ficheCommande/FicheCommande';
 import Advertisement from './pages/advertisement/Advertisement';
-
+import EncoursDeProduction from './pages/EncoursDeProduction/EncoursDeProduction';
+import EtatParArtisan from './pages/EtatParArtisan/EtatParArtisan';
+import FicheProductionArtisan from './pages/FicheProductionArtisan/FicheProductionArtisan';
+import BordereauCheques from './pages/BordereauCheques/BordereauCheques';
+import BordereauChequesRecu from './pages/BordereauChequesRecu/BordereauChequesRecu';
+import BordereauTraites from './pages/BordereauTraites/BordereauTraites';
+import BordereauTraitesRecu from './pages/BordereauTraitesRecu/BordereauTraitesRecu';
+import EcheancierChequesEmis from './pages/EcheancierChequesEmis/EcheancierChequesEmis';
+import EcheancierChequesRecus from './pages/EcheancierChequesRecus/EcheancierChequesRecus';
 
 function App() {
   return (
@@ -350,6 +359,76 @@ function App() {
                 </ProtectedRoute>
               }>
                 <Route index element={<FicheCommande />} />
+              </Route>
+              <Route path="/encours-de-production" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<EncoursDeProduction />} />
+              </Route>
+              <Route path="/etat-par-artisan" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<EtatParArtisan />} />
+              </Route>
+              <Route path="/fiche-production-artisan" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<FicheProductionArtisan />} />
+              </Route>
+              <Route path="/bordereau-cheques" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<BordereauCheques />} />
+              </Route>
+              <Route path="/bordereau-traites" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<BordereauTraites />} />
+              </Route>
+              <Route path="/bordereau-cheques-recu" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<BordereauChequesRecu />} />
+              </Route>
+              <Route path="/bordereau-traites-recu" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<BordereauTraitesRecu />} />
+              </Route>
+              <Route path="/echeancier-cheques-emis" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<EcheancierChequesEmis />} />
+              </Route>
+              <Route path="/echeancier-cheques-recus" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<EcheancierChequesRecus />} />
+              </Route>
+              <Route path="/conge" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<Conge />} />
               </Route>
             </Routes>
           </Router>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../hooks/useAuth';
 import { getAllDemandesConge, updateDemandeConge, deleteDemandeConge } from '../../../api/Employe/demandeConge';
+import { createConge } from '../../../api/Employe/conge';
 import { Search, Edit, Trash2, Eye, Printer, Check, X, AlertCircle } from 'lucide-react';
 import CongeDocument from '../../../components/employe/CongeDocument';
 
@@ -77,6 +78,11 @@ export default function ListeConge() {
   const handleUpdateStatus = async (id, decision, responsable, date_effectuer) => {
     try {
       setUpdateLoading(true);
+      
+      // Find the current demande to check its previous status
+      const currentDemande = demandes.find(d => d._id === id);
+      const previousDecision = currentDemande?.decisionResponsable || 'En attente';
+      
       const updateData = { 
         decisionResponsable: decision 
       };
@@ -99,6 +105,43 @@ export default function ListeConge() {
       }
       
       await updateDemandeConge(id, updateData);
+      
+      // If changing from 'En attente' or 'Refus' to 'Accord total' or 'Accord partiel', create conge entry
+      if ((previousDecision === 'En attente' || previousDecision === 'Refus' || !previousDecision) && 
+          (decision === 'Accord total' || decision === 'Accord partiel')) {
+        
+        // Determine date range based on decision type
+        let dateDebut, dateFin;
+        if (decision === 'Accord partiel' && selectedDemande?.dateRangePartiel?.startDate && selectedDemande?.dateRangePartiel?.endDate) {
+          dateDebut = new Date(selectedDemande.dateRangePartiel.startDate);
+          dateFin = new Date(selectedDemande.dateRangePartiel.endDate);
+        } else {
+          dateDebut = new Date(currentDemande.dateRange.startDate);
+          dateFin = new Date(currentDemande.dateRange.endDate);
+        }
+        
+        // Calculate number of days
+        const diffTime = Math.abs(dateFin - dateDebut);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        
+        // Create conge entry
+        const congeData = {
+          collaborateur: currentDemande.username,
+          nbr_jour: diffDays.toString(),
+          date_debut: dateDebut,
+          date_fin: dateFin,
+          nature: currentDemande.motif
+        };
+        
+        try {
+          await createConge(congeData);
+          console.log('Conge entry created successfully');
+        } catch (congeError) {
+          console.error('Error creating conge entry:', congeError);
+          // Don't fail the whole operation if conge creation fails
+          setError('Demande mise à jour mais erreur lors de la création du congé');
+        }
+      }
       
       // Update local state
       setDemandes(prevDemandes => 
@@ -397,25 +440,25 @@ export default function ListeConge() {
               <div className="mb-6 flex flex-wrap justify-between items-center gap-2">
                 <div className="flex flex-wrap gap-2">
                   <button
-                    onClick={() => handleUpdateStatus(selectedDemande._id, 'Accord total', selectedDemande.responsable, selectedDemande.date_effectuer)}
+                    onClick={() => setSelectedDemande({...selectedDemande, decisionResponsable: 'Accord total'})}
                     disabled={updateLoading}
-                    className={`px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-300 flex items-center ${updateLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    className={`px-4 py-2 ${selectedDemande.decisionResponsable === 'Accord total' ? 'bg-green-700 ring-2 ring-green-500' : 'bg-green-600'} text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-300 flex items-center ${updateLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
                     <Check className="mr-1" size={16} />
                     Accord total
                   </button>
                   <button
-                    onClick={() => handleUpdateStatus(selectedDemande._id, 'Accord partiel', selectedDemande.responsable, selectedDemande.date_effectuer)}
+                    onClick={() => setSelectedDemande({...selectedDemande, decisionResponsable: 'Accord partiel'})}
                     disabled={updateLoading}
-                    className={`px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-colors duration-300 flex items-center ${updateLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    className={`px-4 py-2 ${selectedDemande.decisionResponsable === 'Accord partiel' ? 'bg-yellow-700 ring-2 ring-yellow-500' : 'bg-yellow-600'} text-white rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-colors duration-300 flex items-center ${updateLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
                     <Check className="mr-1" size={16} />
                     Accord partiel
                   </button>
                   <button
-                    onClick={() => handleUpdateStatus(selectedDemande._id, 'Refus', selectedDemande.responsable, selectedDemande.date_effectuer)}
+                    onClick={() => setSelectedDemande({...selectedDemande, decisionResponsable: 'Refus'})}
                     disabled={updateLoading}
-                    className={`px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-300 flex items-center ${updateLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    className={`px-4 py-2 ${selectedDemande.decisionResponsable === 'Refus' ? 'bg-red-700 ring-2 ring-red-500' : 'bg-red-600'} text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-300 flex items-center ${updateLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
                     <X className="mr-1" size={16} />
                     Refus

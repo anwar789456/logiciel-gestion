@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CopyPlus, Plus, LayoutTemplate, Tags, X, AlertCircle, Settings, GripVertical, CheckCircle } from 'lucide-react';
+import { CopyPlus, Plus, LayoutTemplate, Tags, X, AlertCircle, Settings, GripVertical, CheckCircle, Search, Filter } from 'lucide-react';
 import { useAccessControl } from '../../hooks/useAccessControl';
 import { FetchAllProductItems, DeleteProductById, fetchProductById, FetchAllProductTypeItems } from '../../api/product';
 import TableDisplayProduct from '../../components/product/TableDisplayProduct';
@@ -391,56 +391,82 @@ export default function Products() {
 
 
   return (
-    <div className='pt-4'>
-      <div className='pb-4 pl-8 flex justify-between items-center border-b border-gray-200 dark:border-gray-700'>
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
-            {t('products')}
-          </h1>
-        </div>
-        <div className='flex pr-2'>
-          <button
-            onClick={() => setShowProductTypesModal(true)}
-            className='flex items-center bg-transparent border border-blue-600
-              hover:bg-blue-600 text-blue-600 font-bold 
-              hover:text-white
-              py-2 px-4 rounded-xl cursor-pointer
-              mr-2
-              shadow-lg hover:shadow-lg active:shadow-inner
-              active:scale-85
-              transition-all duration-400 ease-in-out'
-          >
-            <Tags className='mr-2 mt-0.5' size={20} />
-            {t('product_types')}
-          </button>
-          <button
-            onClick={() => setShowOptionsModal(true)}
-            className='flex items-center bg-transparent border border-blue-600
-              hover:bg-blue-600 text-blue-600 font-bold 
-              hover:text-white
-              py-2 px-4 rounded-xl cursor-pointer
-              mr-2
-              shadow-lg hover:shadow-lg active:shadow-inner
-              active:scale-85
-              transition-all duration-400 ease-in-out'
-          >
-            <Settings className='mr-2 mt-0.5' size={20} />
-            {t('options')}
-          </button>
-
-          {showIfCanWrite(
-            <button 
-              onClick={() => setShowAddForm(true)}
-              className='flex items-center bg-blue-600 
-              hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-xl 
-              active:scale-85
-              cursor-pointer shadow-lg hover:shadow-lg active:shadow-inner 
-              transition-all duration-400 ease-in-out'
+    <div className='pt-4 flex flex-col h-screen overflow-hidden'>
+      <div className='pb-4 pl-8 border-b border-gray-200 dark:border-gray-700'>
+        <div className='flex justify-between items-center mb-3'>
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
+              {t('products')}
+            </h1>
+          </div>
+          <div className='flex pr-2'>
+            <button
+              onClick={() => setShowProductTypesModal(true)}
+              className='flex items-center bg-transparent border border-blue-600
+                hover:bg-blue-600 text-blue-600 font-bold 
+                hover:text-white
+                py-2 px-4 rounded-xl cursor-pointer
+                mr-2
+                shadow-lg hover:shadow-lg active:shadow-inner
+                active:scale-85
+                transition-all duration-400 ease-in-out'
             >
-              <CopyPlus className='mr-2 mt-0.5' size={20} />
-              {t('ajouter_produit')}
+              <Tags className='mr-2 mt-0.5' size={20} />
+              {t('product_types')}
             </button>
-          )}
+            <button
+              onClick={() => setShowOptionsModal(true)}
+              className='flex items-center bg-transparent border border-blue-600
+                hover:bg-blue-600 text-blue-600 font-bold 
+                hover:text-white
+                py-2 px-4 rounded-xl cursor-pointer
+                mr-2
+                shadow-lg hover:shadow-lg active:shadow-inner
+                active:scale-85
+                transition-all duration-400 ease-in-out'
+            >
+              <Settings className='mr-2 mt-0.5' size={20} />
+              {t('options')}
+            </button>
+
+            {showIfCanWrite(
+              <button 
+                onClick={() => setShowAddForm(true)}
+                className='flex items-center bg-blue-600 
+                hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-xl 
+                active:scale-85
+                cursor-pointer shadow-lg hover:shadow-lg active:shadow-inner 
+                transition-all duration-400 ease-in-out'
+              >
+                <CopyPlus className='mr-2 mt-0.5' size={20} />
+                {t('ajouter_produit')}
+              </button>
+            )}
+          </div>
+        </div>
+        
+        {/* Search Bar */}
+        <div className='flex items-center gap-3 pr-2'>
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder={t('search_products')}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 outline-none"
+              onChange={(e) => {
+                const newFilters = { ...advancedFilters, search: e.target.value };
+                setAdvancedFilters(newFilters);
+                // Trigger refresh after a small delay
+                if (tableRef.current) {
+                  setTimeout(() => {
+                    tableRef.current.refreshData(1);
+                  }, 300);
+                }
+              }}
+              value={advancedFilters.search || ''}
+              autoComplete="off"
+            />
+          </div>
         </div>
       </div>
       
@@ -473,7 +499,7 @@ export default function Products() {
       </Collapse>
       
       {/* Product Table */}
-      <div className="p-2">
+      <div className="p-2 flex-1 min-h-0">
         <TableDisplayProduct
           ref={tableRef}
           title={t('product_list')}

@@ -245,12 +245,12 @@ const TableDisplayProduct = React.forwardRef(({
   }
 
   // Define CSS variables for header and pagination heights
-  const headerHeight = '100px'; // Increased from 64px to accommodate the total items count
-  const paginationHeight = '56px';
+  const headerHeight = '90px'; // Increased from 64px to accommodate the total items count
+  const paginationHeight = '80px';
 
   return (
     <div 
-      className="bg-white dark:bg-gray-800 rounded-md shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden relative"
+      className="bg-white dark:bg-gray-800 rounded-md shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden relative h-full flex flex-col"
       style={{
         '--header-height': headerHeight,
         '--pagination-height': paginationHeight
@@ -285,8 +285,8 @@ const TableDisplayProduct = React.forwardRef(({
       </div>
 
       {/* Enhanced Table Container */}
-      <div className="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg shadow-md">
-        <div className="overflow-x-auto overflow-y-auto" style={{ height: '400px' }}>
+      <div className="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg shadow-md flex-1 min-h-0">
+        <div className="overflow-x-auto overflow-y-auto h-full">
           <table className="w-full table-fixed border-collapse">
             <thead>
               <tr className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 sticky top-0 z-10">

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Receipt, ListOrdered, LayoutGrid, MessageCircleMore, Tags, List, CalendarDays, QrCode, GalleryHorizontal, TicketCheck, ScrollText, ChevronDown, Clipboard, BellDot, FileText, ChevronsRight, ChevronsLeft, TrendingUp, Brain, Truck, Users, TrendingDown, UserCheck, Calendar, Wallet, Globe, Tag, Package, LogOut, Megaphone } from 'lucide-react';
+import { Receipt, ListOrdered, LayoutGrid, MessageCircleMore, Tags, List, CalendarDays, QrCode, GalleryHorizontal, TicketCheck, ScrollText, ChevronDown, Clipboard, BellDot, FileText, ChevronsRight, ChevronsLeft, TrendingUp, Brain, Truck, Users, TrendingDown, UserCheck, Calendar, Wallet, Globe, Tag, Package, LogOut, Megaphone, DollarSign, CreditCard } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -10,15 +10,14 @@ function Sidebar() {
   const { isSidebarOpen, toggleSidebar } = useApp();
   const { canAccess } = useAuth();
   const location = useLocation();
-  // const [isCommandesOpen, setIsCommandesOpen] = useState(false); // Removed - commandes moved to ventes dropdown
   const [isVentesOpen, setIsVentesOpen] = useState(false);
   const [isAchatsOpen, setIsAchatsOpen] = useState(false);
   const [isEmployeeOpen, setIsEmployeeOpen] = useState(false);
   const [isWebsiteOpen, setIsWebsiteOpen] = useState(false);
-  const [isCongeOpen, setIsCongeOpen] = useState(false);
+  const [isRHOpen, setIsRHOpen] = useState(false);
+  const [isProductionOpen, setIsProductionOpen] = useState(false);
+  const [isFinanceOpen, setIsFinanceOpen] = useState(false);
   
-  // Helper functions to check if any routes in a dropdown are accessible
-  // If all routes are denied access, we should hide the dropdown
   const hasAccessToVentesRoutes = () => {
     const routes = ['devis', 'factures', 'bon-de-livraison', 'recue-de-paiement-sur-commande', 'commandes-fiche', 'bon-de-sortie', 'crm', 'fiche-commande'];
     return routes.some(route => canAccess(route));
@@ -29,17 +28,23 @@ function Sidebar() {
     return routes.some(route => canAccess(route));
   };
   
-  // const hasAccessToCommandesRoutes = () => {
-  //   const routes = ['commandes-fiche'];
-  //   return routes.some(route => canAccess(route));
-  // }; // Removed - commandes moved to ventes dropdown
-  
   const hasAccessToEmployeeRoutes = () => {
     const routes = ['users', 'employes'];
     return routes.some(route => canAccess(route));
   };
-  const hasAccessToCongeRoutes = () => {
-    const routes = ['employee-demande-conge', 'employee-liste-conge'];
+  
+  const hasAccessToRHRoutes = () => {
+    const routes = ['users', 'employes', 'employee-demande-conge', 'employee-liste-conge', 'conge'];
+    return routes.some(route => canAccess(route));
+  };
+  
+  const hasAccessToProductionRoutes = () => {
+    const routes = ['encours-de-production', 'etat-par-artisan', 'fiche-production-artisan'];
+    return routes.some(route => canAccess(route));
+  };
+  
+  const hasAccessToFinanceRoutes = () => {
+    const routes = ['caisse', 'bordereau-cheques', 'bordereau-cheques-recu', 'bordereau-traites', 'bordereau-traites-recu', 'echeancier-cheques', 'echeancier-cheques-recus'];
     return routes.some(route => canAccess(route));
   };
   
@@ -47,10 +52,6 @@ function Sidebar() {
     const routes = ['stock', 'categories', 'products', 'tags', 'carousel', 'qr-code', 'commandes-client', 'messages', 'advertisement'];
     return routes.some(route => canAccess(route));
   };
-
-  // const toggleCommandes = () => {
-  //   setIsCommandesOpen(!isCommandesOpen);
-  // }; // Removed - commandes moved to ventes dropdown
 
   const toggleVentes = () => {
     setIsVentesOpen(!isVentesOpen);
@@ -68,8 +69,16 @@ function Sidebar() {
     setIsWebsiteOpen(!isWebsiteOpen);
   };
 
-  const toggleConge = () => {
-    setIsCongeOpen(!isCongeOpen);
+  const toggleRH = () => {
+    setIsRHOpen(!isRHOpen);
+  };
+
+  const toggleProduction = () => {
+    setIsProductionOpen(!isProductionOpen);
+  };
+
+  const toggleFinance = () => {
+    setIsFinanceOpen(!isFinanceOpen);
   };
 
   return (
@@ -91,21 +100,6 @@ function Sidebar() {
       {/* Scrollable content area */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
         <nav className="space-y-0.5">
-          {/* Home */}
-          {/* <NavLink
-            to="/"
-            className={({ isActive }) =>
-              `flex items-center p-3 rounded-s-xs transition-colors duration-300 ease-in-out rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
-            }
-            title={!isSidebarOpen ? t('home') : undefined}
-          >
-            <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
-              <Home size={24} />
-            </div>
-            <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
-              {t('home')}
-            </span>
-          </NavLink> */}
 
           {/* Stats */}
           <NavLink
@@ -428,102 +422,22 @@ function Sidebar() {
           </div>
           )}
 
-          {/* Section header for fiches removed - commandes moved to ventes dropdown */}
-
-          {/* Commandes Dropdown */}
-          {/* {hasAccessToCommandesRoutes() && (
+          {/* Production Dropdown */}
+          {hasAccessToProductionRoutes() && (
             <div>
               <button
-              onClick={toggleCommandes}
-              className={`w-full cursor-pointer flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname.startsWith('/commandes') ? 'pl-2   text-blue-600 dark:text-blue-50' : ''}`}
-              title={!isSidebarOpen ? t('commandes') : undefined}
+              onClick={toggleProduction}
+              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/encours-de-production') || location.pathname.startsWith('/etat-par-artisan') || location.pathname.startsWith('/fiche-production-artisan')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
+              title={!isSidebarOpen ? t('production') : undefined}
             >
               <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
-                <Clipboard size={24} />
+                <Package size={24} />
               </div>
               <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
-                {t('commandes')}
+                {t('production')}
               </span>
               <div className={`ml-auto transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
-                <div className={`transform transition-transform duration-300 ease-in-out ${isCommandesOpen ? 'rotate-180' : 'rotate-0'}`}>
-                  <ChevronDown size={16} />
-                </div>
-              </div>
-            </button>
-            
-            
-            <div 
-              className={`ml-4 overflow-hidden transition-all duration-300 ease-in-out ${
-                isCommandesOpen && isSidebarOpen 
-                  ? 'max-h-48 opacity-100 mt-1' 
-                  : 'max-h-0 opacity-0 mt-0'
-              }`}
-            >
-              <div className="space-y-1 transform transition-transform duration-300 ease-in-out">
-                
-                {canAccess('commandes-fiche') && (
-                <div
-                  className={`transform transition-all duration-300 ease-in-out ${
-                    isCommandesOpen && isSidebarOpen
-                      ? 'translate-y-0 opacity-100'
-                      : '-translate-y-2 opacity-0'
-                  }`}
-                  style={{
-                    transitionDelay: isCommandesOpen ? '0ms' : '0ms'
-                  }}
-                >
-                  <NavLink
-                      to="/fiche-commande"
-                      className={({ isActive }) =>
-                        `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
-                      }
-                    >
-                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
-                      <FileText size={20} />
-                    </div>
-                    {t('fiche_commandes')}
-                  </NavLink>
-                </div>
-                )}
-              </div>
-            </div>
-          </div>
-          )} */}
-
-          {/* Clients */}
-          {canAccess('clients') && (
-          <NavLink
-            to="/clients"
-            className={({ isActive }) =>
-              `flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
-            }
-            title={!isSidebarOpen ? t('clients') : undefined}
-          >
-            <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
-              <Users size={24} />
-            </div>
-            <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
-              {t('clients')}
-            </span>
-          </NavLink>
-          )}
-
-          {/* Employée Dropdown */}
-          {hasAccessToEmployeeRoutes() && (
-            <div>
-              <button
-              onClick={toggleEmployee}
-              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/employee') || location.pathname.startsWith('/demande-conge')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
-              title={!isSidebarOpen ? t('employee') : undefined}
-            >
-              <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
-                <UserCheck size={24} />
-              </div>
-              <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
-                {t('employee')}
-              </span>
-              <div className={`ml-auto transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
-                <div className={`transform transition-transform duration-300 ease-in-out ${isEmployeeOpen ? 'rotate-180' : 'rotate-0'}`}>
+                <div className={`transform transition-transform duration-300 ease-in-out ${isProductionOpen ? 'rotate-180' : 'rotate-0'}`}>
                   <ChevronDown size={16} />
                 </div>
               </div>
@@ -532,8 +446,336 @@ function Sidebar() {
             {/* Dropdown Items with smooth animation */}
             <div 
               className={`ml-4 overflow-hidden transition-all duration-300 ease-in-out ${
-                isEmployeeOpen && isSidebarOpen 
-                  ? 'max-h-[500px] opacity-100 mt-1' 
+                isProductionOpen && isSidebarOpen 
+                  ? 'max-h-96 opacity-100 mt-1' 
+                  : 'max-h-0 opacity-0 mt-0'
+              }`}
+            >
+              <div className="space-y-1 transform transition-transform duration-300 ease-in-out">
+                {/* Encours De Production */}
+                {canAccess('encours-de-production') && (
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isProductionOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isProductionOpen ? '0ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/encours-de-production"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <Clipboard size={20} />
+                    </div>
+                    {t('encours_de_production')}
+                  </NavLink>
+                </div>
+                )}
+
+                {/* Etat Par Artisan */}
+                {canAccess('etat-par-artisan') && (
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isProductionOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isProductionOpen ? '50ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/etat-par-artisan"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <Users size={20} />
+                    </div>
+                    {t('etat_par_artisan')}
+                  </NavLink>
+                </div>
+                )}
+
+                {/* Fiche de Production Par Artisan */}
+                {canAccess('fiche-production-artisan') && (
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isProductionOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isProductionOpen ? '100ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/fiche-production-artisan"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <FileText size={20} />
+                    </div>
+                    {t('fiche_production_artisan')}
+                  </NavLink>
+                </div>
+                )}
+              </div>
+            </div>
+          </div>
+          )}
+
+          {/* Finance Dropdown */}
+          {hasAccessToFinanceRoutes() && (
+            <div>
+              <button
+              onClick={toggleFinance}
+              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/caisse') || location.pathname.startsWith('/bordereau-cheques') || location.pathname.startsWith('/bordereau-traites') || location.pathname.startsWith('/echeancier-cheques')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
+              title={!isSidebarOpen ? t('finance') : undefined}
+            >
+              <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
+                <DollarSign size={24} />
+              </div>
+              <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
+                {t('finance')}
+              </span>
+              <div className={`ml-auto transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
+                <div className={`transform transition-transform duration-300 ease-in-out ${isFinanceOpen ? 'rotate-180' : 'rotate-0'}`}>
+                  <ChevronDown size={16} />
+                </div>
+              </div>
+            </button>
+            
+            {/* Dropdown Items with smooth animation */}
+            <div 
+              className={`ml-4 overflow-hidden transition-all duration-300 ease-in-out ${
+                isFinanceOpen && isSidebarOpen 
+                  ? 'max-h-[600px] opacity-100 mt-1' 
+                  : 'max-h-0 opacity-0 mt-0'
+              }`}
+            >
+              <div className="space-y-1 transform transition-transform duration-300 ease-in-out">
+                {/* Bordereau de Caisse */}
+                {canAccess('caisse') && (
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isFinanceOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isFinanceOpen ? '0ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/caisse"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <Wallet size={20} />
+                    </div>
+                    {t('bordereau_de_caisse')}
+                  </NavLink>
+                </div>
+                )}
+
+                {/* Bordereau de Chèques Emis */}
+                {canAccess('bordereau-cheques') && (
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isFinanceOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isFinanceOpen ? '50ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/bordereau-cheques"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <CreditCard size={20} />
+                    </div>
+                    Bord de Chèques Emis
+                  </NavLink>
+                </div>
+                )}
+
+                {/* Bordereau de Chèques Reçus */}
+                {canAccess('bordereau-cheques-recu') && (
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isFinanceOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isFinanceOpen ? '75ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/bordereau-cheques-recu"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <CreditCard size={20} />
+                    </div>
+                    Bord de Chèques Reçus
+                  </NavLink>
+                </div>
+                )}
+
+                {/* Bordereau de Traites Emis */}
+                {canAccess('bordereau-traites') && (
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isFinanceOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isFinanceOpen ? '100ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/bordereau-traites"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <FileText size={20} />
+                    </div>
+                    Bord de Traites Emis
+                  </NavLink>
+                </div>
+                )}
+
+                {/* Bordereau de Traites Reçus */}
+                {canAccess('bordereau-traites-recu') && (
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isFinanceOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isFinanceOpen ? '125ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/bordereau-traites-recu"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <FileText size={20} />
+                    </div>
+                    Bord de Traites Reçus
+                  </NavLink>
+                </div>
+                )}
+
+                {/* Échéancier Chèques Émis */}
+                {canAccess('echeancier-cheques') && (
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isFinanceOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isFinanceOpen ? '150ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/echeancier-cheques-emis"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <Calendar size={20} />
+                    </div>
+                    Ech de Cheques Emis
+                  </NavLink>
+                </div>
+                )}
+
+                {/* Échéancier Chèques Reçus */}
+                {canAccess('echeancier-cheques-recus') && (
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isFinanceOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isFinanceOpen ? '175ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/echeancier-cheques-recus"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <Calendar size={20} />
+                    </div>
+                    Ech de Cheques Recus
+                  </NavLink>
+                </div>
+                )}
+              </div>
+            </div>
+          </div>
+          )}
+
+          {/* RH Dropdown */}
+          {hasAccessToRHRoutes() && (
+            <div>
+              <button
+              onClick={toggleRH}
+              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/users') || location.pathname.startsWith('/employes') || location.pathname.startsWith('/employee') || location.pathname.startsWith('/conge')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
+              title={!isSidebarOpen ? t('rh') : undefined}
+            >
+              <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
+                <UserCheck size={24} />
+              </div>
+              <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
+                {t('rh')}
+              </span>
+              <div className={`ml-auto transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
+                <div className={`transform transition-transform duration-300 ease-in-out ${isRHOpen ? 'rotate-180' : 'rotate-0'}`}>
+                  <ChevronDown size={16} />
+                </div>
+              </div>
+            </button>
+            
+            {/* Dropdown Items with smooth animation */}
+            <div 
+              className={`ml-4 overflow-hidden transition-all duration-300 ease-in-out ${
+                isRHOpen && isSidebarOpen 
+                  ? 'max-h-[600px] opacity-100 mt-1' 
                   : 'max-h-0 opacity-0 mt-0'
               }`}
             >
@@ -542,12 +784,12 @@ function Sidebar() {
                 {canAccess('users') && (
                   <div
                     className={`transform transition-all duration-300 ease-in-out ${
-                      isEmployeeOpen && isSidebarOpen
+                      isRHOpen && isSidebarOpen
                         ? 'translate-y-0 opacity-100'
                         : '-translate-y-2 opacity-0'
                     }`}
                     style={{
-                      transitionDelay: isEmployeeOpen ? '0ms' : '0ms'
+                      transitionDelay: isRHOpen ? '0ms' : '0ms'
                     }}
                   >
                     <NavLink
@@ -568,12 +810,12 @@ function Sidebar() {
                 {canAccess('employes') && (
                   <div
                     className={`transform transition-all duration-300 ease-in-out ${
-                      isEmployeeOpen && isSidebarOpen
+                      isRHOpen && isSidebarOpen
                         ? 'translate-y-0 opacity-100'
                         : '-translate-y-2 opacity-0'
                     }`}
                     style={{
-                      transitionDelay: isEmployeeOpen ? '50ms' : '0ms'
+                      transitionDelay: isRHOpen ? '50ms' : '0ms'
                     }}
                   >
                     <NavLink
@@ -590,51 +832,16 @@ function Sidebar() {
                   </div>
                 )}
 
-              </div>
-            </div>
-          </div>
-          )}
-
-          {/* Congé Dropdown */}
-          {hasAccessToCongeRoutes() && (
-            <div>
-              <button
-              onClick={toggleConge}
-              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/employee/demande-conge') || location.pathname.startsWith('/employee/liste-conge')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
-              title={!isSidebarOpen ? t('conge') : undefined}
-            >
-              <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
-                <Calendar size={24} />
-              </div>
-              <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
-                {t('conge')}
-              </span>
-              <div className={`ml-auto transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
-                <div className={`transform transition-transform duration-300 ease-in-out ${isCongeOpen ? 'rotate-180' : 'rotate-0'}`}>
-                  <ChevronDown size={16} />
-                </div>
-              </div>
-            </button>
-            
-            {/* Dropdown Items with smooth animation */}
-            <div 
-              className={`ml-4 overflow-hidden transition-all duration-300 ease-in-out ${
-                isCongeOpen && isSidebarOpen 
-                  ? 'max-h-96 opacity-100 mt-1' 
-                  : 'max-h-0 opacity-0 mt-0'
-              }`}
-            >
-              <div className="space-y-1 transform transition-transform duration-300 ease-in-out">
                 {/* Demande de Congé */}
                 {canAccess('employee-demande-conge') && (
                 <div
                   className={`transform transition-all duration-300 ease-in-out ${
-                    isCongeOpen && isSidebarOpen
+                    isRHOpen && isSidebarOpen
                       ? 'translate-y-0 opacity-100'
                       : '-translate-y-2 opacity-0'
                   }`}
                   style={{
-                    transitionDelay: isCongeOpen ? '0ms' : '0ms'
+                    transitionDelay: isRHOpen ? '100ms' : '0ms'
                   }}
                 >
                   <NavLink
@@ -655,12 +862,12 @@ function Sidebar() {
                 {canAccess('employee-liste-conge') && (
                 <div
                   className={`transform transition-all duration-300 ease-in-out ${
-                    isCongeOpen && isSidebarOpen
+                    isRHOpen && isSidebarOpen
                       ? 'translate-y-0 opacity-100'
                       : '-translate-y-2 opacity-0'
                   }`}
                   style={{
-                    transitionDelay: isCongeOpen ? '50ms' : '0ms'
+                    transitionDelay: isRHOpen ? '150ms' : '0ms'
                   }}
                 >
                   <NavLink
@@ -676,34 +883,54 @@ function Sidebar() {
                   </NavLink>
                 </div>
                 )}
+
+                {/* Congé */}
+                {canAccess('conge') && (
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isRHOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isRHOpen ? '200ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/conge"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-350 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <Calendar size={20} />
+                    </div>
+                    {t('liste_conge')}
+                  </NavLink>
+                </div>
+                )}
               </div>
             </div>
           </div>
           )}
 
-          {/* {canAccess('commandes-en-cours') && (
-            <div className={`pt-2 pb-2 transition-normal duration-300 ${isSidebarOpen ? 'pl-2 text-sm' : 'pl-0 text-[11px]' }`}>
-              <p className='font-semibold uppercase whitespace-nowrap transition-all duration-300 ease-in-out text-gray-400 dark:text-gray-500'>
-                {t('en_cours')}
-              </p>
-            </div>
-          )}
-          {canAccess('commandes-en-cours') && (
+          {/* Clients */}
+          {canAccess('clients') && (
           <NavLink
-            to="/commandes-en-cours"
+            to="/clients"
             className={({ isActive }) =>
               `flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
             }
-            title={!isSidebarOpen ? t('commandes_en_cours') : undefined}
+            title={!isSidebarOpen ? t('clients') : undefined}
           >
             <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
-              <BellDot size={24} />
+              <Users size={24} />
             </div>
             <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
-              {t('commandes_en_cours')}
+              {t('clients')}
             </span>
           </NavLink>
-          )} */}
+          )}
 
           {hasAccessToWebsiteRoutes() && (
             <div className={`pt-2 pb-2 transition-normal duration-300 ${isSidebarOpen ? 'pl-2 text-sm' : 'pl-0 text-[11px]' }`}>
@@ -977,30 +1204,8 @@ function Sidebar() {
             </div>
           </div>
           )}
-          {canAccess('caisse') && (
-            <div className={`pt-2 pb-2 transition-normal duration-300 ${isSidebarOpen ? 'pl-2 text-sm' : 'pl-0 text-[11px]' }`}>
-              <p className='font-semibold uppercase whitespace-nowrap transition-all duration-300 ease-in-out text-gray-400 dark:text-gray-500'>
-                {t('caisse')}
-              </p>
-            </div>
-          )}
-          {/* Caisse - Admin Only */}
-          {canAccess('caisse') && (
-            <NavLink
-              to="/caisse"
-              className={({ isActive }) =>
-                `flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md ${isActive ? 'border-blue-600 pl-2 border-l-4 bg-blue-100 dark:bg-gray-900 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`
-              }
-              title={!isSidebarOpen ? t('caisse') : undefined}
-            >
-              <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
-                <Wallet size={24} />
-              </div>
-              <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-in-out ${isSidebarOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0 overflow-hidden'}`}>
-                {t('caisse')}
-              </span>
-            </NavLink>
-          )}
+
+          
 
           {/* Assistant IA - Admin Only */}
           {canAccess('assistant') && (
