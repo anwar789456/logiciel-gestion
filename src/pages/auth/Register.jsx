@@ -21,7 +21,7 @@ const Register = () => {
             alt="US Flag" 
             className="w-5 h-4 rounded-sm"
           />
-          <span>🇺🇸</span>
+          <span>English</span>
         </div>
       );
     } else {
@@ -32,7 +32,7 @@ const Register = () => {
             alt="French Flag" 
             className="w-5 h-4 rounded-sm"
           />
-          <span>🇫🇷</span>
+          <span>Français</span>
         </div>
       );
     }

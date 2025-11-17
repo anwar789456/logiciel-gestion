@@ -15,10 +15,7 @@ const API_BASE_URL_ADD_TYPES = 'https://www.samethome.com/admin/api/logiciel/cre
 // Fetch all products
 export const FetchAllProductItems = async () => {
   try {
-    console.log('Fetching all products...');
     const response = await axios.get(API_BASE_URL_GET);
-    console.log('Products API response received');
-    
     // Process the response data to ensure sizes is properly formatted
     const processedData = response.data.map(product => {
       // Make a copy to avoid modifying the original
@@ -27,13 +24,16 @@ export const FetchAllProductItems = async () => {
       // Check if sizes exists and is a string
       if (processedProduct.sizes && typeof processedProduct.sizes === 'string') {
         try {
-          console.log(`Product ${processedProduct.idProd}: sizes is a string, attempting to parse`);
           const parsedSizes = JSON.parse(processedProduct.sizes);
           processedProduct.sizes = parsedSizes;
-          console.log(`Product ${processedProduct.idProd}: parsed sizes:`, processedProduct.sizes);
         } catch (error) {
           console.error(`Product ${processedProduct.idProd}: Error parsing sizes string:`, error);
         }
+      }
+      
+      // Ensure tva field exists - set default if missing
+      if (!processedProduct.tva || processedProduct.tva === null || processedProduct.tva === undefined) {
+        processedProduct.tva = '19'; // Default TVA value (matches the datalist format)
       }
       
       return processedProduct;
@@ -68,18 +68,13 @@ export const UpdateProductById = async (id, updatedData) => {
 // Function to add a new product
 export const addProduct = async (newProductData) => {
   try {
-    console.log('Sending product data to API:', JSON.stringify(newProductData));
     const response = await axios.post(API_BASE_URL_ADD, newProductData);
-    console.log('API response:', response.data);
     return response.data;
   } catch (error) {
-    console.error('Error adding product:', error);
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      console.error('Error response data:', error.response.data);
       if (error.response.data && error.response.data.error) {
-        console.error('Detailed error:', error.response.data.error);
         // Check if there's a validation error object
         if (error.response.data.error.errors) {
           console.error('Validation errors:', error.response.data.error.errors);
@@ -89,8 +84,6 @@ export const addProduct = async (newProductData) => {
           console.error('Error message from server:', error.response.data.error.message);
         }
       }
-      console.error('Error response status:', error.response.status);
-      console.error('Error response headers:', error.response.headers);
     } else if (error.request) {
       // The request was made but no response was received
       console.error('Error request:', error.request);

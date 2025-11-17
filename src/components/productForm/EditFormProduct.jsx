@@ -222,6 +222,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
         images: processedImages,
         minPrice: product.minPrice || '',
         maxPrice: product.maxPrice || '',
+        tva: product.tva || '19',
         longueur: product.longueur || '',
         largeur: product.largeur || '',
         hauteur: product.hauteur || '',
@@ -931,9 +932,9 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 px-3 py-2"
               />
               <datalist id="tva-options">
-                <option value="7%">7%</option>
-                <option value="13%">13%</option>
-                <option value="19%">19%</option>
+                <option value="7">7%</option>
+                <option value="13">13%</option>
+                <option value="19">19%</option>
               </datalist>
             </div>
           </div>

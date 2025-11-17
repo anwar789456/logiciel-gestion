@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Receipt, ListOrdered, LayoutGrid, MessageCircleMore, Tags, List, CalendarDays, QrCode, GalleryHorizontal, TicketCheck, ScrollText, ChevronDown, Clipboard, BellDot, FileText, ChevronsRight, ChevronsLeft, TrendingUp, Brain, Truck, Users, TrendingDown, UserCheck, Calendar, Wallet, Globe, Tag, Package, LogOut, Megaphone, DollarSign, CreditCard } from 'lucide-react';
+import { Receipt, ListOrdered, LayoutGrid, MessageCircleMore, Tags, List, CalendarDays, QrCode, GalleryHorizontal, TicketCheck, ScrollText, ChevronDown, Clipboard, BellDot, FileText, ChevronsRight, ChevronsLeft, TrendingUp, Brain, Truck, Users, TrendingDown, UserCheck, Calendar, Wallet, Globe, Tag, Package, LogOut, Megaphone, DollarSign, CreditCard, ShoppingCart, PackageCheck } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -24,7 +24,7 @@ function Sidebar() {
   };
   
   const hasAccessToAchatsRoutes = () => {
-    const routes = ['fournisseur'];
+    const routes = ['fournisseur', 'bon-commande-fournisseur', 'bon-reception'];
     return routes.some(route => canAccess(route));
   };
   
@@ -367,7 +367,7 @@ function Sidebar() {
             <div>
               <button
               onClick={toggleAchats}
-              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname.startsWith('/fournisseur') ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
+              className={`cursor-pointer w-full flex items-center p-3 rounded-s-xs transition-colors duration-300 rounded-r-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${(location.pathname.startsWith('/fournisseur') || location.pathname.startsWith('/bon-commande-fournisseur') || location.pathname.startsWith('/bon-reception')) ? 'pl-2 text-blue-600 dark:text-blue-50' : ''}`}
               title={!isSidebarOpen ? t('achats') : undefined}
             >
               <div className="mr-3 w-6 h-6 flex items-center justify-center flex-shrink-0">
@@ -392,6 +392,58 @@ function Sidebar() {
               }`}
             >
               <div className="space-y-1 transform transition-transform duration-300 ease-in-out">
+                {/* Bon de Commande Fournisseur */}
+                {canAccess('bon-commande-fournisseur') && (
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isAchatsOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isAchatsOpen ? '50ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/bon-commande-fournisseur"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-300 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <ShoppingCart size={20} />
+                    </div>
+                    Bon de Commande Fournisseur
+                  </NavLink>
+                </div>
+                )}
+
+                {/* Bon de Réception */}
+                {canAccess('bon-reception') && (
+                <div
+                  className={`transform transition-all duration-300 ease-in-out ${
+                    isAchatsOpen && isSidebarOpen
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-2 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: isAchatsOpen ? '100ms' : '0ms'
+                  }}
+                >
+                  <NavLink
+                    to="/bon-reception"
+                    className={({ isActive }) =>
+                      `font-medium flex items-center p-2 pl-4 rounded-r-md text-md transition-all duration-300 ${isActive ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-50' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:translate-x-1'}`
+                    }
+                  >
+                    <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                      <PackageCheck size={20} />
+                    </div>
+                    Bon de Réception
+                  </NavLink>
+                </div>
+                )}
+
                 {/* Fournisseur */}
                 {canAccess('fournisseur') && (
                 <div

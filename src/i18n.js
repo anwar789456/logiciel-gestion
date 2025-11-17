@@ -627,6 +627,7 @@ i18n
           'bordereau_de_cheques': 'Check Statement',
           'bordereau_de_traites': 'Draft Statement',
           'echeancier_cheques_emis_recus': 'Issued & Received Checks Schedule',
+          'bank': 'Bank',
         }
       },
       fr: {
@@ -710,6 +711,7 @@ i18n
           'sign_in_to_your_account': 'Connectez-vous à votre compte',
           'username': 'Nom d\'utilisateur',
           'password': 'Mot de passe',
+          'bank': 'Banque',
           'sign_in': 'Se connecter',
           'signing_in': 'Connexion en cours...',
           'login_failed': 'Échec de connexion. Veuillez vérifier vos identifiants.',

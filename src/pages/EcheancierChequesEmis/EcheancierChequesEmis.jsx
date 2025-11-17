@@ -18,12 +18,12 @@ export default function EcheancierChequesEmis() {
   const [editLoading, setEditLoading] = useState(false);
 
   const [newEcheancier, setNewEcheancier] = useState({
-    num_cheque: '', banque: '', montant: '', date_emission: '', echeance: '', beneficiaire: '', motif: '', etat: ''
+    beneficiaire: '', num_cheque: '', motif: '', montant: '', date_emission: '', echeance: '', etat: ''
   });
 
   const [editingEcheancier, setEditingEcheancier] = useState(null);
   const [editForm, setEditForm] = useState({
-    num_cheque: '', banque: '', montant: '', date_emission: '', echeance: '', beneficiaire: '', motif: '', etat: ''
+    beneficiaire: '', num_cheque: '', motif: '', montant: '', date_emission: '', echeance: '', etat: ''
   });
 
   useEffect(() => { fetchEcheanciers(); }, []);
@@ -43,7 +43,6 @@ export default function EcheancierChequesEmis() {
 
   const filteredEcheanciers = echeanciers.filter(e => 
     e.num_cheque?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    e.banque?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     e.beneficiaire?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -72,7 +71,7 @@ export default function EcheancierChequesEmis() {
       setEcheanciers(prev => [...prev, created]);
       setAddSuccess(true);
       setTimeout(() => {
-        setNewEcheancier({ num_cheque: '', banque: '', montant: '', date_emission: '', echeance: '', beneficiaire: '', motif: '', etat: '' });
+        setNewEcheancier({ beneficiaire: '', num_cheque: '', motif: '', montant: '', date_emission: '', echeance: '', etat: '' });
         setShowAddModal(false);
         setAddSuccess(false);
       }, 1500);
@@ -86,9 +85,9 @@ export default function EcheancierChequesEmis() {
   const handleEditEcheancier = (e) => {
     setEditingEcheancier(e._id);
     setEditForm({
-      num_cheque: e.num_cheque || '', banque: e.banque || '', montant: e.montant || '',
+      beneficiaire: e.beneficiaire || '', num_cheque: e.num_cheque || '', motif: e.motif || '', montant: e.montant || '',
       date_emission: formatDateForInput(e.date_emission), echeance: formatDateForInput(e.echeance),
-      beneficiaire: e.beneficiaire || '', motif: e.motif || '', etat: e.etat || ''
+      etat: e.etat || ''
     });
     setShowEditModal(true);
   };
@@ -162,30 +161,28 @@ export default function EcheancierChequesEmis() {
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-50 dark:bg-gray-900">
                 <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Bénéficiaire</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">N° Chèque</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Banque</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Motif</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Montant</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Date Émission</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Échéance</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Bénéficiaire</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Motif</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">État</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredEcheanciers.length === 0 ? (
-                  <tr><td colSpan="9" className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">Aucun échéancier trouvé</td></tr>
+                  <tr><td colSpan="8" className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">Aucun échéancier trouvé</td></tr>
                 ) : (
                   filteredEcheanciers.map((e) => (
                     <tr key={e._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{e.num_cheque}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{e.banque}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{e.beneficiaire}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{e.num_cheque}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{e.motif}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{e.montant}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{formatDate(e.date_emission)}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{formatDate(e.echeance)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{e.beneficiaire}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{e.motif}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{e.etat}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex gap-2">
@@ -213,16 +210,16 @@ export default function EcheancierChequesEmis() {
               {addSuccess && <div className="mb-4 p-4 bg-green-100 dark:bg-green-900 border border-green-400 text-green-700 dark:text-green-200 rounded-lg flex items-center gap-2"><Check size={20} /><span>Ajouté avec succès!</span></div>}
               <form onSubmit={handleAddEcheancier} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">N° Chèque <span className="text-red-500">*</span></label>
-                    <input type="text" value={newEcheancier.num_cheque} onChange={(e) => setNewEcheancier({...newEcheancier, num_cheque: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" required /></div>
-                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Banque</label>
-                    <input type="text" value={newEcheancier.banque} onChange={(e) => setNewEcheancier({...newEcheancier, banque: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" /></div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Montant</label>
-                    <input type="text" value={newEcheancier.montant} onChange={(e) => setNewEcheancier({...newEcheancier, montant: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" /></div>
                   <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bénéficiaire</label>
                     <input type="text" value={newEcheancier.beneficiaire} onChange={(e) => setNewEcheancier({...newEcheancier, beneficiaire: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">N° Chèque <span className="text-red-500">*</span></label>
+                    <input type="text" value={newEcheancier.num_cheque} onChange={(e) => setNewEcheancier({...newEcheancier, num_cheque: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" required /></div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Motif</label>
+                    <input type="text" value={newEcheancier.motif} onChange={(e) => setNewEcheancier({...newEcheancier, motif: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Montant</label>
+                    <input type="text" value={newEcheancier.montant} onChange={(e) => setNewEcheancier({...newEcheancier, montant: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" /></div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Émission</label>
@@ -230,9 +227,7 @@ export default function EcheancierChequesEmis() {
                   <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Échéance</label>
                     <input type="date" value={newEcheancier.echeance} onChange={(e) => setNewEcheancier({...newEcheancier, echeance: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" /></div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Motif</label>
-                    <input type="text" value={newEcheancier.motif} onChange={(e) => setNewEcheancier({...newEcheancier, motif: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" /></div>
+                <div className="grid grid-cols-1 gap-4">
                   <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">État</label>
                     <input type="text" value={newEcheancier.etat} onChange={(e) => setNewEcheancier({...newEcheancier, etat: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" /></div>
                 </div>
@@ -257,16 +252,16 @@ export default function EcheancierChequesEmis() {
               {editSuccess && <div className="mb-4 p-4 bg-green-100 dark:bg-green-900 border border-green-400 text-green-700 dark:text-green-200 rounded-lg flex items-center gap-2"><Check size={20} /><span>Modifié avec succès!</span></div>}
               <form onSubmit={handleUpdateEcheancier} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">N° Chèque <span className="text-red-500">*</span></label>
-                    <input type="text" value={editForm.num_cheque} onChange={(e) => setEditForm({...editForm, num_cheque: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" required /></div>
-                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Banque</label>
-                    <input type="text" value={editForm.banque} onChange={(e) => setEditForm({...editForm, banque: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" /></div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Montant</label>
-                    <input type="text" value={editForm.montant} onChange={(e) => setEditForm({...editForm, montant: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" /></div>
                   <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bénéficiaire</label>
                     <input type="text" value={editForm.beneficiaire} onChange={(e) => setEditForm({...editForm, beneficiaire: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">N° Chèque <span className="text-red-500">*</span></label>
+                    <input type="text" value={editForm.num_cheque} onChange={(e) => setEditForm({...editForm, num_cheque: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" required /></div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Motif</label>
+                    <input type="text" value={editForm.motif} onChange={(e) => setEditForm({...editForm, motif: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Montant</label>
+                    <input type="text" value={editForm.montant} onChange={(e) => setEditForm({...editForm, montant: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" /></div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Émission</label>
@@ -274,9 +269,7 @@ export default function EcheancierChequesEmis() {
                   <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Échéance</label>
                     <input type="date" value={editForm.echeance} onChange={(e) => setEditForm({...editForm, echeance: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" /></div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Motif</label>
-                    <input type="text" value={editForm.motif} onChange={(e) => setEditForm({...editForm, motif: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" /></div>
+                <div className="grid grid-cols-1 gap-4">
                   <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">État</label>
                     <input type="text" value={editForm.etat} onChange={(e) => setEditForm({...editForm, etat: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" /></div>
                 </div>

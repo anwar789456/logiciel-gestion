@@ -14,7 +14,8 @@ const ProfilePage = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    img_url: ''
+    img_url: '',
+    bank: ''
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -33,7 +34,8 @@ const ProfilePage = () => {
       email: currentUser.email || '',
       password: '',
       confirmPassword: '',
-      img_url: currentUser.img_url || ''
+      img_url: currentUser.img_url || '',
+      bank: currentUser.bank || ''
     });
   }, [currentUser, navigate]);
   
@@ -65,7 +67,8 @@ const ProfilePage = () => {
     // Prepare the data to send to the API
     const userData = {
       username: formData.username.trim(),
-      img_url: formData.img_url
+      img_url: formData.img_url,
+      bank: formData.bank
     };
     
     // Only include password if it was changed
@@ -180,6 +183,20 @@ const ProfilePage = () => {
                       required
                     />
                   </div>
+                </div>
+                
+                <div>
+                  <label htmlFor="bank" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    {t('bank')}
+                  </label>
+                  <input
+                    id="bank"
+                    name="bank"
+                    type="text"
+                    value={formData.bank}
+                    onChange={handleChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+                  />
                 </div>
                 
                 <div>

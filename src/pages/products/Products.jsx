@@ -551,7 +551,14 @@ export default function Products() {
                 onSuccess={() => {
                   setShowAddForm(false);
                   setSelectedProduct(null);
-                  fetchProducts();
+                  // Refresh the table data
+                  if (tableRef.current) {
+                    tableRef.current.refreshData();
+                  }
+                  toast.success(t('product_added_successfully'), {
+                    position: "top-right",
+                    autoClose: 3000,
+                  });
                 }} 
               />
             </div>
@@ -586,13 +593,6 @@ export default function Products() {
       {showEditForm && selectedProduct && (
         <div 
           className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
-          onClick={(e) => {
-            // Close modal when clicking outside
-            if (e.target === e.currentTarget) {
-              setShowEditForm(false);
-              setSelectedProduct(null);
-            }
-          }}
         >
           <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-4xl h-[98vh] overflow-hidden shadow-xl">
             <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
@@ -617,7 +617,14 @@ export default function Products() {
                 onSuccess={() => {
                   setShowEditForm(false);
                   setSelectedProduct(null);
-                  fetchProducts();
+                  // Refresh the table data
+                  if (tableRef.current) {
+                    tableRef.current.refreshData();
+                  }
+                  toast.success(t('product_updated_successfully'), {
+                    position: "top-right",
+                    autoClose: 3000,
+                  });
                 }} 
               />
             </div>

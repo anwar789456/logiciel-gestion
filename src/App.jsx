@@ -27,6 +27,8 @@ import CRM from './pages/crm/CRM';
 import DemandeConge from './pages/employe/demandeConge/DemandeConge';
 import Clients from './pages/clients/Clients';
 import Fournisseur from './pages/fournisseur/Fournisseur';
+import BonCommandeFournisseur from './pages/BonCommandeFournisseur/BonCommandeFournisseur';
+import BonReception from './pages/BonReception/BonReception';
 import Caisse from './pages/caisse/Caisse';
 import Products from './pages/products/Products';
 import ProductOrdering from './pages/productOrdering/productOrdering';
@@ -240,6 +242,20 @@ function App() {
                 </ProtectedRoute>
               }>
                 <Route index element={<Fournisseur />} />
+              </Route>
+              <Route path="/bon-commande-fournisseur" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<BonCommandeFournisseur />} />
+              </Route>
+              <Route path="/bon-reception" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<BonReception />} />
               </Route>
               <Route path="/devis" element={
                 <ProtectedRoute>

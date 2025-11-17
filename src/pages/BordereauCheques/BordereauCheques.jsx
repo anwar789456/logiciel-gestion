@@ -162,7 +162,7 @@ export default function BordereauCheques() {
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-50 dark:bg-gray-900">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Émetteur</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Bénéficiaire</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">N° Chèque</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Téléphone</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Banque</th>
@@ -215,9 +215,9 @@ export default function BordereauCheques() {
               {addSuccess && <div className="mb-4 p-4 bg-green-100 dark:bg-green-900 border border-green-400 text-green-700 dark:text-green-200 rounded-lg flex items-center gap-2"><Check size={20} /><span>Ajouté avec succès!</span></div>}
               <form onSubmit={handleAddBordereau} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Émetteur <span className="text-red-500">*</span></label>
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bénéficiaire</label>
                     <input type="text" name="emetteur" value={newBordereau.emetteur} onChange={(e) => setNewBordereau({...newBordereau, emetteur: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" required /></div>
-                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">N° Chèque <span className="text-red-500">*</span></label>
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">N° Chèque</label>
                     <input type="text" name="num_cheque" value={newBordereau.num_cheque} onChange={(e) => setNewBordereau({...newBordereau, num_cheque: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" required /></div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -261,9 +261,9 @@ export default function BordereauCheques() {
               {editSuccess && <div className="mb-4 p-4 bg-green-100 dark:bg-green-900 border border-green-400 text-green-700 dark:text-green-200 rounded-lg flex items-center gap-2"><Check size={20} /><span>Modifié avec succès!</span></div>}
               <form onSubmit={handleUpdateBordereau} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Émetteur <span className="text-red-500">*</span></label>
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bénéficiaire</label>
                     <input type="text" value={editForm.emetteur} onChange={(e) => setEditForm({...editForm, emetteur: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" required /></div>
-                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">N° Chèque <span className="text-red-500">*</span></label>
+                  <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">N° Chèque</label>
                     <input type="text" value={editForm.num_cheque} onChange={(e) => setEditForm({...editForm, num_cheque: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" required /></div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
