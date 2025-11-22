@@ -353,3 +353,34 @@ export const updateCategorySubLink = async (categoryId, subLinkTitle, updatedSub
     throw error;
   }
 };
+
+/**
+ * Scan all products and find uncategorized ones
+ * @returns {Object} - Object containing uncategorized products and suggestions
+ */
+export const ScanUncategorizedProducts = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/scan-uncategorized-products`);
+    return response.data;
+  } catch (error) {
+    console.error('Error scanning uncategorized products:', error);
+    throw error;
+  }
+};
+
+/**
+ * Auto-categorize products by adding them to appropriate categories
+ * @param {Array} productSuggestions - Array of product categorization suggestions
+ * @returns {Object} - Result of the auto-categorization
+ */
+export const AutoCategorizeProducts = async (productSuggestions) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/auto-categorize-products`, {
+      suggestions: productSuggestions
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error auto-categorizing products:', error);
+    throw error;
+  }
+};

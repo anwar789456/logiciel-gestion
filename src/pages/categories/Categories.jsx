@@ -8,6 +8,7 @@ import {
   DeleteCategoryItem,
   ReorderCategories 
 } from '../../api/Category/category'
+import ProductCategoryScanner from '../../components/category/ProductCategoryScanner'
 import {
   DndContext,
   closestCorners,
@@ -1625,6 +1626,12 @@ export default function Categories() {
           </h1>
         </div>
         <div className="flex items-center space-x-3">
+          <ProductCategoryScanner 
+            onScanComplete={(count) => {
+              showToast(`${count} produit(s) ajouté(s) aux catégories`, 'success');
+              fetchCategories();
+            }}
+          />
           <button 
             onClick={() => setShowAddForm(true)}
             className="flex items-center bg-blue-600 
