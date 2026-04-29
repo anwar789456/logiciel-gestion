@@ -38,8 +38,7 @@ const RecuPaiement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="py-6">
+    <div className="py-2 sm:py-6">
         {currentView === 'list' && (
           <RecuPaiementList
             onCreateNew={handleCreateNew}
@@ -63,8 +62,6 @@ const RecuPaiement = () => {
             onBack={handleBack}
           />
         )}
-      </div>
-    </div>
   );
 };
 

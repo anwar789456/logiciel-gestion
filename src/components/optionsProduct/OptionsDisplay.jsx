@@ -349,7 +349,7 @@ export const OptionsDisplay = ({ options, handleEdit, handleDelete }) => {
                           <span className="text-xs text-gray-500 dark:text-gray-400">Dimension:</span>
                           <span className="ml-1 text-gray-800 dark:text-gray-200"> {size.longueur}cm × {size.largeur}cm</span>
                         </div>
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                           <div>
                             <span className="text-xs text-gray-500 dark:text-gray-400">Prix:</span>
                             <span className="ml-1 font-medium text-gray-900 dark:text-white">{size.prix_option} TND</span>

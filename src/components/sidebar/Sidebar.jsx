@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Receipt, ListOrdered, LayoutGrid, MessageCircleMore, Tags, List, CalendarDays, QrCode, GalleryHorizontal, TicketCheck, ScrollText, ChevronDown, Clipboard, BellDot, FileText, ChevronsRight, ChevronsLeft, TrendingUp, Brain, Truck, Users, TrendingDown, UserCheck, Calendar, Wallet, Globe, Tag, Package, LogOut, Megaphone, DollarSign, CreditCard, ShoppingCart, PackageCheck } from 'lucide-react';
@@ -10,6 +10,13 @@ function Sidebar() {
   const { isSidebarOpen, toggleSidebar } = useApp();
   const { canAccess } = useAuth();
   const location = useLocation();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768 && isSidebarOpen) {
+      toggleSidebar();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
   const [isVentesOpen, setIsVentesOpen] = useState(false);
   const [isAchatsOpen, setIsAchatsOpen] = useState(false);
   const [isEmployeeOpen, setIsEmployeeOpen] = useState(false);
@@ -83,10 +90,11 @@ function Sidebar() {
 
   return (
     <aside
-      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-[width] duration-300 ${isSidebarOpen ? 'w-60' : 'w-20'} flex flex-col`}
+      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 z-40 flex flex-col
+        ${isSidebarOpen ? 'w-60 translate-x-0' : 'w-20 -translate-x-full md:translate-x-0'}`}
     >
-      <button 
-        className='absolute transition-colors duration-300 ease-in-out top-2 -right-3.5 w-7 h-7 flex items-center cursor-pointer
+      <button
+        className='hidden md:flex absolute transition-colors duration-300 ease-in-out top-2 -right-3.5 w-7 h-7 items-center cursor-pointer
         justify-center
         border rounded-full border-gray-200 dark:border-gray-200
         bg-white hover:bg-gray-100 dark:hover:bg-gray-300

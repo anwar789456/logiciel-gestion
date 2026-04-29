@@ -38,7 +38,7 @@ export default function BonCommandeFournisseur() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-2 sm:p-6">
       {currentView === 'list' && (
         <BonCommandeFournisseurList
           onCreateNew={handleCreateNew}

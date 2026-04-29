@@ -36,28 +36,28 @@ const BonLivraisonViewer = ({ bonLivraison, onEdit, onBack }) => {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
               Bon de livraison N° {bonLivraison.bonLivraisonNumber}
             </h1>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center flex-wrap gap-2">
               <button
                 onClick={() => onEdit && onEdit(bonLivraison)}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="inline-flex items-center px-3 sm:px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Modifier
               </button>
               <button
                 onClick={handleDownloadPDF}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                className="inline-flex items-center px-3 sm:px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
               >
                 <Download className="h-4 w-4 mr-2" />
-                Télécharger PDF
+                <span className="hidden sm:inline">Télécharger </span>PDF
               </button>
               <button
                 onClick={onBack}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600"
+                className="inline-flex items-center px-3 sm:px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600"
               >
                 Retour
               </button>
@@ -65,7 +65,7 @@ const BonLivraisonViewer = ({ bonLivraison, onEdit, onBack }) => {
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-3 sm:p-6">
           {error && (
             <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
               {error}
@@ -223,7 +223,7 @@ const BonLivraisonViewer = ({ bonLivraison, onEdit, onBack }) => {
 
         {/* Informations de création/modification */}
         <div className="text-sm text-gray-500 dark:text-gray-400 border-t pt-4">
-          <div className="flex justify-between">
+          <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
             <span>
               Créé le: {new Date(bonLivraison.createdAt).toLocaleString('fr-FR')}
             </span>

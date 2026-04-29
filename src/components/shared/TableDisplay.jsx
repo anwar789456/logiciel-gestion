@@ -160,7 +160,7 @@ const TableDisplay = React.forwardRef(({
   if (loading && data.length === 0) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div className="p-8">
+        <div className="p-4 sm:p-8">
           <div className="animate-pulse space-y-6">
             <div className="flex justify-between items-center">
               <div className="h-8 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-lg w-1/3"></div>
@@ -184,7 +184,7 @@ const TableDisplay = React.forwardRef(({
   if (error) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-red-200 dark:border-red-700 overflow-hidden">
-        <div className="p-8">
+        <div className="p-4 sm:p-8">
           <div className="text-center">
             <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
               <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
@@ -204,43 +204,35 @@ const TableDisplay = React.forwardRef(({
     );
   }
 
-  const headerHeight = '120px';
-  const paginationHeight = '56px';
-
   return (
-    <div 
+    <div
       className="bg-white dark:bg-gray-800 rounded-md shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden relative"
-      style={{
-        '--header-height': headerHeight,
-        '--pagination-height': paginationHeight
-      }}
     >
       {/* Header */}
-      <div 
-        className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 p-4 border-b border-gray-200 dark:border-gray-700 relative"
-        style={{ height: headerHeight, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
+      <div
+        className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700 relative"
       >
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
           <div className="flex items-start gap-3">
             <div className="flex flex-col">
-              <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+              <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
                 {title}
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 flex items-center gap-2">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 sm:mt-2 flex items-center gap-2">
                 <span className="inline-flex items-center justify-center w-2 h-2 bg-blue-500 rounded-full"></span>
                 {totalItems} {totalItems > 1 ? 'éléments' : 'élément'} au total
               </p>
             </div>
-            
+
             {loading && data.length > 0 && (
-              <div className="flex items-center absolute top-6 right-24">
+              <div className="flex items-center absolute top-4 right-4">
                 <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-300 border-t-blue-600"></div>
               </div>
             )}
           </div>
 
           {/* Search Bar */}
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
             </div>
@@ -248,7 +240,7 @@ const TableDisplay = React.forwardRef(({
               type="text"
               value={searchTerm}
               onChange={handleSearch}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg leading-5 bg-white dark:bg-gray-700 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="block w-full sm:w-72 pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg leading-5 bg-white dark:bg-gray-700 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
               placeholder={searchPlaceholder || "Rechercher..."}
             />
           </div>
@@ -258,13 +250,13 @@ const TableDisplay = React.forwardRef(({
       {/* Table Container */}
       <div className="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg shadow-md">
         <div className="overflow-x-auto overflow-y-auto" style={{ height: '400px' }}>
-          <table className="w-full table-fixed border-collapse">
+          <table className="w-full min-w-[640px] table-fixed border-collapse">
             <thead>
               <tr className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 sticky top-0 z-10">
                 {columns.map((column, index) => (
                   <th
                     key={index}
-                    className="px-6 py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider border-b-2 border-gray-200 dark:border-gray-600"
+                    className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider border-b-2 border-gray-200 dark:border-gray-600"
                     style={{ width: column.width || 'auto' }}
                   >
                     <div className="flex items-center gap-2">
@@ -296,7 +288,7 @@ const TableDisplay = React.forwardRef(({
                     // Actions Column
                     if (column.key === 'actions' && column.type === 'custom') {
                       return (
-                        <td key={colIndex} className="px-6 py-4 whitespace-nowrap">
+                        <td key={colIndex} className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2">
                             {onView && (
                               <button
@@ -355,7 +347,7 @@ const TableDisplay = React.forwardRef(({
                     return (
                       <td
                         key={colIndex}
-                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"
+                        className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900 dark:text-gray-100"
                         style={{ width: column.width || 'auto' }}
                       >
                         {column.type === 'custom' && typeof column.render === 'function'
@@ -373,12 +365,11 @@ const TableDisplay = React.forwardRef(({
 
       {/* Pagination */}
       {totalPages > 0 && (
-        <div 
-          className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 px-6 py-4 border-t border-gray-200 dark:border-gray-700"
-          style={{ height: paginationHeight }}
+        <div
+          className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 px-3 sm:px-6 py-3 sm:py-4 border-t border-gray-200 dark:border-gray-700"
         >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
               <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
                 Page {currentPage} sur {totalPages}
               </div>
@@ -412,7 +403,7 @@ const TableDisplay = React.forwardRef(({
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2 flex-wrap justify-center">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
@@ -420,16 +411,16 @@ const TableDisplay = React.forwardRef(({
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
-              
+
               {[...Array(Math.min(5, totalPages))].map((_, i) => {
                 const pageNum = Math.max(1, currentPage - 2) + i;
                 if (pageNum > totalPages) return null;
-                
+
                 return (
                   <button
                     key={pageNum}
                     onClick={() => handlePageChange(pageNum)}
-                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                    className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                       pageNum === currentPage
                         ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg transform scale-105'
                         : 'border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 shadow-sm hover:shadow-md'
@@ -439,7 +430,7 @@ const TableDisplay = React.forwardRef(({
                   </button>
                 );
               })}
-              
+
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}

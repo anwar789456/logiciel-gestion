@@ -66,27 +66,27 @@ function Stats() {
   const renderOverview = () => (
     <div className="space-y-8">
       {/* Hero Stats Section */}
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-8 border border-blue-200 dark:border-gray-700">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-4 sm:p-8 border border-blue-200 dark:border-gray-700">
+        <div className="flex items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
               Tableau de Bord Exécutif
             </h2>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
               Vue d'ensemble des performances de votre entreprise
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="bg-white dark:bg-gray-800 rounded-full p-3 shadow-lg">
-              <Activity className="h-8 w-8 text-blue-600" />
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="bg-white dark:bg-gray-800 rounded-full p-2 sm:p-3 shadow-lg">
+              <Activity className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
             </div>
           </div>
         </div>
 
         {/* Key Metrics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-lg border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
               <div className="bg-blue-100 dark:bg-blue-900 rounded-lg p-3">
                 <DollarSign className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
@@ -94,14 +94,14 @@ function Stats() {
                 +12%
               </span>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1 break-words">
               {financialStats?.totalRevenue || 0} DT
             </h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm">Chiffre d'affaires total</p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-lg border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
               <div className="bg-green-100 dark:bg-green-900 rounded-lg p-3">
                 <ShoppingCart className="h-6 w-6 text-green-600 dark:text-green-400" />
               </div>
@@ -109,14 +109,14 @@ function Stats() {
                 +8%
               </span>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1 break-words">
               {generalStats?.commandes?.total || 0}
             </h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm">Commandes totales</p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-lg border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
               <div className="bg-purple-100 dark:bg-purple-900 rounded-lg p-3">
                 <Package className="h-6 w-6 text-purple-600 dark:text-purple-400" />
               </div>
@@ -124,14 +124,14 @@ function Stats() {
                 {generalStats?.products?.available || 0} actifs
               </span>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1 break-words">
               {generalStats?.products?.total || 0}
             </h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm">Produits en catalogue</p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-lg border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
               <div className="bg-orange-100 dark:bg-orange-900 rounded-lg p-3">
                 <Users className="h-6 w-6 text-orange-600 dark:text-orange-400" />
               </div>
@@ -139,7 +139,7 @@ function Stats() {
                 Actif
               </span>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1 break-words">
               {generalStats?.messages?.total || 0}
             </h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm">Messages clients</p>
@@ -148,7 +148,7 @@ function Stats() {
       </div>
 
       {/* Secondary Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
         <ModernStatsCard
           title="Factures"
           value={financialStats?.factures?.total || 0}
@@ -182,33 +182,33 @@ function Stats() {
       </div>
 
       {/* Performance Indicators */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-3">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3">
               <TrendingUp className="h-6 w-6 text-green-600" />
               Indicateurs de Performance
             </h3>
           </div>
           <div className="space-y-4">
-            <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <span className="text-gray-700 dark:text-gray-300 font-medium">Taux de conversion</span>
-              <span className="text-xl font-bold text-green-600">{financialStats?.conversionRate?.devisToFacture || 0}%</span>
+            <div className="flex justify-between items-center p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg gap-2">
+              <span className="text-sm sm:text-base text-gray-700 dark:text-gray-300 font-medium">Taux de conversion</span>
+              <span className="text-lg sm:text-xl font-bold text-green-600">{financialStats?.conversionRate?.devisToFacture || 0}%</span>
             </div>
-            <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <span className="text-gray-700 dark:text-gray-300 font-medium">Taux de livraison</span>
-              <span className="text-xl font-bold text-blue-600">{financialStats?.conversionRate?.deliveryRate || 0}%</span>
+            <div className="flex justify-between items-center p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg gap-2">
+              <span className="text-sm sm:text-base text-gray-700 dark:text-gray-300 font-medium">Taux de livraison</span>
+              <span className="text-lg sm:text-xl font-bold text-blue-600">{financialStats?.conversionRate?.deliveryRate || 0}%</span>
             </div>
-            <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <span className="text-gray-700 dark:text-gray-300 font-medium">Délai moyen paiement</span>
-              <span className="text-xl font-bold text-orange-600">{financialStats?.averagePaymentDelay || 0} jours</span>
+            <div className="flex justify-between items-center p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg gap-2">
+              <span className="text-sm sm:text-base text-gray-700 dark:text-gray-300 font-medium">Délai moyen paiement</span>
+              <span className="text-lg sm:text-xl font-bold text-orange-600">{financialStats?.averagePaymentDelay || 0} jours</span>
             </div>
           </div>
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-3">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3">
               <PieChart className="h-6 w-6 text-purple-600" />
               Répartition des Activités
             </h3>
@@ -266,31 +266,31 @@ function Stats() {
     return (
       <div className="space-y-8">
         {/* Charts Header */}
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-8 text-white">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-3xl font-bold mb-2">Analyse Graphique</h2>
-              <p className="text-indigo-100">Visualisation avancée de vos données métier</p>
+        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-4 sm:p-8 text-white">
+          <div className="flex items-start sm:items-center justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="text-xl sm:text-3xl font-bold mb-1 sm:mb-2">Analyse Graphique</h2>
+              <p className="text-sm sm:text-base text-indigo-100">Visualisation avancée de vos données métier</p>
             </div>
-            <div className="bg-white/20 rounded-full p-4">
-              <BarChart3 className="h-8 w-8" />
+            <div className="bg-white/20 rounded-full p-3 sm:p-4 flex-shrink-0">
+              <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8" />
             </div>
           </div>
         </div>
 
         {/* Pie Charts Section */}
         <div className="space-y-6">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <h3 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3">
             <PieChart className="h-7 w-7 text-blue-600" />
             Graphiques Circulaires
           </h3>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-8">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 p-6 border-b border-gray-100 dark:border-gray-700">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 border-b border-gray-100 dark:border-gray-700">
                 <h4 className="text-xl font-semibold text-gray-900 dark:text-white">Répartition des Produits</h4>
                 <p className="text-gray-600 dark:text-gray-400 mt-1">Par catégorie de produits</p>
               </div>
-              <div className="p-6">
+              <div className="p-3 sm:p-6">
                 <ModernPieChart
                   data={chartsData.productsByCategory || [
                     { name: 'Électronique', value: 45 },
@@ -304,11 +304,11 @@ function Stats() {
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-gray-700 dark:to-gray-800 p-6 border-b border-gray-100 dark:border-gray-700">
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 border-b border-gray-100 dark:border-gray-700">
                 <h4 className="text-xl font-semibold text-gray-900 dark:text-white">Statut des Commandes</h4>
                 <p className="text-gray-600 dark:text-gray-400 mt-1">Répartition par statut</p>
               </div>
-              <div className="p-6">
+              <div className="p-3 sm:p-6">
                 <ModernPieChart
                   data={chartsData.ordersByStatus || [
                     { name: 'Confirmées', value: 60 },
@@ -325,17 +325,17 @@ function Stats() {
 
         {/* Bar Charts Section */}
         <div className="space-y-6">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <h3 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3">
             <BarChart3 className="h-7 w-7 text-green-600" />
             Histogrammes
           </h3>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-8">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-gray-700 dark:to-gray-800 p-6 border-b border-gray-100 dark:border-gray-700">
+              <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 border-b border-gray-100 dark:border-gray-700">
                 <h4 className="text-xl font-semibold text-gray-900 dark:text-white">Commandes Mensuelles</h4>
                 <p className="text-gray-600 dark:text-gray-400 mt-1">Évolution sur 6 mois</p>
               </div>
-              <div className="p-6">
+              <div className="p-3 sm:p-6">
                 <ModernBarChart
                   data={chartsData.commandesByMonth || [
                     { name: 'Jan', value: 12 },
@@ -353,11 +353,11 @@ function Stats() {
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
-              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-gray-700 dark:to-gray-800 p-6 border-b border-gray-100 dark:border-gray-700">
+              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 border-b border-gray-100 dark:border-gray-700">
                 <h4 className="text-xl font-semibold text-gray-900 dark:text-white">Revenus Mensuels</h4>
                 <p className="text-gray-600 dark:text-gray-400 mt-1">Chiffre d'affaires par mois</p>
               </div>
-              <div className="p-6">
+              <div className="p-3 sm:p-6">
                 <ModernBarChart
                   data={chartsData.revenueByMonth || [
                     { name: 'Jan', value: 1200 },
@@ -378,17 +378,17 @@ function Stats() {
 
         {/* Line Charts Section */}
         <div className="space-y-6">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <h3 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3">
             <TrendingUp className="h-7 w-7 text-purple-600" />
             Courbes de Tendance
           </h3>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-8">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-gray-700 dark:to-gray-800 p-6 border-b border-gray-100 dark:border-gray-700">
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 border-b border-gray-100 dark:border-gray-700">
                 <h4 className="text-xl font-semibold text-gray-900 dark:text-white">Messages Quotidiens</h4>
                 <p className="text-gray-600 dark:text-gray-400 mt-1">Activité des 7 derniers jours</p>
               </div>
-              <div className="p-6">
+              <div className="p-3 sm:p-6">
                 <ModernLineChart
                   data={chartsData.messagesByDay || [
                     { name: 'Lun', value: 8 },
@@ -407,11 +407,11 @@ function Stats() {
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-gray-700 dark:to-gray-800 p-6 border-b border-gray-100 dark:border-gray-700">
+              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 border-b border-gray-100 dark:border-gray-700">
                 <h4 className="text-xl font-semibold text-gray-900 dark:text-white">Croissance des Ventes</h4>
                 <p className="text-gray-600 dark:text-gray-400 mt-1">Tendance sur 6 mois</p>
               </div>
-              <div className="p-6">
+              <div className="p-3 sm:p-6">
                 <ModernLineChart
                   data={chartsData.salesGrowth || [
                     { name: 'Jan', value: 100 },
@@ -432,16 +432,16 @@ function Stats() {
 
         {/* Multi-Bar Chart Section */}
         <div className="space-y-6">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <h3 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3">
             <BarChart3 className="h-7 w-7 text-indigo-600" />
             Analyse Comparative
           </h3>
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <div className="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-gray-700 dark:to-gray-800 p-6 border-b border-gray-100 dark:border-gray-700">
+            <div className="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 border-b border-gray-100 dark:border-gray-700">
               <h4 className="text-xl font-semibold text-gray-900 dark:text-white">Performance Mensuelle Comparative</h4>
               <p className="text-gray-600 dark:text-gray-400 mt-1">Commandes, Devis et Messages par mois</p>
             </div>
-            <div className="p-6">
+            <div className="p-3 sm:p-6">
               <ModernMultiBarChart
                 data={[
                   { name: 'Jan', commandes: 12, devis: 8, messages: 25 },
@@ -610,14 +610,14 @@ function Stats() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="pt-4 px-8 space-y-8">
+      <div className="pt-3 sm:pt-4 px-3 sm:px-8 space-y-4 sm:space-y-8 pb-8">
         {/* Enhanced Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-6">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
               Tableau de Bord Analytique
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400">
+            <p className="text-sm sm:text-lg text-gray-600 dark:text-gray-400">
               Analyse complète des performances et tendances de votre entreprise
             </p>
           </div>
@@ -626,30 +626,30 @@ function Stats() {
             <button
               onClick={loadAllData}
               disabled={loading}
-              className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 text-sm sm:text-base"
             >
-              <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-4 w-4 sm:h-5 sm:w-5 ${loading ? 'animate-spin' : ''}`} />
               Actualiser les données
             </button>
           </div>
         </div>
 
         {/* Enhanced Navigation */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-2">
-          <nav className="flex space-x-2">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-2 overflow-x-auto">
+          <nav className="flex space-x-2 min-w-max">
             {sections.map((section) => {
               const Icon = section.icon;
               return (
                 <button
                   key={section.id}
                   onClick={() => setActiveSection(section.id)}
-                  className={`flex items-center gap-3 px-6 py-4 rounded-xl font-semibold text-sm transition-all duration-200 ${
+                  className={`flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2.5 sm:py-4 rounded-xl font-semibold text-xs sm:text-sm transition-all duration-200 whitespace-nowrap ${
                     activeSection === section.id
                       ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700'
                   }`}
                 >
-                  <Icon className="h-5 w-5" />
+                  <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                   {section.label}
                 </button>
               );

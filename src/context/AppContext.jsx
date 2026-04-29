@@ -22,9 +22,12 @@ export const AppProvider = ({ children }) => {
     localStorage.getItem('language') || 'en'
   );
   
-  const [isSidebarOpen, setIsSidebarOpen] = useState(
-    localStorage.getItem('sidebarOpen') !== 'false'
-  );
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      return false;
+    }
+    return localStorage.getItem('sidebarOpen') !== 'false';
+  });
 
   // Effect to handle system theme changes
   useEffect(() => {

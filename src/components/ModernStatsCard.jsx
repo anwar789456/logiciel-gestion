@@ -118,42 +118,42 @@ const ModernStatsCard = ({
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-transparent"></div>
       </div>
       
-      <div className="relative p-6">
+      <div className="relative p-4 sm:p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex-1">
-            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+        <div className="flex items-center justify-between mb-3 sm:mb-4 gap-2">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate">
               {title}
             </h3>
             {timeframe && (
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 truncate">
                 {timeframe}
               </p>
             )}
           </div>
-          
+
           {Icon && (
-            <div className={`p-3 rounded-xl bg-gradient-to-r ${colorConfig.bg} shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
-              <Icon className={`h-6 w-6 ${colorConfig.icon}`} />
+            <div className={`p-2 sm:p-3 rounded-xl bg-gradient-to-r ${colorConfig.bg} shadow-lg transform group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}>
+              <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${colorConfig.icon}`} />
             </div>
           )}
         </div>
-        
+
         {/* Main Value */}
-        <div className="mb-4">
-          <div className="flex items-baseline gap-2">
-            <p className="text-3xl font-bold text-gray-900 dark:text-white">
+        <div className="mb-3 sm:mb-4">
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white break-all">
               {typeof value === 'number' ? value.toLocaleString('fr-FR') : value}
             </p>
             {percentage && (
-              <span className={`text-lg font-semibold ${colorConfig.accentText}`}>
+              <span className={`text-base sm:text-lg font-semibold ${colorConfig.accentText}`}>
                 {percentage}%
               </span>
             )}
           </div>
-          
+
           {subtitle && (
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
               {subtitle}
             </p>
           )}

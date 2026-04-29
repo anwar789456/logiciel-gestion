@@ -40,7 +40,7 @@ function Factures() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-2 sm:p-6">
       {currentView === 'list' && (
         <FacturesList
           onCreateNew={handleCreateNew}

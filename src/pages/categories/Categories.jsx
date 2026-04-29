@@ -986,7 +986,7 @@ const PreviewModal = ({ category, onClose, t }) => {
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-3 sm:p-6">
           {/* Desktop Preview */}
           <div className="mb-8">
             <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-md">
@@ -1564,9 +1564,9 @@ export default function Categories() {
 
   if (loading && categories.length === 0) {
     return (
-      <div className="pt-4 px-8">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
+      <div className="pt-4 px-3 sm:px-8">
+        <div className="flex justify-between items-center mb-4 sm:mb-6">
+          <h1 className="text-lg sm:text-2xl font-semibold text-gray-800 dark:text-white">
             {t('categories')}
           </h1>
         </div>
@@ -1581,9 +1581,9 @@ export default function Categories() {
 
   if (error) {
     return (
-      <div className="pt-4 px-8">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
+      <div className="pt-4 px-3 sm:px-8">
+        <div className="flex justify-between items-center mb-4 sm:mb-6">
+          <h1 className="text-lg sm:text-2xl font-semibold text-gray-800 dark:text-white">
             {t('categories')}
           </h1>
         </div>
@@ -1619,13 +1619,13 @@ export default function Categories() {
       )}
 
       {/* Header */}
-      <div className="pb-4 px-8 flex justify-between items-center border-b border-gray-200 dark:border-gray-700 mb-6">
+      <div className="pb-4 px-3 sm:px-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 border-b border-gray-200 dark:border-gray-700 mb-4 sm:mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
+          <h1 className="text-lg sm:text-2xl font-semibold text-gray-800 dark:text-white">
             {t('categories')}
           </h1>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-3">
           <ProductCategoryScanner 
             onScanComplete={(count) => {
               showToast(`${count} produit(s) ajouté(s) aux catégories`, 'success');

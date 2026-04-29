@@ -104,8 +104,8 @@ export default function BonReceptionForm({ existingBon, onSuccess, onCancel }) {
     <div className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-6xl h-[95vh] overflow-hidden shadow-xl flex flex-col">
         {/* Fixed Header */}
-        <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+        <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-3 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
+          <h2 className="text-base sm:text-xl font-semibold text-gray-900 dark:text-white">
             {existingBon ? 'Modifier' : 'Nouveau'} Bon de Réception
           </h2>
           <button
@@ -117,10 +117,10 @@ export default function BonReceptionForm({ existingBon, onSuccess, onCancel }) {
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <form id="bon-reception-form" onSubmit={handleSubmit} className="space-y-6">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-6">
+          <form id="bon-reception-form" onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         {/* Supplier Information */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-3 sm:p-6 space-y-4">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
             Informations Fournisseur
           </h3>
@@ -186,15 +186,15 @@ export default function BonReceptionForm({ existingBon, onSuccess, onCancel }) {
         </div>
 
         {/* Articles */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
-          <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-3 sm:p-6 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border-b border-gray-200 dark:border-gray-700 pb-2">
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white">
               Articles
             </h3>
             <button
               type="button"
               onClick={addArticle}
-              className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
             >
               <Plus size={16} />
               Ajouter
@@ -326,12 +326,12 @@ export default function BonReceptionForm({ existingBon, onSuccess, onCancel }) {
         </div>
 
         {/* Fixed Footer */}
-        <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-6 py-4">
-          <div className="flex justify-end gap-3">
+        <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 sm:px-6 py-3 sm:py-4">
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3">
             <button
               type="button"
               onClick={onCancel}
-              className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700 dark:text-gray-200 transition-colors"
+              className="w-full sm:w-auto px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700 dark:text-gray-200 transition-colors"
             >
               Annuler
             </button>
@@ -339,7 +339,7 @@ export default function BonReceptionForm({ existingBon, onSuccess, onCancel }) {
               type="submit"
               form="bon-reception-form"
               disabled={loading}
-              className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
             >
               <Save size={18} />
               {loading ? 'Enregistrement...' : 'Sauvegarder'}

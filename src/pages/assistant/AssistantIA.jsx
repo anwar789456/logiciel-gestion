@@ -212,20 +212,20 @@ const AssistantIA = () => {
         {/* Classement clients */}
         <ClassementClients clients={topClients} />
         {/* Header */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-          <div className="flex items-center justify-between">
+        <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-8 mb-4 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center space-x-4">
               <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-3 rounded-xl">
                 <Brain className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Assistant IA</h1>
+                <h1 className="text-xl sm:text-3xl font-bold text-gray-900">Assistant IA</h1>
                 <p className="text-gray-600 mt-1">Analyses intelligentes et prédictions business</p>
               </div>
             </div>
             <button
               onClick={loadInsights}
-              className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors flex items-center space-x-2"
+              className="w-full sm:w-auto bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
             >
               <RefreshCw className="w-5 h-5" />
               <span>Actualiser</span>
@@ -619,8 +619,8 @@ const PerformanceTab = ({ insights }) => {
   return (
     <div className="space-y-10">
       {/* Mois Actuel & Précédent */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in">
-        <div className="bg-gradient-to-br from-blue-100 to-blue-300 rounded-2xl shadow-2xl p-8 flex flex-col gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 animate-fade-in">
+        <div className="bg-gradient-to-br from-blue-100 to-blue-300 rounded-2xl shadow-2xl p-4 sm:p-8 flex flex-col gap-4">
           <h3 className="text-xl font-bold text-blue-900 mb-2 flex items-center gap-2"><BarChart3 className="w-6 h-6 text-blue-500" /> Mois Actuel</h3>
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
@@ -637,7 +637,7 @@ const PerformanceTab = ({ insights }) => {
             </div>
           </div>
         </div>
-        <div className="bg-gradient-to-br from-gray-100 to-gray-300 rounded-2xl shadow-2xl p-8 flex flex-col gap-4">
+        <div className="bg-gradient-to-br from-gray-100 to-gray-300 rounded-2xl shadow-2xl p-4 sm:p-8 flex flex-col gap-4">
           <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2"><BarChart3 className="w-6 h-6 text-gray-500" /> Mois Précédent</h3>
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">

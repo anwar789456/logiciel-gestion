@@ -21,10 +21,10 @@ const NewMessageNotification = () => {
   const { count, latestMessage } = newMessageNotification;
 
   return (
-    <div className="fixed top-4 right-4 z-50 animate-slide-in transition-all duration-300">
+    <div className="fixed top-20 sm:top-4 right-2 left-2 sm:right-4 sm:left-auto z-50 animate-slide-in transition-all duration-300">
       {/* Audio element for notification sound */}
       <audio ref={audioRef} src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto" />
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 min-w-80 max-w-md">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3 sm:p-4 sm:min-w-80 max-w-md mx-auto sm:mx-0">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">

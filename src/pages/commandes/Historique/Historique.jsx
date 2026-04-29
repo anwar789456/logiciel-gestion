@@ -6,7 +6,7 @@ function HistoriqueCommande() {
   
     return (
         <div className=''>
-            <h1 className="text-center text-2xl font-semibold text-gray-800 dark:text-white mb-6">
+            <h1 className="text-center text-lg sm:text-2xl font-semibold text-gray-800 dark:text-white mb-4 sm:mb-6">
                 Historique
             </h1>
         </div>

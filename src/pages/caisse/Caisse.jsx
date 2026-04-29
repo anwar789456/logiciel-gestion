@@ -179,13 +179,13 @@ export default function Caisse() {
   return (
     <div className='pt-4'>
       {/* Header with title and add button */}
-      <div className='pb-4 pl-8 flex justify-between items-center border-b border-gray-200 dark:border-gray-700'>
+      <div className='pb-4 px-3 sm:pl-8 sm:pr-2 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 border-b border-gray-200 dark:border-gray-700'>
         <div>
-          <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
+          <h1 className="text-lg sm:text-2xl font-semibold text-gray-800 dark:text-white">
             {t('caisse')}
           </h1>
         </div>
-        <div className='flex pr-2'>
+        <div className='flex flex-wrap gap-2'>
           <button
             onClick={() => setShowSoldePartForm(true)}
             className='flex items-center bg-transparent border border-green-600
@@ -344,23 +344,23 @@ export default function Caisse() {
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   {/* Solde Depart Row */}
                   <tr className="bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-800/30 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                       {/* Display the date from the initial balance document */}
                       {new Date(summary.soldeDate).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
                       {t('starting_balance')}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                       {/* Empty debit cell */}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                       {/* Empty credit cell */}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                       {parseFloat(summary.soldeDepart || 0).toFixed(3)} DT
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
                         onClick={() => setShowSoldePartForm(true)}
                         className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-3"
@@ -383,22 +383,22 @@ export default function Caisse() {
                     
                     return (
                       <tr key={transaction._id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                           {new Date(transaction.datetransaction).toLocaleString()}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-300 max-w-xs truncate">
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 text-sm text-gray-500 dark:text-gray-300 max-w-xs truncate">
                           {transaction.note || transaction.name}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                           {transaction.transactiontype === 'Sortie' ? `${parseFloat(transaction.montant).toFixed(3)} DT` : ''}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                           {transaction.transactiontype === 'Entrée' ? `${parseFloat(transaction.montant).toFixed(3)} DT` : ''}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                           {runningBalance.toFixed(3)} DT
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-sm font-medium">
                           <button
                             onClick={() => handleEditTransaction(transaction)}
                             className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-3"
@@ -420,19 +420,19 @@ export default function Caisse() {
                     <td colSpan="2" className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right">
                       {t('total')}:
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">
                       {filteredTransactions
                         .filter(t => t.transactiontype === 'Sortie')
                         .reduce((sum, t) => sum + parseFloat(t.montant), 0)
                         .toFixed(3)} DT
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400">
                       {filteredTransactions
                         .filter(t => t.transactiontype === 'Entrée')
                         .reduce((sum, t) => sum + parseFloat(t.montant), 0)
                         .toFixed(3)} DT
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-blue-600 dark:text-blue-400">
                       {parseFloat(summary.balance).toFixed(3)} DT
                     </td>
                     <td></td>
@@ -459,7 +459,7 @@ export default function Caisse() {
         >
           <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-lg w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-xl flex flex-col">
             {/* Modal Header */}
-            <div className="flex-shrink-0 bg-white/95 dark:bg-gray-800/95 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
+            <div className="flex-shrink-0 bg-white/95 dark:bg-gray-800/95 border-b border-gray-200 dark:border-gray-700 px-3 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('starting_balance')}</h2>
               <button 
                 onClick={() => setShowSoldePartForm(false)}
@@ -470,7 +470,7 @@ export default function Caisse() {
             </div>
             
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-3 sm:p-6">
               <SoldePartForm 
                 onClose={() => setShowSoldePartForm(false)} 
                 onSuccess={() => {
@@ -498,7 +498,7 @@ export default function Caisse() {
         >
           <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-lg w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-xl flex flex-col">
             {/* Modal Header */}
-            <div className="flex-shrink-0 bg-white/95 dark:bg-gray-800/95 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
+            <div className="flex-shrink-0 bg-white/95 dark:bg-gray-800/95 border-b border-gray-200 dark:border-gray-700 px-3 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('add_transaction')}</h2>
               <button 
                 onClick={() => setShowAddForm(false)}
@@ -509,7 +509,7 @@ export default function Caisse() {
             </div>
             
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-3 sm:p-6">
               <AddTransactionForm onClose={() => setShowAddForm(false)} onSuccess={() => {
                 setShowAddForm(false);
                 fetchTransactions();
@@ -532,7 +532,7 @@ export default function Caisse() {
         >
           <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-lg w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-xl flex flex-col">
             {/* Modal Header */}
-            <div className="flex-shrink-0 bg-white/95 dark:bg-gray-800/95 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
+            <div className="flex-shrink-0 bg-white/95 dark:bg-gray-800/95 border-b border-gray-200 dark:border-gray-700 px-3 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('edit_transaction')}</h2>
               <button 
                 onClick={() => setShowEditForm(false)}
@@ -543,7 +543,7 @@ export default function Caisse() {
             </div>
             
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-3 sm:p-6">
               <EditTransactionForm 
                 transaction={selectedTransaction} 
                 onClose={() => setShowEditForm(false)} 

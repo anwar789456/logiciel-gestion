@@ -220,30 +220,30 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-3">
-          <FileText className="h-8 w-8 text-blue-600" />
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+    <div className="max-w-6xl mx-auto p-3 sm:p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3">
+        <div className="flex items-center space-x-2 sm:space-x-3">
+          <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
+          <h2 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
             {existingDevis ? 'Modifier le Devis' : 'Nouveau Devis'}
           </h2>
         </div>
-        <div className="flex items-center space-x-2 bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-lg">
-          <Calculator className="h-5 w-5 text-blue-600" />
-          <span className="text-lg font-semibold text-blue-600">
+        <div className="flex items-center space-x-2 bg-blue-50 dark:bg-blue-900/20 px-3 sm:px-4 py-2 rounded-lg">
+          <Calculator className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+          <span className="text-sm sm:text-lg font-semibold text-blue-600">
             Total: {totals.totalAmount.toFixed(2)} DT
           </span>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         {/* Logo Section */}
-        <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <div className="bg-gray-50 dark:bg-gray-700 p-3 sm:p-6 rounded-lg">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
             Logo du Devis
           </h3>
-          
-          <div className="flex items-start space-x-6">
+
+          <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
             {/* Logo Preview */}
             <div className="flex-shrink-0">
               <div className="w-32 h-24 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-white dark:bg-gray-800">
@@ -278,7 +278,7 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
                   Si aucun logo n'est sélectionné, le logo SAMET HOME sera utilisé par défaut.
                 </p>
                 
-                <div className="flex items-center space-x-3">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                   <input
                     type="file"
                     accept="image/*"
@@ -293,7 +293,7 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
                     <Upload className="h-4 w-4" />
                     <span>Choisir un logo</span>
                   </label>
-                  
+
                   {(logoPreview || formData.customLogo) && (
                     <button
                       type="button"
@@ -316,8 +316,8 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
         </div>
 
         {/* Client Information */}
-        <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <div className="bg-gray-50 dark:bg-gray-700 p-3 sm:p-6 rounded-lg">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
             Informations Client
           </h3>
 
@@ -352,7 +352,7 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Nom du Client *
@@ -412,7 +412,7 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
               <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-4">
                 Informations Entreprise
               </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Nom de l'Entreprise *
@@ -472,15 +472,15 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
         </div>
 
         {/* Items */}
-        <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <div className="bg-gray-50 dark:bg-gray-700 p-3 sm:p-6 rounded-lg">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3 sm:mb-4">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
               Articles du Devis
             </h3>
             <button
               type="button"
               onClick={addItem}
-              className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+              className="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
             >
               <Plus className="h-4 w-4" />
               <span>Ajouter Article</span>
@@ -546,8 +546,8 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
         </div>
 
         {/* Terms and Conditions */}
-        <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <div className="bg-gray-50 dark:bg-gray-700 p-3 sm:p-6 rounded-lg">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
             Conditions
           </h3>
           <div className="space-y-4">
@@ -604,12 +604,12 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-end space-x-4">
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4">
           {onCancel && (
             <button
               type="button"
               onClick={onCancel}
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+              className="w-full sm:w-auto px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
             >
               Annuler
             </button>
@@ -617,7 +617,7 @@ const DevisForm = ({ existingDevis = null, onSuccess, onCancel }) => {
           <button
             type="submit"
             disabled={loading || uploadingLogo}
-            className="flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full sm:w-auto flex items-center justify-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="h-4 w-4" />
             <span>

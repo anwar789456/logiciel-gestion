@@ -182,8 +182,8 @@ export default function DemandeConge() {
   };
 
   return (
-    <div className='mt-4 px-8'>
-      <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">{t('leave_request_title')}</h1>
+    <div className='mt-4 px-3 sm:px-8'>
+      <h1 className="text-lg sm:text-2xl font-semibold text-gray-800 dark:text-white mb-4 sm:mb-6">{t('leave_request_title')}</h1>
       
       {loading ? (
         <div className="flex justify-center items-center py-8">

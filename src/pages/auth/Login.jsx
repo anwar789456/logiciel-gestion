@@ -91,8 +91,8 @@ const Login = () => {
   };
   
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 px-4">
-      <div className="absolute top-4 right-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 px-4 py-8 sm:py-12">
+      <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
         <button
           className="flex cursor-pointer items-center space-x-2 p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700 focus:outline-none transition-all duration-300 shadow-sm"
           onClick={() => changeLanguage(language === 'en' ? 'fr' : 'en')}
@@ -102,12 +102,12 @@ const Login = () => {
           <ChevronDown size={18} className="text-blue-600 dark:text-blue-300" style={{minWidth: '18px', filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.1))'}} />
         </button>
       </div>
-      <div className="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 p-10 rounded-xl shadow-xl backdrop-blur-sm bg-opacity-90 dark:bg-opacity-80 transition-all duration-300 border border-gray-200 dark:border-gray-700">
+      <div className="max-w-md w-full space-y-6 sm:space-y-8 bg-white dark:bg-gray-800 p-6 sm:p-10 rounded-xl shadow-xl backdrop-blur-sm bg-opacity-90 dark:bg-opacity-80 transition-all duration-300 border border-gray-200 dark:border-gray-700">
         <div className="text-center">
           <div className="flex justify-center mb-4">
-            <img src="/128x128.png" alt="Samet-Home Logo" className="h-16 w-auto" />
+            <img src="/128x128.png" alt="Samet-Home Logo" className="h-12 sm:h-16 w-auto" />
           </div>
-          <h2 className="mt-2 text-3xl font-extrabold text-gray-900 dark:text-white bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-indigo-300">
+          <h2 className="mt-2 text-xl sm:text-3xl font-extrabold text-gray-900 dark:text-white bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-indigo-300">
             {t('sign_in_to_your_account')}
           </h2>
         </div>

@@ -88,33 +88,33 @@ const ProductDetailsModal = ({ product, isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div 
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4">
+      <div
         ref={modalRef}
-        className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-fade-in-up"
+        className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto animate-fade-in-up"
       >
         {/* Header */}
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-t-2xl p-6 relative">
-          <button 
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-t-xl sm:rounded-t-2xl p-4 sm:p-6 relative">
+          <button
             onClick={onClose}
-            className="absolute right-4 top-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-full p-2 transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-600"
+            className="absolute right-3 top-3 sm:right-4 sm:top-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-full p-2 transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-600"
           >
             <X size={20} />
           </button>
-          
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{product.nom}</h2>
-          <div className="flex items-center mt-2">
+
+          <h2 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white pr-10 break-words">{product.nom}</h2>
+          <div className="flex items-center flex-wrap gap-2 mt-2">
             {getAvailabilityBadge(product.disponibilite)}
-            <span className="ml-4 text-gray-700 dark:text-gray-300">{t('id')}: {product.idProd}</span>
+            <span className="text-sm sm:text-base text-gray-700 dark:text-gray-300">{t('id')}: {product.idProd}</span>
           </div>
         </div>
-        
+
         {/* Content */}
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
           {/* Left column - Image and basic info */}
           <div className="space-y-6">
             {/* Product image */}
-            <div className="bg-gray-100 dark:bg-gray-700 rounded-xl overflow-hidden shadow-md h-64 flex items-center justify-center">
+            <div className="bg-gray-100 dark:bg-gray-700 rounded-xl overflow-hidden shadow-md h-48 sm:h-64 flex items-center justify-center">
               {product.images && product.images.length > 0 && product.images[0].img ? (
                 <img 
                   src={product.images[0].img} 
@@ -138,21 +138,21 @@ const ProductDetailsModal = ({ product, isOpen, onClose }) => {
                 <DollarSign size={20} className="text-green-600 mr-2" />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('price_information')}</h3>
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('min_price')}</p>
-                  <p className="text-xl font-bold text-gray-900 dark:text-white">{product.minPrice} DT</p>
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{t('min_price')}</p>
+                  <p className="text-base sm:text-xl font-bold text-gray-900 dark:text-white">{product.minPrice} DT</p>
                 </div>
                 {product.maxPrice && (
                   <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('max_price')}</p>
-                    <p className="text-xl font-bold text-gray-900 dark:text-white">{product.maxPrice} DT</p>
+                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{t('max_price')}</p>
+                    <p className="text-base sm:text-xl font-bold text-gray-900 dark:text-white">{product.maxPrice} DT</p>
                   </div>
                 )}
                 {product.tva && (
                   <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">TVA</p>
-                    <p className="text-xl font-bold text-gray-900 dark:text-white">{product.tva}</p>
+                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">TVA</p>
+                    <p className="text-base sm:text-xl font-bold text-gray-900 dark:text-white">{product.tva}</p>
                   </div>
                 )}
               </div>
@@ -207,7 +207,7 @@ const ProductDetailsModal = ({ product, isOpen, onClose }) => {
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('dimensions')}</h3>
                 </div>
                 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {product.longueur && (
                     <div>
                       <p className="text-sm text-gray-500 dark:text-gray-400">{t('length')}</p>

@@ -16,9 +16,9 @@ function Commandes() {
   };
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+    <div className="p-2 sm:p-6">
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">
           {t('commandes')}
         </h1>
         <p className="text-gray-600 dark:text-gray-300">

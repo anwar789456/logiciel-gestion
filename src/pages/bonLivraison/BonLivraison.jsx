@@ -38,7 +38,7 @@ export default function BonLivraison() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-2 sm:p-6">
       {currentView === 'list' && (
         <BonLivraisonList
           onCreateNew={handleCreateNew}

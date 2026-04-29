@@ -195,7 +195,7 @@ function ProductOrdering() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto p-3 sm:p-6">
       {showSuccessMessage && (
         <div className="fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md z-50">
           <div className="flex items-center">
@@ -208,7 +208,7 @@ function ProductOrdering() {
         </div>
       )}
       
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">{t('product_ordering')}</h1>
+      <h1 className="text-lg sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">{t('product_ordering')}</h1>
       
       <div className="flex flex-wrap gap-6 mb-8">
         <div className="flex-1 min-w-[250px]">

@@ -102,7 +102,7 @@ const DevisCompteur = () => {
           <label htmlFor="newValue" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Nouvelle valeur
           </label>
-          <div className="flex space-x-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <input
               type="text"
               id="newValue"
@@ -114,7 +114,7 @@ const DevisCompteur = () => {
             <button
               onClick={handleSave}
               disabled={saving || !newValue || newValue.trim() === ''}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {saving ? (
                 <RefreshCw className="h-4 w-4 animate-spin" />

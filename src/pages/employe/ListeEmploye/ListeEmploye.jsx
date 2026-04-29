@@ -264,22 +264,22 @@ export default function ListeEmploye() {
     
     return (
         <div className="pt-4">
-            <div className='pl-8 pb-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-700'>
+            <div className='pl-3 sm:pl-8 pr-3 sm:pr-8 pb-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 border-b border-gray-200 dark:border-gray-700'>
                 <div>
-                    <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
+                    <h1 className="text-lg sm:text-2xl font-semibold text-gray-800 dark:text-white">
                         {(t('fiche_employe'))}
                     </h1>
                 </div>
-                <div className='flex pr-8'>
-                    <button 
+                <div className='flex'>
+                    <button
                         onClick={() => {
                             setIsUserEmployee(false);
                             setShowAddModal(true);
                         }}
-                        className='flex items-center bg-blue-600 
-                        hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-xl 
+                        className='w-full sm:w-auto flex items-center justify-center bg-blue-600
+                        hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-xl
                         active:scale-85
-                        cursor-pointer shadow-lg hover:shadow-lg active:shadow-inner 
+                        cursor-pointer shadow-lg hover:shadow-lg active:shadow-inner
                         transition-all duration-400 ease-in-out'
                     >
                         <CopyPlus className='mr-2 mt-0.5' size={20} />
@@ -290,7 +290,7 @@ export default function ListeEmploye() {
 
             <div className=''>
                 {/* Main content */}
-                <div className="flex-1 p-8">
+                <div className="flex-1 p-3 sm:p-8">
                     {error && (
                         <div className="mb-4 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded relative" role="alert">
                             <div className="flex items-center">
@@ -539,7 +539,7 @@ export default function ListeEmploye() {
                                         </div>
                                     </div>
                                     
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
                                             <label htmlFor="date_naiss" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                 {t('birth_date')}
@@ -834,7 +834,7 @@ export default function ListeEmploye() {
                                         </div>
                                     </div>
                                     
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
                                             <label htmlFor="edit_date_naiss" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                 {t('birth_date')}

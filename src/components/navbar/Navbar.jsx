@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Moon, SunMedium, ChevronDown, Bolt, LogOut, User, UserPlus, Settings } from 'lucide-react';
+import { Moon, SunMedium, ChevronDown, Bolt, LogOut, User, UserPlus, Settings, Menu } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../hooks/useAuth';
 
 function Navbar() {
   const { t } = useTranslation();
-  const { isDarkMode, toggleDarkMode, language, changeLanguage } = useApp();
+  const { isDarkMode, toggleDarkMode, language, changeLanguage, toggleSidebar } = useApp();
   const { currentUser, isAdmin, logout, canAccess } = useAuth();
   const navigate = useNavigate();
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
@@ -32,23 +32,23 @@ function Navbar() {
     if (lang === 'en') {
       return (
         <div className="flex items-center space-x-2">
-          <img 
-            src="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/us.svg" 
-            alt="US Flag" 
+          <img
+            src="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/us.svg"
+            alt="US Flag"
             className="w-5 h-4 rounded-sm"
           />
-          <span>English</span>
+          <span className="hidden sm:inline">English</span>
         </div>
       );
     } else {
       return (
         <div className="flex items-center space-x-2">
-          <img 
-            src="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/fr.svg" 
-            alt="French Flag" 
+          <img
+            src="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/fr.svg"
+            alt="French Flag"
             className="w-5 h-4 rounded-sm"
           />
-          <span>Français</span>
+          <span className="hidden sm:inline">Français</span>
         </div>
       );
     }
@@ -60,32 +60,40 @@ function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-50">
-      <div className="max-w-full px-4 mx-auto">
+      <div className="max-w-full px-2 sm:px-4 mx-auto">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">            
-            <img 
-              src={logoPath} 
-              alt="Samet Home Logo" 
-              className="h-10 w-auto"
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleSidebar}
+              className="md:hidden p-2 rounded-md cursor-pointer text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+              title="Menu"
+              aria-label="Toggle menu"
+            >
+              <Menu size={22} />
+            </button>
+            <img
+              src={logoPath}
+              alt="Samet Home Logo"
+              className="h-8 sm:h-10 w-auto"
             />
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-1 sm:space-x-3">
             {currentUser && (
               <div className="relative" ref={profileMenuRef}>
-                <button 
+                <button
                   onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-                  className="flex items-center justify-center h-10 w-10 rounded-full border-2 border-blue-500 dark:border-blue-400 overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-300 hover:scale-105"
+                  className="flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-full border-2 border-blue-500 dark:border-blue-400 overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-300 hover:scale-105"
                   title={currentUser.name || currentUser.username}
                 >
                   {currentUser.img_url ? (
-                    <img 
-                      src={currentUser.img_url} 
-                      alt={currentUser.name || currentUser.username} 
+                    <img
+                      src={currentUser.img_url}
+                      alt={currentUser.name || currentUser.username}
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <User className="h-6 w-6 text-blue-500 dark:text-blue-400" />
+                    <User className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500 dark:text-blue-400" />
                   )}
                 </button>
                 
@@ -133,9 +141,9 @@ function Navbar() {
             )}
             
             {canAccess('settings') && (
-              <button 
+              <button
                 onClick={handleSettingsClick}
-                className='p-2 rounded-md cursor-pointer text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none'
+                className='hidden sm:flex p-2 rounded-md cursor-pointer text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none'
                 title={t('settings')}
               >
                 <Bolt size={20} />
@@ -152,12 +160,12 @@ function Navbar() {
 
             <div className="relative">
               <button
-                className="flex cursor-pointer items-center space-x-2 p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+                className="flex cursor-pointer items-center space-x-1 sm:space-x-2 p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
                 onClick={() => changeLanguage(language === 'en' ? 'fr' : 'en')}
                 title={language === 'en' ? t('switchToFrench') : t('switchToEnglish')}
               >
                 <span>{getLanguageDisplay(language)}</span>
-                <ChevronDown size={16} />
+                <ChevronDown size={16} className="hidden sm:inline" />
               </button>
             </div>
             

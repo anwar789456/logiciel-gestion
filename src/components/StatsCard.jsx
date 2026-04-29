@@ -80,30 +80,30 @@ const StatsCard = ({
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6 hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between mb-3 sm:mb-4 gap-2">
+        <h3 className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide truncate">
           {title}
         </h3>
         {Icon && (
-          <div className={`p-2 rounded-lg ${colorClasses[color].bg} ${colorClasses[color].border} border`}>
+          <div className={`p-2 rounded-lg flex-shrink-0 ${colorClasses[color].bg} ${colorClasses[color].border} border`}>
             <Icon className={`h-5 w-5 ${colorClasses[color].icon}`} />
           </div>
         )}
       </div>
-      
-      <div className="flex items-baseline justify-between">
-        <div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">
+
+      <div className="flex items-baseline justify-between flex-wrap gap-2">
+        <div className="min-w-0">
+          <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white break-all">
             {typeof value === 'number' ? value.toLocaleString('fr-FR') : value}
           </p>
           {subtitle && (
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
               {subtitle}
             </p>
           )}
         </div>
-        
+
         {trend !== null && (
           <div className="flex items-center gap-1">
             {getTrendIcon()}

@@ -141,7 +141,7 @@ const AdvancedProductFilters = ({ filters, setFilters, onFiltersChange, onApplyF
   return (
     <div className="bg-white dark:bg-gray-800 rounded-none ">
       {/* Filter Toggle Button */}
-      <div className="px-8 p-2 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+      <div className="px-3 sm:px-8 p-2 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-sm hover:shadow-md"
@@ -226,7 +226,7 @@ const AdvancedProductFilters = ({ filters, setFilters, onFiltersChange, onApplyF
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t('price_range')}
             </label>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <input
                   type="number"
@@ -253,7 +253,7 @@ const AdvancedProductFilters = ({ filters, setFilters, onFiltersChange, onApplyF
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t('quantity_range')}
             </label>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <input
                   type="number"

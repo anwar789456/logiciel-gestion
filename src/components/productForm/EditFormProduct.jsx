@@ -895,7 +895,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
             />
           </div>
           
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('min_price')}</label>
               <input
@@ -1300,7 +1300,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
                   </div>
                   
                   <div className="space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('length')}</label>
                         <input
@@ -1321,7 +1321,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('option_price')}</label>
                         <input
@@ -1511,7 +1511,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
                 </button>
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('dimension_type')}</label>
                   <select
@@ -1565,7 +1565,7 @@ const EditFormProduct = ({ product, onClose, onSuccess }) => {
               
               {/* Show additional fields based on type */}
               {dimension.thedimensiontype === 'Longueur x Largeur' && (
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('long')}</label>
                     <input

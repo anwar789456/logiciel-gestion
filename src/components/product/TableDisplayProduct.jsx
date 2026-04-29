@@ -200,7 +200,7 @@ const TableDisplayProduct = React.forwardRef(({
   if (loading && data.length === 0) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div className="p-8">
+        <div className="p-4 sm:p-8">
           <div className="animate-pulse space-y-6">
             <div className="flex justify-between items-center">
               <div className="h-8 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-lg w-1/3"></div>
@@ -224,7 +224,7 @@ const TableDisplayProduct = React.forwardRef(({
   if (error) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-red-200 dark:border-red-700 overflow-hidden">
-        <div className="p-8">
+        <div className="p-4 sm:p-8">
           <div className="text-center">
             <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
               <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400" />

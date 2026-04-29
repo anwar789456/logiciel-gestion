@@ -156,37 +156,37 @@ function CommandesList() {
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
               <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
+                <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
                   <div className="flex items-center space-x-2">
                     <Users size={16} />
                     <span>Client</span>
                   </div>
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
+                <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
                   <div className="flex items-center space-x-2">
                     <Contact size={16} />
                     <span>Contact</span>
                   </div>
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
+                <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
                   <div className="flex items-center space-x-2">
                     <MapPin size={16} />
                     <span>Localisation</span>
                   </div>
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
+                <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
                   <div className="flex items-center space-x-2">
                     <Calendar size={16} />
                     <span>Date</span>
                   </div>
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
+                <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
                   <div className="flex items-center space-x-2">
                     <Package size={16} />
                     <span>Articles</span>
                   </div>
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
+                <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">
                   <div className="flex items-center space-x-2">
                     <Settings size={16} />
                     <span>Actions</span>
@@ -197,13 +197,13 @@ function CommandesList() {
             <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
               {filteredCommandes.map((commande) => (
                 <tr key={commande._id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
-                  <td className="px-6 py-4">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4">
                     <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                         <User className="mr-2 text-gray-400" size={16} />
                         <span className="truncate max-w-[200px]">{commande.nomPrenom}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4">
                     <div className="space-y-1">
                       {commande.email && (
                         <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
@@ -219,13 +219,13 @@ function CommandesList() {
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4">
                     <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                       <MapPin size={14} className="mr-2 text-gray-400" />
                       <span>{commande.gouvernorat || 'Non spécifié'}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4">
                     <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                       <Calendar size={14} className="mr-2 text-gray-400" />
                       <span>
@@ -233,7 +233,7 @@ function CommandesList() {
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4">
                     <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                       <Package size={14} className="mr-2 text-gray-400" />
                       <span>{getTotalQuantity(commande.cartItems)} article{getTotalQuantity(commande.cartItems) > 1 ? 's' : ''}</span>
@@ -246,7 +246,7 @@ function CommandesList() {
                     )}
                   </td>
                   
-                  <td className="px-6 py-4">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4">
                     <button
                       onClick={() => openModal(commande)}
                       className="inline-flex items-center px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
@@ -304,9 +304,9 @@ function CommandesList() {
               transformOrigin: 'center',
             }}
           >
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <div className="p-3 sm:p-6">
+              <div className="flex justify-between items-center mb-4 sm:mb-6">
+                <h2 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
                   Détails de la commande
                 </h2>
                 <button

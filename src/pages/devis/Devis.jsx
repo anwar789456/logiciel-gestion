@@ -40,7 +40,7 @@ function Devis() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-2 sm:p-6">
       {currentView === 'list' && (
         <DevisList
           onCreateNew={handleCreateNew}

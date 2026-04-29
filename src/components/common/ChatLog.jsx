@@ -270,13 +270,13 @@ function ChatLog({ chatItems }) {
   }
 
   return (
-    <div className="m-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+    <div className="m-1 sm:m-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
       {/* Header with filters and controls */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex flex-wrap gap-4 items-center justify-between">
-          <div className="flex gap-4 items-center flex-1">
+      <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex flex-wrap gap-3 sm:gap-4 items-stretch sm:items-center justify-between">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center flex-1 min-w-0">
             {/* Search */}
-            <div className="relative flex-1 max-w-md">
+            <div className="relative flex-1 sm:max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
@@ -287,9 +287,9 @@ function ChatLog({ chatItems }) {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 outline-none"
               />
             </div>
-            
+
             {/* Author Filter - Searchable Dropdown */}
-            <div className="relative" ref={authorDropdownRef}>
+            <div className="relative w-full sm:w-auto" ref={authorDropdownRef}>
               <div className="relative">
                 <input
                   ref={authorInputRef}
@@ -299,7 +299,7 @@ function ChatLog({ chatItems }) {
                   onChange={(e) => setAuthorSearchTerm(e.target.value)}
                   onFocus={() => setShowAuthorDropdown(true)}
                   autoComplete="off"
-                  className="w-64 pl-3 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 outline-none"
+                  className="w-full sm:w-64 pl-3 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 outline-none"
                 />
                 
                 {/* Clear button */}
@@ -358,10 +358,10 @@ function ChatLog({ chatItems }) {
             </div>
 
             {/* Date Filter */}
-            <div className="relative" ref={dateFilterRef}>
+            <div className="relative w-full sm:w-auto" ref={dateFilterRef}>
               <button
                 onClick={() => setShowDateFilter(!showDateFilter)}
-                className={`flex items-center gap-2 px-3 py-2 border rounded-lg text-sm ${
+                className={`w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-2 border rounded-lg text-sm ${
                   hasDateFilters
                     ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
                     : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200'
@@ -373,7 +373,7 @@ function ChatLog({ chatItems }) {
               </button>
               
               {showDateFilter && (
-                <div className="absolute z-20 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 min-w-80">
+                <div className="absolute z-20 left-0 sm:right-0 sm:left-auto mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 w-[calc(100vw-2rem)] sm:w-auto sm:min-w-80 max-w-md">
                   <div className="space-y-4">
                     {/* Date Range Inputs */}
                     <div>
@@ -497,10 +497,10 @@ function ChatLog({ chatItems }) {
           </div>
           
           {/* Column Settings */}
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <button
               onClick={() => setShowColumnSettings(!showColumnSettings)}
-              className="flex items-center gap-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
             >
               <Columns3Cog className="w-4 h-4" />
               {t('Columns')}
@@ -671,10 +671,10 @@ function ChatLog({ chatItems }) {
       
 
       {/* Pagination */}
-      <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
-        <div className="flex items-center justify-between">
+      <div className="px-3 sm:px-4 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
 
-          <div className='flex items-center'>
+          <div className='flex items-center flex-wrap gap-2'>
             <div className="text-sm text-gray-700 dark:text-gray-200">
               {t('Page {{current}} of {{total}}', { current: currentPage, total: totalPages })}
             </div>
@@ -759,20 +759,18 @@ function ChatLog({ chatItems }) {
               `}</style>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-center">
               <button
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
                 className="flex items-center gap-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-200"
                 >
                 <ChevronLeft className="w-4 h-4" />
-                {t('Previous')}
+                <span className="hidden sm:inline">{t('Previous')}</span>
               </button>
-              
-            
-            
+
             {/* Page numbers */}
-            <div className="flex gap-1">
+            <div className="flex gap-1 flex-wrap justify-center">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNum => (
                 <button
                   key={pageNum}
@@ -793,7 +791,7 @@ function ChatLog({ chatItems }) {
               disabled={currentPage === totalPages}
               className="flex items-center gap-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-200"
             >
-              {t('Next')}
+              <span className="hidden sm:inline">{t('Next')}</span>
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
@@ -832,24 +830,24 @@ function ChatLog({ chatItems }) {
               }
             `}
           </style>
-          <div className="fixed inset-0 bg-transparent bg-opacity-50 backdrop-blur-[5px] flex items-center justify-center z-50 modal-backdrop">
-            <div 
+          <div className="fixed inset-0 bg-transparent bg-opacity-50 backdrop-blur-[5px] flex items-center justify-center z-50 modal-backdrop p-3 sm:p-4">
+            <div
               ref={expandedMessageRef}
-              className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-4xl max-h-[85vh] w-full mx-4 flex flex-col modal-content border border-gray-200 dark:border-gray-700 overflow-hidden"
+              className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl shadow-2xl max-w-4xl max-h-[90vh] sm:max-h-[85vh] w-full flex flex-col modal-content border border-gray-200 dark:border-gray-700 overflow-hidden"
             >
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
-                <div className="flex items-center gap-4">
-                  <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-full">
+              <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50 gap-2">
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                  <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-full flex-shrink-0">
                     <User className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-lg">
+                  <div className="flex flex-col gap-1 min-w-0">
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-base sm:text-lg truncate">
                       {expandedMessage.author}
                     </h3>
-                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                      <Calendar className="w-4 h-4" />
-                      <span>{formatTimestamp(expandedMessage.timestamp)}</span>
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                      <Calendar className="w-4 h-4 flex-shrink-0" />
+                      <span className="truncate">{formatTimestamp(expandedMessage.timestamp)}</span>
                     </div>
                   </div>
                 </div>
@@ -862,9 +860,9 @@ function ChatLog({ chatItems }) {
               </div>
 
               {/* Content */}
-              <div className="p-6 flex-1 overflow-y-auto">
+              <div className="p-4 sm:p-6 flex-1 overflow-y-auto">
                 <div className="prose dark:prose-invert max-w-none">
-                  <div className="text-gray-800 dark:text-gray-200 whitespace-pre-line leading-relaxed text-[15px] font-normal">
+                  <div className="text-gray-800 dark:text-gray-200 whitespace-pre-line leading-relaxed text-sm sm:text-[15px] font-normal break-words">
                     {expandedMessage.content}
                   </div>
                 </div>

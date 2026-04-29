@@ -7,14 +7,14 @@ function Settings() {
   const { t } = useTranslation();
 
   return (
-    <div className='px-8 pt-4'>
-      <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">
+    <div className='px-3 sm:px-8 pt-4'>
+      <h1 className="text-lg sm:text-2xl font-semibold text-gray-800 dark:text-white mb-4 sm:mb-6">
         {t('settings')}
       </h1>
       
       <div className="space-y-6">
         {/* General Settings */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3 sm:p-6 border border-gray-200 dark:border-gray-700">
           <h2 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
             {t('parametres_generaux')}
           </h2>

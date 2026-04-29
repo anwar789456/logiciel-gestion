@@ -6,9 +6,9 @@ function CommandesEnCours() {
   const { t } = useTranslation();
 
   return (
-    <div className="pt-4 px-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
+    <div className="pt-4 px-3 sm:px-8">
+      <div className="mb-4 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mb-2">
           {t('commandes_en_cours')}
         </h1>
       </div>

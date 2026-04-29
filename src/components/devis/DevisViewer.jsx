@@ -30,10 +30,10 @@ const DevisViewer = ({ devis, onEdit, onBack }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+    <div className="max-w-4xl mx-auto p-3 sm:p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center space-x-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center space-x-3">
           <button
             onClick={onBack}
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
@@ -41,30 +41,30 @@ const DevisViewer = ({ devis, onEdit, onBack }) => {
             <ArrowLeft className="h-5 w-5" />
             <span>Retour</span>
           </button>
-          <div className="flex items-center space-x-3">
-            <FileText className="h-8 w-8 text-blue-600" />
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
                 Devis N° {devis.devisNumber}
               </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                 Créé le {new Date(devis.createdAt).toLocaleDateString('fr-FR')}
               </p>
             </div>
           </div>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center flex-wrap gap-2">
           {getStatusBadge(devis.status)}
           <button
             onClick={() => onEdit && onEdit(devis)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
           >
             <Edit className="h-4 w-4" />
             <span>Modifier</span>
           </button>
           <button
             onClick={handleDownloadPDF}
-            className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
           >
             <Download className="h-4 w-4" />
             <span>PDF</span>
@@ -73,33 +73,33 @@ const DevisViewer = ({ devis, onEdit, onBack }) => {
       </div>
 
       {/* Company Header */}
-      <div className="mb-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
-        <div className="flex justify-between items-start">
+      <div className="mb-6 sm:mb-8 p-3 sm:p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
           <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">SAMET HOME</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">SAMET HOME</h2>
             <p className="text-sm text-gray-600 dark:text-gray-400">MEUBLES ET DECORATION</p>
             <p className="text-xs text-gray-500 dark:text-gray-500">SATRACO s.a.r.l - IU:1280963K</p>
           </div>
-          <div className="text-right">
+          <div className="sm:text-right">
             <div className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 mb-1">
-              <User className="h-4 w-4" />
-              <span className="font-medium">CLIENT: {devis.clientName}</span>
+              <User className="h-4 w-4 shrink-0" />
+              <span className="font-medium text-sm">CLIENT: {devis.clientName}</span>
             </div>
             <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 mb-1">
-              <MapPin className="h-4 w-4" />
-              <span>ADRESSE: {devis.clientAddress}</span>
+              <MapPin className="h-4 w-4 shrink-0" />
+              <span className="text-sm">ADRESSE: {devis.clientAddress}</span>
             </div>
             <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
-              <Phone className="h-4 w-4" />
-              <span>Téléphone: {devis.clientPhone}</span>
+              <Phone className="h-4 w-4 shrink-0" />
+              <span className="text-sm">Téléphone: {devis.clientPhone}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Devis Details */}
-      <div className="mb-8 text-center">
-        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+      <div className="mb-6 sm:mb-8 text-center">
+        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
           DEVIS N° {devis.devisNumber}
         </h3>
         <div className="flex items-center justify-center space-x-2 text-gray-600 dark:text-gray-400">

@@ -919,7 +919,7 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
                     </button>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('option_name')}</label>
                       <input
@@ -977,7 +977,7 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
                     </button>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('length')}</label>
                       <input
@@ -1057,7 +1057,7 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
                     </button>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('foam_name')}</label>
                       <input
@@ -1284,7 +1284,7 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
             />
           </div>
           
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('min_price')}</label>
               <input
@@ -1718,7 +1718,7 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
                   </div>
                   
                   <div className="space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('length')}</label>
                         <input
@@ -1739,7 +1739,7 @@ const [showNewOptionModal, setShowNewOptionModal] = useState({ show: false, type
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('option_price')}</label>
                         <input

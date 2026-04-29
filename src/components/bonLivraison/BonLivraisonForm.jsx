@@ -152,9 +152,9 @@ const BonLivraisonForm = ({ existingBonLivraison = null, onSuccess, onCancel }) 
   return (
     <div className="max-w-7xl mx-auto">
       <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
               {existingBonLivraison ? 'Modifier le bon de livraison' : 'Nouveau bon de livraison'}
             </h1>
             <button
@@ -166,7 +166,7 @@ const BonLivraisonForm = ({ existingBonLivraison = null, onSuccess, onCancel }) 
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-3 sm:p-6">
 
         {error && (
           <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -174,7 +174,7 @@ const BonLivraisonForm = ({ existingBonLivraison = null, onSuccess, onCancel }) 
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {/* Type de client */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -390,13 +390,13 @@ const BonLivraisonForm = ({ existingBonLivraison = null, onSuccess, onCancel }) 
           </div>
 
           {/* Articles */}
-          <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Articles du Bon de Livraison</h3>
+          <div className="bg-gray-50 dark:bg-gray-700 p-3 sm:p-6 rounded-lg">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3 sm:mb-4">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Articles du Bon de Livraison</h3>
               <button
                 type="button"
                 onClick={addItem}
-                className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                className="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
               >
                 <Plus className="h-4 w-4" />
                 <span>Ajouter Article</span>
@@ -453,18 +453,18 @@ const BonLivraisonForm = ({ existingBonLivraison = null, onSuccess, onCancel }) 
           </div>
 
           {/* Boutons */}
-          <div className="flex justify-end space-x-4">
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4">
             <button
               type="button"
               onClick={onCancel}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600"
+              className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600"
             >
               Annuler
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Save className="h-4 w-4 mr-2" />
               {loading ? 'Enregistrement...' : existingBonLivraison ? 'Modifier' : 'Créer'}

@@ -300,13 +300,13 @@ const Carousel = () => {
 
   return (
     <div className="pt-4">
-      <div className='pb-4 pl-8 flex justify-between items-center border-b border-gray-200 dark:border-gray-700'>
+      <div className='pb-4 pl-3 sm:pl-8 pr-3 sm:pr-2 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 border-b border-gray-200 dark:border-gray-700'>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('carousel')}</h1>
+          <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">{t('carousel')}</h1>
         </div>
-        <div className='flex pr-2'>
-          <button 
-            className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-200 shadow-sm"
+        <div className='flex'>
+          <button
+            className="w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-200 shadow-sm"
             onClick={() => handleOpenForm()}
           >
             <CopyPlus className='mr-2 mt-0.5' size={20} />
@@ -338,7 +338,7 @@ const Carousel = () => {
             </div>
           ) : (
             <>
-              <div className="mt-6 px-8 mb-2 flex items-center">
+              <div className="mt-6 px-3 sm:px-8 mb-2 flex items-center">
                 <div className="p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg flex items-center">
                   <AlertCircle size={16} className="mr-2" />
                   <p className="text-sm">{t('drag_to_reorder_carousel')}</p>

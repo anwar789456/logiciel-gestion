@@ -219,13 +219,13 @@ export default function Agenda() {
   }
 
   return (
-    <div className='pt-4 px-8 pb-8'>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className='text-2xl font-semibold text-gray-800 dark:text-white'>Agenda</h1>
+    <div className='pt-4 px-3 sm:px-8 pb-4 sm:pb-8'>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4 sm:mb-6">
+        <h1 className='text-lg sm:text-2xl font-semibold text-gray-800 dark:text-white'>Agenda</h1>
         {canWrite() && (
-          <button 
+          <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Plus size={16} />
             {t('add_event')}

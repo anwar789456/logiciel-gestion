@@ -46,23 +46,23 @@ const ModernChartContainer = ({ title, subtitle, children, actions = null, loadi
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
-        <div className="flex items-center justify-between">
+      <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-700">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
               {title}
             </h3>
             {subtitle && (
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
                 {subtitle}
               </p>
             )}
           </div>
-          
+
           {actions && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               {actions}
               <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
                 <MoreHorizontal className="h-4 w-4 text-gray-500" />
@@ -71,9 +71,9 @@ const ModernChartContainer = ({ title, subtitle, children, actions = null, loadi
           )}
         </div>
       </div>
-      
+
       {/* Content */}
-      <div className="p-6">
+      <div className="p-3 sm:p-6">
         {children}
       </div>
     </div>
@@ -143,9 +143,9 @@ export const ModernPieChart = ({ data, title, subtitle, dataKey = 'value', nameK
 
   return (
     <ModernChartContainer title={title} subtitle={subtitle} actions={actions}>
-      <div className="flex flex-col lg:flex-row items-center gap-6">
-        <div className="flex-1 w-full">
-          <ResponsiveContainer width="100%" height={300}>
+      <div className="flex flex-col lg:flex-row items-center gap-4 sm:gap-6">
+        <div className="flex-1 w-full min-w-0">
+          <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
                 data={data}
@@ -173,7 +173,7 @@ export const ModernPieChart = ({ data, title, subtitle, dataKey = 'value', nameK
         </div>
         
         {/* Legend personnalisée */}
-        <div className="flex flex-col gap-3 min-w-[200px]">
+        <div className="flex flex-col gap-2 sm:gap-3 w-full lg:min-w-[200px] lg:w-auto">
           {data.map((entry, index) => (
             <div key={index} className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -213,8 +213,8 @@ export const ModernBarChart = ({ data, title, subtitle, xKey = 'name', yKey = 'v
 
   return (
     <ModernChartContainer title={title} subtitle={subtitle} actions={actions}>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+      <ResponsiveContainer width="100%" height={250}>
+        <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
           <defs>
             <linearGradient id={`gradient-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={color} stopOpacity={0.8}/>
@@ -268,8 +268,8 @@ export const ModernLineChart = ({ data, title, subtitle, xKey = 'name', yKey = '
 
   return (
     <ModernChartContainer title={title} subtitle={subtitle} actions={actions}>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+      <ResponsiveContainer width="100%" height={250}>
+        <LineChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
           <defs>
             <linearGradient id={`lineGradient-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={color} stopOpacity={0.2}/>
@@ -324,8 +324,8 @@ export const ModernMultiBarChart = ({ data, title, subtitle, bars = [] }) => {
 
   return (
     <ModernChartContainer title={title} subtitle={subtitle} actions={actions}>
-      <ResponsiveContainer width="100%" height={350}>
-        <ComposedChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+      <ResponsiveContainer width="100%" height={300}>
+        <ComposedChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" opacity={0.5} />
           <XAxis 
             dataKey="name" 

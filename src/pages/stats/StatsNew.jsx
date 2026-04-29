@@ -66,10 +66,10 @@ function Stats() {
   const renderOverview = () => (
     <div className="space-y-8">
       {/* Hero Stats Section */}
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-8 border border-blue-200 dark:border-gray-700">
-        <div className="flex items-center justify-between mb-6">
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-4 sm:p-8 border border-blue-200 dark:border-gray-700">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            <h2 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Tableau de Bord Exécutif
             </h2>
             <p className="text-gray-600 dark:text-gray-400">
@@ -290,7 +290,7 @@ function Stats() {
                 <h4 className="text-xl font-semibold text-gray-900 dark:text-white">Répartition des Produits</h4>
                 <p className="text-gray-600 dark:text-gray-400 mt-1">Par catégorie de produits</p>
               </div>
-              <div className="p-6">
+              <div className="p-3 sm:p-6">
                 <ModernPieChart
                   data={chartsData.productsByCategory || [
                     { name: 'Électronique', value: 45 },
@@ -308,7 +308,7 @@ function Stats() {
                 <h4 className="text-xl font-semibold text-gray-900 dark:text-white">Statut des Commandes</h4>
                 <p className="text-gray-600 dark:text-gray-400 mt-1">Répartition par statut</p>
               </div>
-              <div className="p-6">
+              <div className="p-3 sm:p-6">
                 <ModernPieChart
                   data={chartsData.ordersByStatus || [
                     { name: 'Confirmées', value: 60 },
@@ -335,7 +335,7 @@ function Stats() {
                 <h4 className="text-xl font-semibold text-gray-900 dark:text-white">Commandes Mensuelles</h4>
                 <p className="text-gray-600 dark:text-gray-400 mt-1">Évolution sur 6 mois</p>
               </div>
-              <div className="p-6">
+              <div className="p-3 sm:p-6">
                 <ModernBarChart
                   data={chartsData.commandesByMonth || [
                     { name: 'Jan', value: 12 },
@@ -357,7 +357,7 @@ function Stats() {
                 <h4 className="text-xl font-semibold text-gray-900 dark:text-white">Revenus Mensuels</h4>
                 <p className="text-gray-600 dark:text-gray-400 mt-1">Chiffre d'affaires par mois</p>
               </div>
-              <div className="p-6">
+              <div className="p-3 sm:p-6">
                 <ModernBarChart
                   data={chartsData.revenueByMonth || [
                     { name: 'Jan', value: 1200 },
@@ -388,7 +388,7 @@ function Stats() {
                 <h4 className="text-xl font-semibold text-gray-900 dark:text-white">Messages Quotidiens</h4>
                 <p className="text-gray-600 dark:text-gray-400 mt-1">Activité des 7 derniers jours</p>
               </div>
-              <div className="p-6">
+              <div className="p-3 sm:p-6">
                 <ModernLineChart
                   data={chartsData.messagesByDay || [
                     { name: 'Lun', value: 8 },
@@ -411,7 +411,7 @@ function Stats() {
                 <h4 className="text-xl font-semibold text-gray-900 dark:text-white">Croissance des Ventes</h4>
                 <p className="text-gray-600 dark:text-gray-400 mt-1">Tendance sur 6 mois</p>
               </div>
-              <div className="p-6">
+              <div className="p-3 sm:p-6">
                 <ModernLineChart
                   data={chartsData.salesGrowth || [
                     { name: 'Jan', value: 100 },
@@ -441,7 +441,7 @@ function Stats() {
               <h4 className="text-xl font-semibold text-gray-900 dark:text-white">Performance Mensuelle Comparative</h4>
               <p className="text-gray-600 dark:text-gray-400 mt-1">Commandes, Devis et Messages par mois</p>
             </div>
-            <div className="p-6">
+            <div className="p-3 sm:p-6">
               <ModernMultiBarChart
                 data={[
                   { name: 'Jan', commandes: 12, devis: 8, messages: 25 },
@@ -477,11 +477,11 @@ function Stats() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="pt-4 px-8 space-y-8">
+      <div className="pt-4 px-3 sm:px-8 space-y-6 sm:space-y-8">
         {/* Enhanced Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
               Tableau de Bord Analytique
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-400">

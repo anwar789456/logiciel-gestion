@@ -149,18 +149,18 @@ const RecuPaiementList = ({ onCreateNew, onEdit, onView }) => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-        <div className="flex items-center space-x-3">
-          <FileText className="h-8 w-8 text-blue-600" />
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+        <div className="flex items-center space-x-2 sm:space-x-3">
+          <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
+          <h2 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
             Gestion des Reçus de Paiement
           </h2>
         </div>
         <button
           onClick={onCreateNew}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="h-5 w-5" />
           <span>Nouveau Reçu</span>

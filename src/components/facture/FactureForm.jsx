@@ -229,19 +229,19 @@ const FactureForm = ({ existingFacture = null, onSuccess, onCancel }) => {
     <div className="max-w-6xl mx-auto">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
+        <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center space-x-3">
               <FileText className="h-6 w-6 text-blue-600" />
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                 {existingFacture ? 'Modifier la Facture' : 'Nouvelle Facture'}
               </h2>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex flex-col-reverse sm:flex-row sm:items-center gap-2 sm:gap-3">
               <button
                 type="button"
                 onClick={onCancel}
-                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600"
+                className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600"
               >
                 Annuler
               </button>
@@ -249,7 +249,7 @@ const FactureForm = ({ existingFacture = null, onSuccess, onCancel }) => {
                 type="submit"
                 form="facture-form"
                 disabled={loading}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                className="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
               >
                 <Save className="h-4 w-4" />
                 <span>{loading ? 'Sauvegarde...' : 'Sauvegarder'}</span>
@@ -258,7 +258,7 @@ const FactureForm = ({ existingFacture = null, onSuccess, onCancel }) => {
           </div>
         </div>
 
-        <form id="facture-form" onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form id="facture-form" onSubmit={handleSubmit} className="p-3 sm:p-6 space-y-4 sm:space-y-6">
           {/* Client Type Selection */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -338,12 +338,12 @@ const FactureForm = ({ existingFacture = null, onSuccess, onCancel }) => {
           </div>
 
           {/* Logo Upload Section */}
-          <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Logo de la Facture</h3>
+          <div className="bg-gray-50 dark:bg-gray-700 p-3 sm:p-4 rounded-lg">
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">Logo de la Facture</h3>
             <div className="space-y-4">
               {/* Logo Preview */}
-              <div className="flex items-center space-x-4">
-                <div className="w-32 h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-white dark:bg-gray-800">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                <div className="w-24 h-24 sm:w-32 sm:h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-white dark:bg-gray-800 shrink-0">
                   {logoPreview ? (
                     <img src={logoPreview} alt="Logo preview" className="w-full h-full object-contain rounded-lg" />
                   ) : formData.customLogo ? (
@@ -356,7 +356,7 @@ const FactureForm = ({ existingFacture = null, onSuccess, onCancel }) => {
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                     Choisissez un logo personnalisé pour cette facture. Si aucun logo n'est sélectionné, le logo SAMET HOME sera utilisé par défaut.
                   </p>
-                  <div className="flex space-x-2">
+                  <div className="flex flex-wrap gap-2">
                     <label className="cursor-pointer inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                       <Upload className="h-4 w-4 mr-2" />
                       Choisir un logo
@@ -435,13 +435,13 @@ const FactureForm = ({ existingFacture = null, onSuccess, onCancel }) => {
           )}
 
           {/* Items Section */}
-          <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Articles de la Facture</h3>
+          <div className="bg-gray-50 dark:bg-gray-700 p-3 sm:p-6 rounded-lg">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3 sm:mb-4">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Articles de la Facture</h3>
               <button
                 type="button"
                 onClick={addItem}
-                className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                className="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
               >
                 <Plus className="h-4 w-4" />
                 <span>Ajouter Article</span>

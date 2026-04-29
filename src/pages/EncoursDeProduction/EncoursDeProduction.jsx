@@ -181,10 +181,10 @@ export default function EncoursDeProduction() {
   };
 
   return (
-    <div className='pt-4 px-8'>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">Encours de Production</h1>
-        <button onClick={() => setShowAddModal(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+    <div className='pt-4 px-3 sm:px-8'>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4 sm:mb-6">
+        <h1 className="text-lg sm:text-2xl font-semibold text-gray-800 dark:text-white">Encours de Production</h1>
+        <button onClick={() => setShowAddModal(true)} className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
           <CopyPlus size={20} />Ajouter Production
         </button>
       </div>
@@ -295,7 +295,7 @@ export default function EncoursDeProduction() {
       {showAddModal && (
         <div className="fixed inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
+            <div className="p-3 sm:p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Ajouter une Production</h2>
                 <button onClick={() => setShowAddModal(false)} className="text-gray-500 hover:text-gray-700"><X size={24} /></button>
@@ -331,7 +331,7 @@ export default function EncoursDeProduction() {
                   ))}
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Commande</label>
                     <input type="date" value={newProduction.date_commande} onChange={(e) => setNewProduction({...newProduction, date_commande: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" /></div>
                   <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Délais Client</label>
@@ -353,7 +353,7 @@ export default function EncoursDeProduction() {
       {showEditModal && (
         <div className="fixed inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
+            <div className="p-3 sm:p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Modifier la Production</h2>
                 <button onClick={() => setShowEditModal(false)} className="text-gray-500 hover:text-gray-700"><X size={24} /></button>
@@ -389,7 +389,7 @@ export default function EncoursDeProduction() {
                   ))}
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Commande</label>
                     <input type="date" value={editForm.date_commande} onChange={(e) => setEditForm({...editForm, date_commande: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" /></div>
                   <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Délais Client</label>

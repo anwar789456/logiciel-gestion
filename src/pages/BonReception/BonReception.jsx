@@ -35,7 +35,7 @@ export default function BonReception() {
   };
 
   return (
-    <div className='pt-4 px-8'>
+    <div className='pt-4 px-3 sm:px-8'>
       {currentView === 'list' && (
         <BonReceptionList
           onCreateNew={handleCreateNew}

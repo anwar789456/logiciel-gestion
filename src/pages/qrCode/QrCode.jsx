@@ -134,9 +134,9 @@ export default function QrCode() {
 
   return (
     <div className="pt-4">
-      <div className='pb-4 pl-8 flex justify-between items-center border-b border-gray-200 dark:border-gray-700'>
+      <div className='pb-4 pl-3 sm:pl-8 flex justify-between items-center border-b border-gray-200 dark:border-gray-700'>
         <div>
-          <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
+          <h1 className="text-lg sm:text-2xl font-semibold text-gray-800 dark:text-white">
             {t('qr_code_generator')}
           </h1>
         </div>

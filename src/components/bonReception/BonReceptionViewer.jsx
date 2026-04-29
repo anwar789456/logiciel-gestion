@@ -60,9 +60,9 @@ export default function BonReceptionViewer({ bon, onEdit, onBack }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header - Hidden on print */}
-      <div className="flex justify-between items-center print:hidden">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 print:hidden">
         <button
           onClick={onBack}
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
@@ -70,7 +70,7 @@ export default function BonReceptionViewer({ bon, onEdit, onBack }) {
           <ArrowLeft size={20} />
           Retour
         </button>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-2 sm:gap-3">
           <button
             onClick={() => onEdit(bon)}
             className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
@@ -96,10 +96,10 @@ export default function BonReceptionViewer({ bon, onEdit, onBack }) {
       </div>
 
       {/* Printable Content */}
-      <div className="bg-white rounded-lg shadow-lg p-8 print:shadow-none">
+      <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8 print:shadow-none">
         {/* Header */}
-        <div className="text-center mb-8 border-b-2 border-gray-300 pb-4">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        <div className="text-center mb-4 sm:mb-8 border-b-2 border-gray-300 pb-4">
+          <h1 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
             BON DE RÉCEPTION
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400">
@@ -108,7 +108,7 @@ export default function BonReceptionViewer({ bon, onEdit, onBack }) {
         </div>
 
         {/* Supplier and Date Information */}
-        <div className="grid grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 mb-4 sm:mb-8">
           <div>
             <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-3">
               Fournisseur

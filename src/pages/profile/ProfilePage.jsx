@@ -110,13 +110,13 @@ const ProfilePage = () => {
   }
   
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
       <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-        <div className="px-6 py-4 bg-blue-600 dark:bg-blue-700">
+        <div className="px-3 sm:px-6 py-3 sm:py-4 bg-blue-600 dark:bg-blue-700">
           <h2 className="text-xl font-bold text-white">{t('profile')}</h2>
         </div>
         
-        <div className="p-6">
+        <div className="p-3 sm:p-6">
           {error && (
             <div className="mb-4 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg relative animate-fadeIn" role="alert">
               <div className="flex items-center">

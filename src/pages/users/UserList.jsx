@@ -366,16 +366,16 @@ const UserList = () => {
   };
   
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-        <div className="px-6 py-4 bg-blue-600 dark:bg-blue-700 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-white flex items-center">
+        <div className="px-3 sm:px-6 py-3 sm:py-4 bg-blue-600 dark:bg-blue-700 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+          <h2 className="text-lg sm:text-xl font-bold text-white flex items-center">
             <User className="mr-2" />
             {t('employee_list')}
           </h2>
           <button
             onClick={() => setShowAddModal(true)}
-            className="p-2 bg-white text-blue-600 rounded-md hover:bg-blue-50 flex items-center"
+            className="w-full sm:w-auto p-2 bg-white text-blue-600 rounded-md hover:bg-blue-50 flex items-center justify-center"
           >
             <UserPlus size={18} className="mr-1" />
             {t('add_employee')}
@@ -525,7 +525,7 @@ const UserList = () => {
               </button>
             </div>
             
-            <div className="p-6">
+            <div className="p-3 sm:p-6">
               {error && (
                 <div className="mb-4 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded relative" role="alert">
                   <div className="flex items-center">
@@ -740,7 +740,7 @@ const UserList = () => {
               </button>
             </div>
             
-            <div className="p-6">
+            <div className="p-3 sm:p-6">
               {error && (
                 <div className="mb-4 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded relative" role="alert">
                   <div className="flex items-center">

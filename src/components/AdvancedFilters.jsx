@@ -218,15 +218,15 @@ const AdvancedFilters = ({ onFiltersChange, availableClients = [], loading = fal
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0 pt-4 border-t border-gray-200 dark:border-gray-700">
             <button
               onClick={clearFilters}
-              className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+              className="flex items-center justify-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
             >
               <X className="h-4 w-4" />
               Effacer les filtres
             </button>
-            
+
             <button
               onClick={() => setIsOpen(false)}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

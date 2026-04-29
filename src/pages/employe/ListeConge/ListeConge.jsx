@@ -271,7 +271,7 @@ export default function ListeConge() {
   // Redirect if not admin
   if (!isAdmin()) {
     return (
-      <div className="pt-4 px-8">
+      <div className="pt-4 px-3 sm:px-8">
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
           <strong className="font-bold">Accès refusé!</strong>
           <span className="block sm:inline"> Cette page est réservée aux administrateurs.</span>
@@ -281,8 +281,8 @@ export default function ListeConge() {
   }
 
   return (
-    <div className='pt-4 px-8'>
-      <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Liste des Demandes de Congé</h1>
+    <div className='pt-4 px-3 sm:px-8'>
+      <h1 className="text-lg sm:text-2xl font-semibold text-gray-800 dark:text-white mb-4 sm:mb-6">Liste des Demandes de Congé</h1>
       
       {/* Success message */}
       {updateSuccess && (
@@ -435,7 +435,7 @@ export default function ListeConge() {
               </button>
             </div>
             
-            <div className="p-6 max-h-[80vh] overflow-y-auto">
+            <div className="p-3 sm:p-6 max-h-[80vh] overflow-y-auto">
               {/* Actions buttons */}
               <div className="mb-6 flex flex-wrap justify-between items-center gap-2">
                 <div className="flex flex-wrap gap-2">

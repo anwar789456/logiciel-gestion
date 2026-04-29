@@ -392,14 +392,14 @@ export default function Products() {
 
   return (
     <div className='pt-4 flex flex-col h-screen overflow-hidden'>
-      <div className='pb-4 pl-8 border-b border-gray-200 dark:border-gray-700'>
-        <div className='flex justify-between items-center mb-3'>
+      <div className='pb-4 pl-3 sm:pl-8 pr-3 border-b border-gray-200 dark:border-gray-700'>
+        <div className='flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-3'>
           <div>
-            <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
+            <h1 className="text-lg sm:text-2xl font-semibold text-gray-800 dark:text-white">
               {t('products')}
             </h1>
           </div>
-          <div className='flex pr-2'>
+          <div className='flex flex-wrap gap-2'>
             <button
               onClick={() => setShowProductTypesModal(true)}
               className='flex items-center bg-transparent border border-blue-600
@@ -607,7 +607,7 @@ export default function Products() {
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6 overflow-y-auto" style={{ maxHeight: '90vh' }}>
+            <div className="p-3 sm:p-6 overflow-y-auto" style={{ maxHeight: '90vh' }}>
               <EditFormProduct 
                 product={selectedProduct} 
                 onClose={() => {
