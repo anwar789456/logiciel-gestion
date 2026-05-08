@@ -12,7 +12,9 @@ function Navbar() {
   const navigate = useNavigate();
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef(null);
-  const logoPath = isDarkMode ? '/logo-samet-home-dark-mode.png' : '/logo-samet-home.png';
+  const logoPath = isDarkMode
+    ? `${import.meta.env.BASE_URL}logo-samet-home-dark-mode.png`
+    : `${import.meta.env.BASE_URL}logo-samet-home.png`;
   
   // Close the profile menu when clicking outside of it
   useEffect(() => {
