@@ -3,7 +3,7 @@ set -e
 
 FRONT_DIR="/var/www/logiciel-front"
 
-echo "📦 Pulling latest changes from GitHub..."
+echo "Pulling the latest changes from GitHub..."
 cd "$FRONT_DIR"
 git pull origin main
 
