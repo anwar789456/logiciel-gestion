@@ -1,6 +1,6 @@
-const http = require("http");
-const { exec } = require("child_process");
-const crypto = require("crypto");
+import http from "http";
+import { exec } from "child_process";
+import crypto from "crypto";
 
 
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || "";
