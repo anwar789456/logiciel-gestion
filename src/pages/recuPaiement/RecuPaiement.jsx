@@ -62,6 +62,7 @@ const RecuPaiement = () => {
             onBack={handleBack}
           />
         )}
+    </div>
   );
 };
 

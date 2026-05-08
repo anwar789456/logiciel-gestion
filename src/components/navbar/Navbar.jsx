@@ -74,7 +74,7 @@ function Navbar() {
             <img
               src={logoPath}
               alt="Samet Home Logo"
-              className="h-8 sm:h-10 w-auto"
+              className="hidden sm:block w-[250px]"
             />
           </div>
 

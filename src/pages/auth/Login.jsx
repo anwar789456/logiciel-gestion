@@ -21,7 +21,6 @@ const Login = () => {
             alt="US Flag" 
             className="w-5 h-4 rounded-sm"
           />
-          <span>English</span>
         </div>
       );
     } else {
@@ -32,7 +31,6 @@ const Login = () => {
             alt="French Flag" 
             className="w-5 h-4 rounded-sm"
           />
-          <span>Français</span>
         </div>
       );
     }
@@ -104,9 +102,7 @@ const Login = () => {
       </div>
       <div className="max-w-md w-full space-y-6 sm:space-y-8 bg-white dark:bg-gray-800 p-6 sm:p-10 rounded-xl shadow-xl backdrop-blur-sm bg-opacity-90 dark:bg-opacity-80 transition-all duration-300 border border-gray-200 dark:border-gray-700">
         <div className="text-center">
-          <div className="flex justify-center mb-4">
-            <img src="/128x128.png" alt="Samet-Home Logo" className="h-12 sm:h-16 w-auto" />
-          </div>
+          
           <h2 className="mt-2 text-xl sm:text-3xl font-extrabold text-gray-900 dark:text-white bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-indigo-300">
             {t('sign_in_to_your_account')}
           </h2>

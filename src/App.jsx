@@ -59,7 +59,7 @@ function App() {
     <AppProvider>
       <AuthProvider>
         <WebSocketProvider>
-          <Router>
+          <Router basename="/samet-home-erp">
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Navigate to="/login" />} />
